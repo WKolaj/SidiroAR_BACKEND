@@ -4,7 +4,8 @@
   "description": "Back-end for SidiroAR application",
   "main": "server.js",
   "directories": {
-    "test": "tests"
+    "test": "tests",
+    "start": "node server.js"
   },
   "dependencies": {
     "bcrypt": "^3.0.7",
