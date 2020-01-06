@@ -24,6 +24,24 @@ module.exports.readStreamToString = function(readable) {
   });
 };
 
+/**
+ * Write all the text in a writable stream,
+ * via a Promise.
+ * @param {object} writable
+ */
+module.exports.writeStringToStream = function(writeable, data) {
+  return new Promise((resolve, reject) => {
+    writeable.on("finish", function() {
+      return resolve(data);
+    });
+    writeable.on("error", function(err) {
+      return reject(err);
+    });
+    writeable.write(data);
+    writeable.end();
+  });
+};
+
 //Method for checking if object is empty
 module.exports.isObjectEmpty = function(obj) {
   for (let key in obj) {

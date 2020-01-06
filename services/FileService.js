@@ -1,8 +1,12 @@
 const fs = require("fs");
 const config = require("config");
 const path = require("path");
-
 const filesDirPath = config.get("filesDir");
+const {
+  checkIfDirectoryExistsAsync,
+  createDirAsync,
+  removeFileOrDirectoryAsync
+} = require("../utilities/utilities");
 
 const getFilePathWithFileDir = filePath => {
   return path.join(filesDirPath, filePath);
@@ -22,4 +26,24 @@ module.exports.getFileReadStream = function(filePath) {
 module.exports.getFileWriteStream = function(filePath) {
   //Can be changed to cloud upload version
   return fs.createWriteStream(getFilePathWithFileDir(filePath));
+};
+
+/**
+ * @description Method for creating user directory on server
+ */
+module.exports.createUserDirIfNotExists = async function(userId) {
+  let userDirPath = getFilePathWithFileDir(userId);
+  if (!(await checkIfDirectoryExistsAsync(userDirPath))) {
+    await createDirAsync(userDirPath);
+  }
+};
+
+/**
+ * @description Method for deleting file if it exists
+ */
+module.exports.deleteFileIfExists = async function(filePath) {
+  let filePathWithFileDir = getFilePathWithFileDir(filePath);
+  if (!(await checkIfDirectoryExistsAsync(filePathWithFileDir))) {
+    await removeFileOrDirectoryAsync(filePathWithFileDir);
+  }
 };
