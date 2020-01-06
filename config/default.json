@@ -1,4 +1,6 @@
 {
+  "filesDir": "files",
+  "modelFileExtension": "smdl",
   "port": 5000,
   "logging": {
     "info": {

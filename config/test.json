@@ -1,4 +1,5 @@
 {
+  "filesDir": "__testDir/files",
   "logging": {
     "info": {
       "path": "__testDir/logs/info/info.log",

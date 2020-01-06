@@ -4,8 +4,24 @@ const { promisify } = require("util");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
 
-const getFullPath = pathName => {
-  return path.resolve(pathName);
+/**
+ * Reads all the text in a readable stream and returns it as a string,
+ * via a Promise.
+ * @param {object} readable
+ */
+module.exports.readStreamToString = function(readable) {
+  return new Promise((resolve, reject) => {
+    let data = "";
+    readable.on("data", function(chunk) {
+      data += chunk;
+    });
+    readable.on("end", function() {
+      return resolve(data);
+    });
+    readable.on("error", function(err) {
+      return reject(err);
+    });
+  });
 };
 
 //Method for checking if object is empty
