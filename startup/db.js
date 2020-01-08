@@ -1,11 +1,18 @@
 const logger = require("../logger/logger");
+const mongoose = require("mongoose");
+const config = require("config");
 
 module.exports = async function() {
   logger.info("database initializing database...");
 
-  //HERE PUT A CODE TO INITIALIZE DATABASE!
+  const connectionString = config.get("dbConnectionString");
 
-  //TO DO LATER
+  await mongoose.connect(connectionString, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+  });
+
+  mongoose.set("useCreateIndex", true);
 
   logger.info("database initialized");
 };

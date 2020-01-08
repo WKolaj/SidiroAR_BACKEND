@@ -25,6 +25,9 @@ module.exports.getFileReadStream = function(filePath) {
  */
 module.exports.getFileWriteStream = function(filePath) {
   //Can be changed to cloud upload version
+
+  //Attention! - if directory for file to create exists, it throws automatically without possibility to catch this err
+  //therefore should include .on("error",()=>{}) catching mechanism for write streams!
   return fs.createWriteStream(getFilePathWithFileDir(filePath));
 };
 

@@ -1,0 +1,5 @@
+{
+  "dbConnectionString": "SIDIROAR_DB_CONNECTION_STRING",
+  "emailLogin": "SIDIROAR_EMAIL_LOGIN",
+  "emailPassword": "SIDIROAR_EMAIL_PASSWORD"
+}

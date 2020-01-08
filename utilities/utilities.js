@@ -3,6 +3,7 @@ const path = require("path");
 const { promisify } = require("util");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
+const nodemailer = require("nodemailer");
 
 /**
  * Reads all the text in a readable stream and returns it as a string,
@@ -231,4 +232,26 @@ module.exports.isCorrectValue = function(value) {
   if (isNaN(value)) return false;
 
   return true;
+};
+
+/**
+ * @description Method for generating random integer
+ */
+module.exports.getRandomInt = function(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min)) + min;
+};
+
+/**
+ * @description Method for generating random string cotaining only numbers
+ */
+module.exports.generateRandomNumberString = function(numberOfSigns) {
+  let stringToReturn = "";
+
+  for (let i = 0; i < numberOfSigns; i++) {
+    stringToReturn += module.exports.getRandomInt(0, 9).toString();
+  }
+
+  return stringToReturn;
 };
