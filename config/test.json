@@ -1,5 +1,8 @@
 {
   "filesDir": "__testDir/files",
+  "dbConnectionString": "mongodb://testSidiroAR:testSidiroARPassword@localhost/sidiroar",
+  "emailLogin": "testSidiroEmail@abcd.com",
+  "emailPassword": "testSidiroEmailPasssword",
   "logging": {
     "info": {
       "path": "__testDir/logs/info/info.log",

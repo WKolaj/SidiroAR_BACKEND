@@ -25,6 +25,9 @@ module.exports.sendMail = async function(recipient, subject, htmlContent) {
     transporter.sendMail(mailOptions, (err, info) => {
       //logging if error occured
       if (err) logger.error(err.message, err);
+
+      //Always resolving - in order not to throw without checking with await
+      return resolve(info);
     });
   });
 };

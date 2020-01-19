@@ -44,7 +44,9 @@ function validateUser(user) {
       .regex(/^\d+$/)
       .min(4)
       .max(4),
-    permissions: Joi.number().integer()
+    permissions: Joi.number()
+      .integer()
+      .required()
   };
 
   return Joi.validate(user, schema);
