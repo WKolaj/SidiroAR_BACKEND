@@ -21,6 +21,9 @@
     "supertest": "^4.0.2",
     "winston": "^3.2.1"
   },
+  "jest": {
+    "testEnvironment": "node"
+  },
   "devDependencies": {},
   "scripts": {
     "test": "jest  --runInBand --detectOpenHandles --forceExit --coverage",

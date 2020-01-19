@@ -1,7 +1,8 @@
 {
   "filesDir": "__testDir/files",
-  "dbConnectionString": "mongodb://testSidiroAR:testSidiroARPassword@localhost/sidiroar",
+  "dbConnectionString": "mongodb://testSidiroAR:testSidiroARPassword@localhost:27017/sidiroar",
   "emailLogin": "testSidiroEmail@abcd.com",
+  "port": 5000,
   "emailPassword": "testSidiroEmailPasssword",
   "logging": {
     "info": {

@@ -17,8 +17,6 @@ class Transport {
 
       let error = null;
 
-      console.log(mockThrowErrorWhileSending);
-
       if (mockThrowErrorWhileSending)
         error = new Error("Test error while sending email");
 
