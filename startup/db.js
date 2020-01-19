@@ -9,10 +9,9 @@ module.exports = async function() {
 
   await mongoose.connect(connectionString, {
     useNewUrlParser: true,
-    useUnifiedTopology: true
+    useUnifiedTopology: true,
+    useCreateIndex: true
   });
-
-  mongoose.set("useCreateIndex", true);
 
   logger.info("database initialized");
 };

@@ -9,12 +9,9 @@ module.exports = async function(app) {
 
   //TO DO LATER
 
-  // app.use("/api/users", users);
-  // logger.info("Users route initialized");
-
   logger.info("Route error handler initialized");
 
-  app.use("/api/user", userRouter);
+  app.use("/api/users", userRouter);
 
   logger.info("User route initialized");
 
