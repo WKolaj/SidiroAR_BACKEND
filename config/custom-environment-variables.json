@@ -1,5 +1,6 @@
 {
   "dbConnectionString": "SIDIROAR_DB_CONNECTION_STRING",
   "emailLogin": "SIDIROAR_EMAIL_LOGIN",
-  "emailPassword": "SIDIROAR_EMAIL_PASSWORD"
+  "emailPassword": "SIDIROAR_EMAIL_PASSWORD",
+  "jwtPrivateKey": "SIDIROAR_JWT_PRIVATE_KEY"
 }

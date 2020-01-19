@@ -255,3 +255,31 @@ module.exports.generateRandomNumberString = function(numberOfSigns) {
 
   return stringToReturn;
 };
+
+/**
+ * @description method for getting bit in given variable
+ * @param {number} number variable
+ * @param {number} bitPosition bit position
+ */
+module.exports.getBit = function(number, bitPosition) {
+  return (number & (1 << bitPosition)) === 0 ? false : true;
+};
+
+/**
+ * @description method for setting bit in given variable
+ * @param {number} number variable
+ * @param {number} bitPosition bit position
+ */
+module.exports.setBit = function(number, bitPosition) {
+  return number | (1 << bitPosition);
+};
+
+/**
+ * @description method for clearing bit in given variable
+ * @param {number} number variable
+ * @param {number} bitPosition bit position
+ */
+module.exports.clearBit = function(number, bitPosition) {
+  let mask = ~(1 << bitPosition);
+  return number & mask;
+};

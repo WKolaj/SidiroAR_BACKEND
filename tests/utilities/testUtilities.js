@@ -1,0 +1,75 @@
+const { User } = require("../../models/user");
+const { exists } = require("../../utilities/utilities");
+
+const testUselessUserEmail = "useless@test1234abcd.com.pl";
+const testAdminEmail = "admin@test1234abcd.com.pl";
+const testUserEmail = "user@test1234abcd.com.pl";
+const testUserAndAdminEmail = "userAndAdmin@test1234abcd.com.pl";
+
+//Method for generating useless (without permissions) user directly into database
+module.exports.generateUselessUser = async () => {
+  let user = await User.findOne({ email: testUselessUserEmail });
+  if (exists(user)) return user;
+
+  user = new User({
+    name: "testUselessUser",
+    email: testUselessUserEmail,
+    password: "1111",
+    permissions: 0
+  });
+
+  await user.save();
+
+  return user;
+};
+
+//Method for generating test admin user directly into database
+module.exports.generateTestAdmin = async () => {
+  let admin = await User.findOne({ email: testAdminEmail });
+  if (exists(admin)) return admin;
+
+  admin = new User({
+    name: "testAdmin",
+    email: testAdminEmail,
+    password: "1234",
+    permissions: 2
+  });
+
+  await admin.save();
+
+  return admin;
+};
+
+//Method for generating test  user directly into database
+module.exports.generateTestUser = async () => {
+  let user = await User.findOne({ email: testUserEmail });
+  if (exists(user)) return user;
+
+  user = new User({
+    name: "testUser",
+    email: testUserEmail,
+    password: "4321",
+    permissions: 1
+  });
+
+  await user.save();
+
+  return user;
+};
+
+//Method for generating test user that is also an admin directly into database
+module.exports.generateTestAdminAndUser = async () => {
+  let user = await User.findOne({ email: testUserAndAdminEmail });
+  if (exists(user)) return user;
+
+  user = new User({
+    name: "testUserAndAdmin",
+    email: testUserAndAdminEmail,
+    password: "1243",
+    permissions: 3
+  });
+
+  await user.save();
+
+  return user;
+};

@@ -3,6 +3,7 @@
   "dbConnectionString": "mongodb://testSidiroAR:testSidiroARPassword@localhost:27017/sidiroar",
   "emailLogin": "testSidiroEmail@abcd.com",
   "port": 5000,
+  "jwtPrivateKey": "testPrivateKey",
   "emailPassword": "testSidiroEmailPasssword",
   "logging": {
     "info": {

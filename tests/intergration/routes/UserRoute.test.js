@@ -3,8 +3,16 @@ const { snooze } = require("../../../utilities/utilities");
 const _ = require("lodash");
 const request = require("supertest");
 const bcrypt = require("bcrypt");
+const config = require("config");
+const jsonWebToken = require("jsonwebtoken");
 let { User } = require("../../../models/user");
-
+let {
+  generateTestAdmin,
+  generateTestUser,
+  generateTestAdminAndUser,
+  generateUselessUser
+} = require("../../utilities/testUtilities");
+let { exists } = require("../../../utilities/utilities");
 let server;
 
 //mocking email service
@@ -14,6 +22,11 @@ let sendMailMockFunction = jest.fn(
 EmailService.sendMail = sendMailMockFunction;
 
 describe("/api/users", () => {
+  let uselessUser;
+  let testAdmin;
+  let testUser;
+  let testUserAndAdmin;
+
   beforeEach(async () => {
     //Clearing number of mock function calls
     sendMailMockFunction.mockClear();
@@ -22,6 +35,12 @@ describe("/api/users", () => {
 
     //Clearing users in database before each test
     await User.deleteMany({});
+
+    //generating uslessUser, user, admin and adminUser
+    uselessUser = await generateUselessUser();
+    testAdmin = await generateTestAdmin();
+    testUser = await generateTestUser();
+    testUserAndAdmin = await generateTestAdminAndUser();
   });
 
   afterEach(async () => {
@@ -34,20 +53,30 @@ describe("/api/users", () => {
 
   describe("POST/", () => {
     let requestPayload;
+    //jwt used to authenticate when posting
+    let jwt;
 
-    beforeEach(() => {
+    beforeEach(async () => {
       requestPayload = {
         email: "1234@abcd.pl",
         name: "testUser",
         permissions: 1,
         password: "4321"
       };
+
+      jwt = await testAdmin.generateJWT();
     });
 
     let exec = async () => {
-      return request(server)
-        .post("/api/users")
-        .send(requestPayload);
+      if (exists(jwt))
+        return request(server)
+          .post("/api/users")
+          .set(config.get("tokenHeader"), jwt)
+          .send(requestPayload);
+      else
+        return request(server)
+          .post("/api/users")
+          .send(requestPayload);
     };
 
     it("should create new user and return 200 with user payload inside body if user payload is valid", async () => {
@@ -62,7 +91,9 @@ describe("/api/users", () => {
       //Body should correspond with payload (except  _id)
       let expectedBody = {
         ...requestPayload,
-        _id: response.body._id
+        _id: response.body._id,
+        modelIds: [],
+        modelNames: []
       };
 
       expect(response.body).toEqual(expectedBody);
@@ -76,17 +107,14 @@ describe("/api/users", () => {
       expect(user).toBeDefined();
 
       //user payload should be the same to response (except hashed password)
-      let userPayload = _.pick(user, [
-        "email",
-        "name",
-        "permissions",
-        "modelIds",
-        "modelNames"
-      ]);
+      let userPayload = _.pick(user, ["email", "name", "permissions"]);
       //Id should be converted to string
       userPayload._id = user._id.toString();
-
       userPayload.password = requestPayload.password;
+      //modelIds and modelNames should be empty - it is new user
+      userPayload.modelNames = [];
+      userPayload.modelIds = [];
+
       expect(response.body).toEqual(userPayload);
 
       //Password should be encrypted properly
@@ -131,6 +159,7 @@ describe("/api/users", () => {
 
       let response = await request(server)
         .post("/api/users")
+        .set(config.get("tokenHeader"), jwt)
         .send(requestPayload);
 
       //#region CHECKING_EMAIL
@@ -151,10 +180,10 @@ describe("/api/users", () => {
 
       //#region CHECKING_DATABASE
 
-      //Only one user should be saved inside database
+      //Only five users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser, created User
       let userCount = await User.countDocuments({});
 
-      expect(userCount).toEqual(1);
+      expect(userCount).toEqual(5);
 
       //#endregion CHECKING_DATABASE
     });
@@ -164,11 +193,7 @@ describe("/api/users", () => {
     it("should not create new user and return 400 if email is not defined", async () => {
       delete requestPayload.email;
 
-      await exec();
-
-      let response = await request(server)
-        .post("/api/users")
-        .send(requestPayload);
+      let response = await exec();
 
       //#region CHECKING_EMAIL
 
@@ -187,9 +212,10 @@ describe("/api/users", () => {
 
       //#region CHECKING_DATABASE
 
+      //Only four users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser
       let userCount = await User.countDocuments({});
 
-      expect(userCount).toEqual(0);
+      expect(userCount).toEqual(4);
 
       //#endregion CHECKING_DATABASE
     });
@@ -197,11 +223,7 @@ describe("/api/users", () => {
     it("should not create new user and return 400 if email is null", async () => {
       requestPayload.email = null;
 
-      await exec();
-
-      let response = await request(server)
-        .post("/api/users")
-        .send(requestPayload);
+      let response = await exec();
 
       //#region CHECKING_EMAIL
 
@@ -220,9 +242,10 @@ describe("/api/users", () => {
 
       //#region CHECKING_DATABASE
 
+      //Only four users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser
       let userCount = await User.countDocuments({});
 
-      expect(userCount).toEqual(0);
+      expect(userCount).toEqual(4);
 
       //#endregion CHECKING_DATABASE
     });
@@ -230,11 +253,7 @@ describe("/api/users", () => {
     it("should not create new user and return 400 if email is a empty", async () => {
       requestPayload.email = "";
 
-      await exec();
-
-      let response = await request(server)
-        .post("/api/users")
-        .send(requestPayload);
+      let response = await exec();
 
       //#region CHECKING_EMAIL
 
@@ -253,9 +272,10 @@ describe("/api/users", () => {
 
       //#region CHECKING_DATABASE
 
+      //Only four users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser
       let userCount = await User.countDocuments({});
 
-      expect(userCount).toEqual(0);
+      expect(userCount).toEqual(4);
 
       //#endregion CHECKING_DATABASE
     });
@@ -263,11 +283,7 @@ describe("/api/users", () => {
     it("should not create new user and return 400 if email is a number", async () => {
       requestPayload.email = 123;
 
-      await exec();
-
-      let response = await request(server)
-        .post("/api/users")
-        .send(requestPayload);
+      let response = await exec();
 
       //#region CHECKING_EMAIL
 
@@ -286,9 +302,10 @@ describe("/api/users", () => {
 
       //#region CHECKING_DATABASE
 
+      //Only four users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser
       let userCount = await User.countDocuments({});
 
-      expect(userCount).toEqual(0);
+      expect(userCount).toEqual(4);
 
       //#endregion CHECKING_DATABASE
     });
@@ -296,11 +313,7 @@ describe("/api/users", () => {
     it("should not create new user and return 400 if email is an invalid string", async () => {
       requestPayload.email = "abcd1234";
 
-      await exec();
-
-      let response = await request(server)
-        .post("/api/users")
-        .send(requestPayload);
+      let response = await exec();
 
       //#region CHECKING_EMAIL
 
@@ -319,9 +332,10 @@ describe("/api/users", () => {
 
       //#region CHECKING_DATABASE
 
+      //Only four users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser
       let userCount = await User.countDocuments({});
 
-      expect(userCount).toEqual(0);
+      expect(userCount).toEqual(4);
 
       //#endregion CHECKING_DATABASE
     });
@@ -333,11 +347,7 @@ describe("/api/users", () => {
     it("should not create new user and return 400 if name is not defined", async () => {
       delete requestPayload.name;
 
-      await exec();
-
-      let response = await request(server)
-        .post("/api/users")
-        .send(requestPayload);
+      let response = await exec();
 
       //#region CHECKING_EMAIL
 
@@ -356,9 +366,10 @@ describe("/api/users", () => {
 
       //#region CHECKING_DATABASE
 
+      //Only four users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser
       let userCount = await User.countDocuments({});
 
-      expect(userCount).toEqual(0);
+      expect(userCount).toEqual(4);
 
       //#endregion CHECKING_DATABASE
     });
@@ -366,11 +377,7 @@ describe("/api/users", () => {
     it("should not create new user and return 400 if name is null", async () => {
       requestPayload.name = null;
 
-      await exec();
-
-      let response = await request(server)
-        .post("/api/users")
-        .send(requestPayload);
+      let response = await exec();
 
       //#region CHECKING_EMAIL
 
@@ -389,9 +396,10 @@ describe("/api/users", () => {
 
       //#region CHECKING_DATABASE
 
+      //Only four users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser
       let userCount = await User.countDocuments({});
 
-      expect(userCount).toEqual(0);
+      expect(userCount).toEqual(4);
 
       //#endregion CHECKING_DATABASE
     });
@@ -399,11 +407,7 @@ describe("/api/users", () => {
     it("should not create new user and return 400 if name is a empty", async () => {
       requestPayload.name = "";
 
-      await exec();
-
-      let response = await request(server)
-        .post("/api/users")
-        .send(requestPayload);
+      let response = await exec();
 
       //#region CHECKING_EMAIL
 
@@ -422,9 +426,10 @@ describe("/api/users", () => {
 
       //#region CHECKING_DATABASE
 
+      //Only four users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser
       let userCount = await User.countDocuments({});
 
-      expect(userCount).toEqual(0);
+      expect(userCount).toEqual(4);
 
       //#endregion CHECKING_DATABASE
     });
@@ -432,11 +437,7 @@ describe("/api/users", () => {
     it("should not create new user and return 400 if name is a number", async () => {
       requestPayload.name = 123;
 
-      await exec();
-
-      let response = await request(server)
-        .post("/api/users")
-        .send(requestPayload);
+      let response = await exec();
 
       //#region CHECKING_EMAIL
 
@@ -455,9 +456,10 @@ describe("/api/users", () => {
 
       //#region CHECKING_DATABASE
 
+      //Only four users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser
       let userCount = await User.countDocuments({});
 
-      expect(userCount).toEqual(0);
+      expect(userCount).toEqual(4);
 
       //#endregion CHECKING_DATABASE
     });
@@ -465,11 +467,7 @@ describe("/api/users", () => {
     it("should not create new user and return 400 if name is shorter than 3 signs", async () => {
       requestPayload.name = "ab";
 
-      await exec();
-
-      let response = await request(server)
-        .post("/api/users")
-        .send(requestPayload);
+      let response = await exec();
 
       //#region CHECKING_EMAIL
 
@@ -490,9 +488,10 @@ describe("/api/users", () => {
 
       //#region CHECKING_DATABASE
 
+      //Only four users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser
       let userCount = await User.countDocuments({});
 
-      expect(userCount).toEqual(0);
+      expect(userCount).toEqual(4);
 
       //#endregion CHECKING_DATABASE
     });
@@ -513,7 +512,9 @@ describe("/api/users", () => {
       let expectedBody = {
         ...requestPayload,
         password: response.body.password,
-        _id: response.body._id
+        _id: response.body._id,
+        modelIds: [],
+        modelNames: []
       };
 
       expect(response.body).toEqual(expectedBody);
@@ -527,17 +528,16 @@ describe("/api/users", () => {
       expect(user).toBeDefined();
 
       //user payload should be the same to response (excepted hashed password)
-      let userPayload = _.pick(user, [
-        "email",
-        "name",
-        "permissions",
-        "modelIds",
-        "modelNames"
-      ]);
+      let userPayload = _.pick(user, ["email", "name", "permissions"]);
       //Id should be converted to string
       userPayload._id = user._id.toString();
 
       userPayload.password = response.body.password;
+
+      //List of ids and names is empty - new user without any models
+      userPayload.modelIds = [];
+      userPayload.modelNames = [];
+
       expect(response.body).toEqual(userPayload);
 
       //Password should be encrypted properly
@@ -550,11 +550,7 @@ describe("/api/users", () => {
       //101 signs
       requestPayload.name = Array(102).join("n");
 
-      await exec();
-
-      let response = await request(server)
-        .post("/api/users")
-        .send(requestPayload);
+      let response = await exec();
 
       //#region CHECKING_EMAIL
 
@@ -575,9 +571,10 @@ describe("/api/users", () => {
 
       //#region CHECKING_DATABASE
 
+      //Only four users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser
       let userCount = await User.countDocuments({});
 
-      expect(userCount).toEqual(0);
+      expect(userCount).toEqual(4);
 
       //#endregion CHECKING_DATABASE
     });
@@ -598,7 +595,9 @@ describe("/api/users", () => {
       let expectedBody = {
         ...requestPayload,
         password: response.body.password,
-        _id: response.body._id
+        _id: response.body._id,
+        modelIds: [],
+        modelNames: []
       };
 
       expect(response.body).toEqual(expectedBody);
@@ -612,17 +611,16 @@ describe("/api/users", () => {
       expect(user).toBeDefined();
 
       //user payload should be the same to response (excepted hashed password)
-      let userPayload = _.pick(user, [
-        "email",
-        "name",
-        "permissions",
-        "modelIds",
-        "modelNames"
-      ]);
+      let userPayload = _.pick(user, ["email", "name", "permissions"]);
       //Id should be converted to string
       userPayload._id = user._id.toString();
 
       userPayload.password = response.body.password;
+
+      //List of ids and names is empty - new user without any models
+      userPayload.modelIds = [];
+      userPayload.modelNames = [];
+
       expect(response.body).toEqual(userPayload);
 
       //Password should be encrypted properly
@@ -650,7 +648,9 @@ describe("/api/users", () => {
       let expectedBody = {
         ...requestPayload,
         password: response.body.password,
-        _id: response.body._id
+        _id: response.body._id,
+        modelIds: [],
+        modelNames: []
       };
 
       expect(response.body).toEqual(expectedBody);
@@ -664,17 +664,16 @@ describe("/api/users", () => {
       expect(user).toBeDefined();
 
       //user payload should be the same to response (excepted hashed password)
-      let userPayload = _.pick(user, [
-        "email",
-        "name",
-        "permissions",
-        "modelIds",
-        "modelNames"
-      ]);
+      let userPayload = _.pick(user, ["email", "name", "permissions"]);
       //Id should be converted to string
       userPayload._id = user._id.toString();
 
       userPayload.password = response.body.password;
+
+      //List of ids and names is empty - new user without any models
+      userPayload.modelIds = [];
+      userPayload.modelNames = [];
+
       expect(response.body).toEqual(userPayload);
 
       //Password should be encrypted properly
@@ -713,11 +712,7 @@ describe("/api/users", () => {
     it("should not create new user and return 400 if password is null", async () => {
       requestPayload.password = null;
 
-      await exec();
-
-      let response = await request(server)
-        .post("/api/users")
-        .send(requestPayload);
+      let response = await exec();
 
       //#region CHECKING_EMAIL
 
@@ -736,9 +731,10 @@ describe("/api/users", () => {
 
       //#region CHECKING_DATABASE
 
+      //Only four users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser
       let userCount = await User.countDocuments({});
 
-      expect(userCount).toEqual(0);
+      expect(userCount).toEqual(4);
 
       //#endregion CHECKING_DATABASE
     });
@@ -746,11 +742,7 @@ describe("/api/users", () => {
     it("should not create new user and return 400 if password is a empty", async () => {
       requestPayload.password = "";
 
-      await exec();
-
-      let response = await request(server)
-        .post("/api/users")
-        .send(requestPayload);
+      let response = await exec();
 
       //#region CHECKING_EMAIL
 
@@ -769,9 +761,10 @@ describe("/api/users", () => {
 
       //#region CHECKING_DATABASE
 
+      //Only four users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser
       let userCount = await User.countDocuments({});
 
-      expect(userCount).toEqual(0);
+      expect(userCount).toEqual(4);
 
       //#endregion CHECKING_DATABASE
     });
@@ -779,11 +772,7 @@ describe("/api/users", () => {
     it("should not create new user and return 400 if password is a number", async () => {
       requestPayload.password = 1234;
 
-      await exec();
-
-      let response = await request(server)
-        .post("/api/users")
-        .send(requestPayload);
+      let response = await exec();
 
       //#region CHECKING_EMAIL
 
@@ -802,9 +791,10 @@ describe("/api/users", () => {
 
       //#region CHECKING_DATABASE
 
+      //Only four users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser
       let userCount = await User.countDocuments({});
 
-      expect(userCount).toEqual(0);
+      expect(userCount).toEqual(4);
 
       //#endregion CHECKING_DATABASE
     });
@@ -812,11 +802,7 @@ describe("/api/users", () => {
     it("should not create new user and return 400 if password is shorter than 4 signs", async () => {
       requestPayload.password = "123";
 
-      await exec();
-
-      let response = await request(server)
-        .post("/api/users")
-        .send(requestPayload);
+      let response = await exec();
 
       //#region CHECKING_EMAIL
 
@@ -837,9 +823,10 @@ describe("/api/users", () => {
 
       //#region CHECKING_DATABASE
 
+      //Only four users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser
       let userCount = await User.countDocuments({});
 
-      expect(userCount).toEqual(0);
+      expect(userCount).toEqual(4);
 
       //#endregion CHECKING_DATABASE
     });
@@ -860,7 +847,9 @@ describe("/api/users", () => {
       let expectedBody = {
         ...requestPayload,
         password: response.body.password,
-        _id: response.body._id
+        _id: response.body._id,
+        modelIds: [],
+        modelNames: []
       };
 
       expect(response.body).toEqual(expectedBody);
@@ -874,17 +863,16 @@ describe("/api/users", () => {
       expect(user).toBeDefined();
 
       //user payload should be the same to response (excepted hashed password)
-      let userPayload = _.pick(user, [
-        "email",
-        "name",
-        "permissions",
-        "modelIds",
-        "modelNames"
-      ]);
+      let userPayload = _.pick(user, ["email", "name", "permissions"]);
       //Id should be converted to string
       userPayload._id = user._id.toString();
 
       userPayload.password = response.body.password;
+
+      //List of ids and names is empty - new user without any models
+      userPayload.modelIds = [];
+      userPayload.modelNames = [];
+
       expect(response.body).toEqual(userPayload);
 
       //Password should be encrypted properly
@@ -897,11 +885,7 @@ describe("/api/users", () => {
       //5 signs
       requestPayload.password = "12345";
 
-      await exec();
-
-      let response = await request(server)
-        .post("/api/users")
-        .send(requestPayload);
+      let response = await exec();
 
       //#region CHECKING_EMAIL
 
@@ -922,9 +906,10 @@ describe("/api/users", () => {
 
       //#region CHECKING_DATABASE
 
+      //Only four users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser
       let userCount = await User.countDocuments({});
 
-      expect(userCount).toEqual(0);
+      expect(userCount).toEqual(4);
 
       //#endregion CHECKING_DATABASE
     });
@@ -933,11 +918,7 @@ describe("/api/users", () => {
       //5 signs
       requestPayload.password = "1ab2";
 
-      await exec();
-
-      let response = await request(server)
-        .post("/api/users")
-        .send(requestPayload);
+      let response = await exec();
 
       //#region CHECKING_EMAIL
 
@@ -958,13 +939,507 @@ describe("/api/users", () => {
 
       //#region CHECKING_DATABASE
 
+      //Only four users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser
       let userCount = await User.countDocuments({});
 
-      expect(userCount).toEqual(0);
+      expect(userCount).toEqual(4);
 
       //#endregion CHECKING_DATABASE
     });
 
     //#endregion CHECK_PASSWORD
+
+    //#region CHECK_PERMISSIONS
+
+    it("should not create new user and return 400 if permissions is not defined", async () => {
+      delete requestPayload.permissions;
+
+      let response = await exec();
+
+      //#region CHECKING_EMAIL
+
+      expect(sendMailMockFunction).not.toHaveBeenCalled();
+
+      //#endregion CHECKING_EMAIL
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(400);
+      expect(response.text).toBeDefined();
+      expect(response.text).toContain('"permissions" is required');
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //Only four users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser
+      let userCount = await User.countDocuments({});
+
+      expect(userCount).toEqual(4);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should not create new user and return 400 if permissions is null", async () => {
+      requestPayload.permissions = null;
+
+      let response = await exec();
+
+      //#region CHECKING_EMAIL
+
+      expect(sendMailMockFunction).not.toHaveBeenCalled();
+
+      //#endregion CHECKING_EMAIL
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(400);
+      expect(response.text).toBeDefined();
+      expect(response.text).toContain('"permissions" must be a number');
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //Only four users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser
+      let userCount = await User.countDocuments({});
+
+      expect(userCount).toEqual(4);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should not create new user and return 400 if permissions is a empty", async () => {
+      requestPayload.permissions = "";
+
+      let response = await exec();
+
+      //#region CHECKING_EMAIL
+
+      expect(sendMailMockFunction).not.toHaveBeenCalled();
+
+      //#endregion CHECKING_EMAIL
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(400);
+      expect(response.text).toBeDefined();
+      expect(response.text).toContain('"permissions" must be a number');
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //Only four users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser
+      let userCount = await User.countDocuments({});
+
+      expect(userCount).toEqual(4);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should not create new user and return 400 if permissions is a string", async () => {
+      requestPayload.permissions = "1abc";
+
+      let response = await exec();
+
+      //#region CHECKING_EMAIL
+
+      expect(sendMailMockFunction).not.toHaveBeenCalled();
+
+      //#endregion CHECKING_EMAIL
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(400);
+      expect(response.text).toBeDefined();
+      expect(response.text).toContain('"permissions" must be a number');
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //Only four users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser
+      let userCount = await User.countDocuments({});
+
+      expect(userCount).toEqual(4);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should not create new user and return 400 if permissions is smaller than 0", async () => {
+      requestPayload.permissions = -1;
+
+      let response = await exec();
+
+      //#region CHECKING_EMAIL
+
+      expect(sendMailMockFunction).not.toHaveBeenCalled();
+
+      //#endregion CHECKING_EMAIL
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(400);
+      expect(response.text).toBeDefined();
+      expect(response.text).toContain(
+        '"permissions" must be larger than or equal to 0'
+      );
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //Only four users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser
+      let userCount = await User.countDocuments({});
+
+      expect(userCount).toEqual(4);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should create new user and return 200 if permissions is 0", async () => {
+      requestPayload.permissions = 0;
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(200);
+      expect(response.body).toBeDefined();
+
+      //Body should correspond with payload (except for password and _id)
+      let expectedBody = {
+        ...requestPayload,
+        password: response.body.password,
+        _id: response.body._id,
+        modelIds: [],
+        modelNames: []
+      };
+
+      expect(response.body).toEqual(expectedBody);
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //New user should be saved inside database
+      let user = await User.findOne({ _id: response.body._id });
+      expect(user).toBeDefined();
+
+      //user payload should be the same to response (excepted hashed password)
+      let userPayload = _.pick(user, ["email", "name", "permissions"]);
+      //Id should be converted to string
+      userPayload._id = user._id.toString();
+
+      userPayload.password = response.body.password;
+
+      //List of ids and names is empty - new user without any models
+      userPayload.modelIds = [];
+      userPayload.modelNames = [];
+
+      expect(response.body).toEqual(userPayload);
+
+      //Password should be encrypted properly
+      expect(bcrypt.compareSync(response.body.password, user.password));
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should not create new user and return 400 if permissions is greater than 255", async () => {
+      requestPayload.permissions = 256;
+
+      let response = await exec();
+
+      //#region CHECKING_EMAIL
+
+      expect(sendMailMockFunction).not.toHaveBeenCalled();
+
+      //#endregion CHECKING_EMAIL
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(400);
+      expect(response.text).toBeDefined();
+      expect(response.text).toContain(
+        '"permissions" must be less than or equal to 255'
+      );
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //Only four users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser
+      let userCount = await User.countDocuments({});
+
+      expect(userCount).toEqual(4);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should create new user and return 200 if permissions is 255", async () => {
+      requestPayload.permissions = 255;
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(200);
+      expect(response.body).toBeDefined();
+
+      //Body should correspond with payload (except for password and _id)
+      let expectedBody = {
+        ...requestPayload,
+        password: response.body.password,
+        _id: response.body._id,
+        modelIds: [],
+        modelNames: []
+      };
+
+      expect(response.body).toEqual(expectedBody);
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //New user should be saved inside database
+      let user = await User.findOne({ _id: response.body._id });
+      expect(user).toBeDefined();
+
+      //user payload should be the same to response (excepted hashed password)
+      let userPayload = _.pick(user, ["email", "name", "permissions"]);
+      //Id should be converted to string
+      userPayload._id = user._id.toString();
+
+      userPayload.password = response.body.password;
+
+      //List of ids and names is empty - new user without any models
+      userPayload.modelIds = [];
+      userPayload.modelNames = [];
+
+      expect(response.body).toEqual(userPayload);
+
+      //Password should be encrypted properly
+      expect(bcrypt.compareSync(response.body.password, user.password));
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should not create new user and return 400 if permissions is float", async () => {
+      requestPayload.permissions = 123.321;
+
+      let response = await exec();
+
+      //#region CHECKING_EMAIL
+
+      expect(sendMailMockFunction).not.toHaveBeenCalled();
+
+      //#endregion CHECKING_EMAIL
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(400);
+      expect(response.text).toBeDefined();
+      expect(response.text).toContain('"permissions" must be an integer');
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //Only four users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser
+      let userCount = await User.countDocuments({});
+
+      expect(userCount).toEqual(4);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    //#endregion CHECK_PERMISSIONS
+
+    //#region CHECK_AUTHORIZATION
+
+    it("should not create new user and return 401 if jwt has not been given", async () => {
+      jwt = undefined;
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(401);
+      expect(response.text).toBeDefined();
+      expect(response.text).toContain("Access denied. No token provided");
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //Only four users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser
+      let userCount = await User.countDocuments({});
+
+      expect(userCount).toEqual(4);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should not create new user and return 403 if jwt of user has been given", async () => {
+      jwt = await testUser.generateJWT();
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(403);
+      expect(response.text).toBeDefined();
+      expect(response.text).toContain("Access forbidden");
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //Only four users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser
+      let userCount = await User.countDocuments({});
+
+      expect(userCount).toEqual(4);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should not create new user and return 403 if jwt of useless (with permissions set to 0) user has been given", async () => {
+      jwt = await uselessUser.generateJWT();
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(403);
+      expect(response.text).toBeDefined();
+      expect(response.text).toContain("Access forbidden");
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //Only four users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser
+      let userCount = await User.countDocuments({});
+
+      expect(userCount).toEqual(4);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should create new user and return 200 with user payload inside body if jwt of adminAndUser user is given", async () => {
+      jwt = await testUserAndAdmin.generateJWT();
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(200);
+      expect(response.body).toBeDefined();
+
+      //Body should correspond with payload (except  _id)
+      let expectedBody = {
+        ...requestPayload,
+        _id: response.body._id,
+        modelIds: [],
+        modelNames: []
+      };
+
+      expect(response.body).toEqual(expectedBody);
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //New user should be saved inside database
+      let user = await User.findOne({ _id: response.body._id });
+      expect(user).toBeDefined();
+
+      //user payload should be the same to response (except hashed password)
+      let userPayload = _.pick(user, ["email", "name", "permissions"]);
+      //Id should be converted to string
+      userPayload._id = user._id.toString();
+      userPayload.password = requestPayload.password;
+      //modelIds and modelNames should be empty - it is new user
+      userPayload.modelNames = [];
+      userPayload.modelIds = [];
+
+      expect(response.body).toEqual(userPayload);
+
+      //Password should be encrypted properly
+      expect(bcrypt.compareSync(requestPayload.password, user.password));
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should not create new user and return 400 if invalid jwt has been given", async () => {
+      jwt = "abcd1234";
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(400);
+      expect(response.text).toBeDefined();
+      expect(response.text).toContain("Invalid token provided");
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //Only four users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser
+      let userCount = await User.countDocuments({});
+
+      expect(userCount).toEqual(4);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should not create new user and return 400 if  jwt from different private key was provided", async () => {
+      let fakeUserPayload = {
+        _id: "abcdefgh",
+        email: "fakeUser@testFakeUser.com.pl",
+        name: "fakeUser",
+        permissions: 3
+      };
+
+      jwt = await jsonWebToken.sign(fakeUserPayload, "differentTestPrivateKey");
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(400);
+      expect(response.text).toBeDefined();
+      expect(response.text).toContain("Invalid token provided");
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //Only four users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser
+      let userCount = await User.countDocuments({});
+
+      expect(userCount).toEqual(4);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    //#endregion CHECK_AUTHORIZATION
   });
 });

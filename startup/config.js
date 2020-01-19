@@ -13,6 +13,8 @@ module.exports = async function() {
   throwIfConfigDoesNotExist("emailPassword");
   throwIfConfigDoesNotExist("modelFileExtension");
   throwIfConfigDoesNotExist("port");
+  throwIfConfigDoesNotExist("tokenHeader");
+  throwIfConfigDoesNotExist("jwtPrivateKey");
   throwIfConfigDoesNotExist("logging");
   throwIfConfigDoesNotExist("logging.info");
   throwIfConfigDoesNotExist("logging.info.path");

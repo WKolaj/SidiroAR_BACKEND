@@ -1,6 +1,7 @@
 {
   "filesDir": "files",
   "modelFileExtension": "smdl",
+  "tokenHeader": "x-auth-token",
   "port": 5000,
   "logging": {
     "info": {

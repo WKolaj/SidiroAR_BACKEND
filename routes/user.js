@@ -5,9 +5,12 @@ const { sendMail } = require("../services/EmailService");
 const validate = require("../middleware/validate");
 const validateObjectId = require("../middleware/validateObjectId");
 const { exists, hashString } = require("../utilities/utilities");
+const hasUser = require("../middleware/auth/hasUser");
+const isAdmin = require("../middleware/auth/isAdmin");
+const isUser = require("../middleware/auth/isUser");
 const _ = require("lodash");
 
-router.get("/", async (req, res) => {
+router.get("/", [hasUser, isAdmin], async (req, res) => {
   var allUsers = (await User.find()).map(user =>
     _.pick(user, ["_id", "name", "email", "permissions"])
   );
@@ -15,7 +18,7 @@ router.get("/", async (req, res) => {
   return res.status(200).send(allUsers);
 });
 
-router.get("/:id", [validateObjectId], async (req, res) => {
+router.get("/:id", [hasUser, isAdmin, validateObjectId], async (req, res) => {
   let user = await User.findById(req.params.id);
   if (!exists(user)) return res.status(404).send("User not found");
 
@@ -24,65 +27,82 @@ router.get("/:id", [validateObjectId], async (req, res) => {
     .send(_.pick(user, ["_id", "name", "email", "permissions"]));
 });
 
-router.post("/", [validate(validateUser)], async (req, res) => {
-  //Checking if email is defined - has to be defined when posting, but not when putting
-  if (!exists(req.body.email))
-    return res.status(400).send('"email" property has to be defined!');
+router.post(
+  "/",
+  [hasUser, isAdmin, validate(validateUser)],
+  async (req, res) => {
+    //Checking if email is defined - has to be defined when posting, but not when putting
+    if (!exists(req.body.email))
+      return res.status(400).send('"email" property has to be defined!');
 
-  //Checking if user already exists
-  let user = await User.findOne({ email: req.body.email });
-  if (exists(user)) return res.status(400).send("User already registered.");
+    //Checking if user already exists
+    let user = await User.findOne({ email: req.body.email });
+    if (exists(user)) return res.status(400).send("User already registered.");
 
-  //Setting default permissions if they don't exist
-  if (!exists(req.body.permissions)) User.setDefaultPermissions(req.body);
+    //Setting default permissions if they don't exist
+    if (!exists(req.body.permissions)) User.setDefaultPermissions(req.body);
 
-  //Setting password as random one if user's password do not exist
-  if (!exists(req.body.password)) req.body.password = User.generateRandomPin();
+    //Setting password as random one if user's password do not exist
+    if (!exists(req.body.password))
+      req.body.password = User.generateRandomPin();
 
-  let passwordBeforeHash = req.body.password;
+    let passwordBeforeHash = req.body.password;
 
-  //Hash password
-  req.body.password = await hashString(req.body.password);
+    //Hash password
+    req.body.password = await hashString(req.body.password);
 
-  //Create and save new user
-  user = new User(
-    _.pick(req.body, ["name", "email", "password", "permissions"])
-  );
-  await user.save();
+    //Create and save new user
+    user = new User(
+      _.pick(req.body, ["name", "email", "password", "permissions"])
+    );
+    await user.save();
 
-  let payloadToReturn = _.pick(user, [
-    "_id",
-    "name",
-    "email",
-    "password",
-    "permissions"
-  ]);
-  payloadToReturn.password = passwordBeforeHash;
+    //Sending email - it is not neccessary to wait until it has been finished
+    sendMail(
+      user.email,
+      "Rejestracja SidiroAR",
+      User.generateEmailText(user.name, user.email, passwordBeforeHash)
+    );
 
-  //Sending email - it is not neccessary to wait until it has been finished
-  sendMail(
-    user.email,
-    "Rejestracja SidiroAR",
-    User.generateEmailText(user.name, user.email, passwordBeforeHash)
-  );
+    //Building payload to return
+    let payloadToReturn = _.pick(user, [
+      "_id",
+      "name",
+      "email",
+      "password",
+      "permissions"
+    ]);
+    payloadToReturn.password = passwordBeforeHash;
 
-  return res.status(200).send(payloadToReturn);
-});
+    //Getting and assiging all models associated with user
+    let { ids, names } = await user.getModelLists();
+    payloadToReturn.modelIds = ids;
+    payloadToReturn.modelNames = names;
 
-router.delete("/:id", [validateObjectId], async (req, res) => {
-  let user = await User.findById(req.params.id);
-  if (!exists(user)) return res.status(404).send("User not found");
+    return res.status(200).send(payloadToReturn);
+  }
+);
 
-  await User.findOneAndDelete({ _id: req.params.id });
+router.delete(
+  "/:id",
+  [hasUser, isAdmin, validateObjectId],
+  async (req, res) => {
+    let user = await User.findById(req.params.id);
+    if (!exists(user)) return res.status(404).send("User not found");
 
-  return res
-    .status(200)
-    .send(_.pick(user, ["_id", "name", "email", "permissions"]));
-});
+    await User.findOneAndDelete({ _id: req.params.id });
+
+    //TO DO - also delete ids and names and files associated with user
+
+    return res
+      .status(200)
+      .send(_.pick(user, ["_id", "name", "email", "permissions"]));
+  }
+);
 
 router.put(
   "/:id",
-  [validateObjectId, validate(validateUser)],
+  [hasUser, isAdmin, validateObjectId, validate(validateUser)],
   async (req, res) => {
     //Id has to be defined
     let user = await User.findById(req.params.id);

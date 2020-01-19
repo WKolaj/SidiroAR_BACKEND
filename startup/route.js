@@ -1,6 +1,7 @@
 const logger = require("../logger/logger");
 const error = require("../middleware/error");
 const userRouter = require("../routes/user");
+const authRouter = require("../routes/auth");
 
 module.exports = async function(app) {
   logger.info("initializing routes...");
@@ -10,6 +11,10 @@ module.exports = async function(app) {
   //TO DO LATER
 
   logger.info("Route error handler initialized");
+
+  app.use("/api/auth", authRouter);
+
+  logger.info("Auth route initialized");
 
   app.use("/api/users", userRouter);
 
