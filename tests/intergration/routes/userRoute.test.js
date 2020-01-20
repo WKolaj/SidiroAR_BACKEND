@@ -1411,10 +1411,10 @@ describe("/api/users", () => {
 
     it("should not create new user and return 400 if  jwt from different private key was provided", async () => {
       let fakeUserPayload = {
-        _id: "abcdefgh",
-        email: "fakeUser@testFakeUser.com.pl",
-        name: "fakeUser",
-        permissions: 3
+        _id: testAdmin._id,
+        email: testAdmin.email,
+        name: testAdmin.name,
+        permissions: testAdmin.permissions
       };
 
       jwt = await jsonWebToken.sign(fakeUserPayload, "differentTestPrivateKey");
@@ -1441,5 +1441,276 @@ describe("/api/users", () => {
     });
 
     //#endregion CHECK_AUTHORIZATION
+  });
+
+  describe("GET/", () => {
+    //jwt used to authenticate when posting
+    let jwt;
+
+    beforeEach(async () => {
+      jwt = await testAdmin.generateJWT();
+    });
+
+    let exec = async () => {
+      if (exists(jwt))
+        return request(server)
+          .get("/api/users")
+          .set(config.get("tokenHeader"), jwt)
+          .send();
+      else
+        return request(server)
+          .get("/api/users")
+          .send();
+    };
+
+    it("should return 200 and a list of all users - if there are some users", async () => {
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(200);
+      expect(response.body).toBeDefined();
+
+      //Body should contain all users payload
+      expect(response.body).toBeDefined();
+
+      //There should be 4 users - useless, normal, admin, and normal+admin
+      expect(response.body.length).toEqual(4);
+
+      let expectedBody = [
+        {
+          _id: uselessUser._id.toString(),
+          name: uselessUser.name,
+          email: uselessUser.email,
+          permissions: uselessUser.permissions
+        },
+        {
+          _id: testUser._id.toString(),
+          name: testUser.name,
+          email: testUser.email,
+          permissions: testUser.permissions
+        },
+        {
+          _id: testAdmin._id.toString(),
+          name: testAdmin.name,
+          email: testAdmin.email,
+          permissions: testAdmin.permissions
+        },
+        {
+          _id: testUserAndAdmin._id.toString(),
+          name: testUserAndAdmin.name,
+          email: testUserAndAdmin.email,
+          permissions: testUserAndAdmin.permissions
+        }
+      ];
+
+      //ordering both expected and real body by id
+      let orderedExpectedBody = _.orderBy(expectedBody, "_id", "asc");
+      let orderedResponseBody = _.orderBy(response.body, "_id", "asc");
+
+      //after sorting - both array should be the same
+      expect(orderedExpectedBody).toEqual(orderedResponseBody);
+
+      //#endregion CHECKING_RESPONSE
+    });
+
+    it("should return 200 and a empty list - if there are no users", async () => {
+      await User.deleteMany({});
+
+      //JWT should still be valid - regarding its content
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(200);
+      expect(response.body).toBeDefined();
+
+      //There should be empty array - no users
+      expect(response.body).toEqual([]);
+
+      //#endregion CHECKING_RESPONSE
+    });
+
+    it("should return 200 and a empty list - if there is only one users", async () => {
+      //deleting all except testUser
+      await User.deleteMany({ _id: { $ne: testUser._id } });
+
+      //JWT should still be valid - regarding its content
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(200);
+      expect(response.body).toBeDefined();
+
+      //There should be empty array - no users
+      expect(response.body).toEqual([
+        {
+          _id: testUser._id.toString(),
+          name: testUser.name,
+          email: testUser.email,
+          permissions: testUser.permissions
+        }
+      ]);
+
+      //#endregion CHECKING_RESPONSE
+    });
+
+    it("should not return any user and return 401 if jwt has not been given", async () => {
+      jwt = undefined;
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(401);
+      expect(response.text).toBeDefined();
+      expect(response.text).toContain("Access denied. No token provided");
+
+      //#endregion CHECKING_RESPONSE
+    });
+
+    it("should not return any user and return 403 if jwt of user has been given", async () => {
+      jwt = await testUser.generateJWT();
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(403);
+      expect(response.text).toBeDefined();
+      expect(response.text).toContain("Access forbidden");
+
+      //#endregion CHECKING_RESPONSE
+    });
+
+    it("should not return any user and return 403 if jwt of useless (with permissions set to 0) user has been given", async () => {
+      jwt = await uselessUser.generateJWT();
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(403);
+      expect(response.text).toBeDefined();
+      expect(response.text).toContain("Access forbidden");
+
+      //#endregion CHECKING_RESPONSE
+    });
+
+    it("should return all users and return 200 with user payload inside body if jwt of adminAndUser user is given", async () => {
+      jwt = await testUserAndAdmin.generateJWT();
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(200);
+      expect(response.body).toBeDefined();
+
+      //Body should contain all users payload
+      expect(response.body).toBeDefined();
+
+      //There should be 4 users - useless, normal, admin, and normal+admin
+      expect(response.body.length).toEqual(4);
+
+      let expectedBody = [
+        {
+          _id: uselessUser._id.toString(),
+          name: uselessUser.name,
+          email: uselessUser.email,
+          permissions: uselessUser.permissions
+        },
+        {
+          _id: testUser._id.toString(),
+          name: testUser.name,
+          email: testUser.email,
+          permissions: testUser.permissions
+        },
+        {
+          _id: testAdmin._id.toString(),
+          name: testAdmin.name,
+          email: testAdmin.email,
+          permissions: testAdmin.permissions
+        },
+        {
+          _id: testUserAndAdmin._id.toString(),
+          name: testUserAndAdmin.name,
+          email: testUserAndAdmin.email,
+          permissions: testUserAndAdmin.permissions
+        }
+      ];
+
+      //ordering both expected and real body by id
+      let orderedExpectedBody = _.orderBy(expectedBody, "_id", "asc");
+      let orderedResponseBody = _.orderBy(response.body, "_id", "asc");
+
+      //after sorting - both array should be the same
+      expect(orderedExpectedBody).toEqual(orderedResponseBody);
+
+      //#endregion CHECKING_RESPONSE
+    });
+
+    it("should not return any user and return 400 if invalid jwt has been given", async () => {
+      jwt = "abcd1234";
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(400);
+      expect(response.text).toBeDefined();
+      expect(response.text).toContain("Invalid token provided");
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //Only four users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser
+      let userCount = await User.countDocuments({});
+
+      expect(userCount).toEqual(4);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should not return any user and return 400 if  jwt from different private key was provided", async () => {
+      let fakeUserPayload = {
+        _id: testAdmin._id,
+        email: testAdmin.email,
+        name: testAdmin.name,
+        permissions: testAdmin.permissions
+      };
+
+      jwt = await jsonWebToken.sign(fakeUserPayload, "differentTestPrivateKey");
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(400);
+      expect(response.text).toBeDefined();
+      expect(response.text).toContain("Invalid token provided");
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //Only four users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser
+      let userCount = await User.countDocuments({});
+
+      expect(userCount).toEqual(4);
+
+      //#endregion CHECKING_DATABASE
+    });
   });
 });
