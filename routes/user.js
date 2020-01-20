@@ -39,9 +39,6 @@ router.post(
     let user = await User.findOne({ email: req.body.email });
     if (exists(user)) return res.status(400).send("User already registered.");
 
-    //Setting default permissions if they don't exist
-    if (!exists(req.body.permissions)) User.setDefaultPermissions(req.body);
-
     //Setting password as random one if user's password do not exist
     if (!exists(req.body.password))
       req.body.password = User.generateRandomPin();

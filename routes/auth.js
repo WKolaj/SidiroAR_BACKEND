@@ -18,13 +18,16 @@ router.post("/", async (req, res) => {
   if (!exists(req.body.password))
     return res.status(400).send("Invalid request - password cannot be empty");
 
+  //converting password to string if it is not a string
+  req.body.password = req.body.password.toString();
+
   let user = await User.findOne({ email: req.body.email });
 
   if (!existsAndIsNotEmpty(user))
-    return res.status(400).send("Invalid login or password");
+    return res.status(400).send("Invalid email or password");
 
   if (!(await hashedStringMatch(req.body.password, user.password)))
-    return res.status(400).send("Invalid login or password");
+    return res.status(400).send("Invalid email or password");
 
   //Creating payload to return
   let payloadToReturn = _.pick(user, ["_id", "name", "email", "permissions"]);

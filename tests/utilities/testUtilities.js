@@ -1,5 +1,5 @@
 const { User } = require("../../models/user");
-const { exists } = require("../../utilities/utilities");
+const { exists, hashString } = require("../../utilities/utilities");
 
 const testUselessUserEmail = "useless@test1234abcd.com.pl";
 const testAdminEmail = "admin@test1234abcd.com.pl";
@@ -14,7 +14,7 @@ module.exports.generateUselessUser = async () => {
   user = new User({
     name: "testUselessUser",
     email: testUselessUserEmail,
-    password: "1111",
+    password: await hashString("1111"),
     permissions: 0
   });
 
@@ -31,7 +31,7 @@ module.exports.generateTestAdmin = async () => {
   admin = new User({
     name: "testAdmin",
     email: testAdminEmail,
-    password: "1234",
+    password: await hashString("1234"),
     permissions: 2
   });
 
@@ -48,7 +48,7 @@ module.exports.generateTestUser = async () => {
   user = new User({
     name: "testUser",
     email: testUserEmail,
-    password: "4321",
+    password: await hashString("4321"),
     permissions: 1
   });
 
@@ -65,7 +65,7 @@ module.exports.generateTestAdminAndUser = async () => {
   user = new User({
     name: "testUserAndAdmin",
     email: testUserAndAdminEmail,
-    password: "1243",
+    password: await hashString("1243"),
     permissions: 3
   });
 

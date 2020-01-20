@@ -89,4 +89,31 @@ describe("User", () => {
       expect(result).toEqual(false);
     });
   });
+
+  describe("generateRandomPin", () => {
+    let exec = () => {
+      return User.generateRandomPin();
+    };
+
+    it("should generate random string that contains three digits", () => {
+      let result = exec();
+
+      expect(result).toBeDefined();
+
+      expect(result).toMatch(/^\d+$/);
+    });
+
+    it("should generate two different passwords - one after antoher", () => {
+      let result1 = exec();
+      let result2 = exec();
+
+      expect(result1).toBeDefined();
+      expect(result1).toMatch(/^\d+$/);
+
+      expect(result2).toBeDefined();
+      expect(result2).toMatch(/^\d+$/);
+
+      expect(result1).not.toEqual(result2);
+    });
+  });
 });

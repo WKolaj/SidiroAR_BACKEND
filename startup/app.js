@@ -6,6 +6,7 @@ const config = require("config");
 const log = require("../logger/logger");
 const app = express();
 const path = require("path");
+const helmet = require("helmet");
 
 module.exports = async function(workingDirName) {
   if (!workingDirName) workingDirName = __dirname;
@@ -20,6 +21,10 @@ module.exports = async function(workingDirName) {
   await require("./validation")();
 
   const port = process.env.PORT || config.get("port");
+
+  //Turning on helmet
+
+  app.use(helmet());
 
   //Static front-end files are stored under client/build dir
   app.use(express.static(path.join(workingDirName, "client/build")));

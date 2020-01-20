@@ -63,12 +63,6 @@ function validateUser(user) {
   return Joi.validate(user, schema);
 }
 
-//Method for setting default permissions of user
-userSchema.statics.setDefaultPermissions = function(userPayload) {
-  //Default permissions - 1 (User)
-  userPayload.permissions = 1;
-};
-
 //Method for generating random pin for user
 userSchema.statics.generateRandomPin = function() {
   return generateRandomNumberString(4);
