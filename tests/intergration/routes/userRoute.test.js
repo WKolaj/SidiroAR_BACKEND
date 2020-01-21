@@ -15,7 +15,7 @@ let {
   generateUselessUser,
   generateTestModels
 } = require("../../utilities/testUtilities");
-let { exists } = require("../../../utilities/utilities");
+let { exists, hashedStringMatch } = require("../../../utilities/utilities");
 let server;
 
 //mocking email service
@@ -2473,7 +2473,7 @@ describe("/api/users", () => {
       //#endregion CHECKING_DATABASE
     });
 
-    it("should return users and return 200 with user payloadif jwt of adminAndUser user is given", async () => {
+    it("should return user and return 200 with user payload if jwt of adminAndUser user is given", async () => {
       jwt = await testUserAndAdmin.generateJWT();
 
       let response = await exec();
@@ -2610,6 +2610,1237 @@ describe("/api/users", () => {
       );
 
       expect(idOfAllModels).toEqual(expectedModelIds);
+
+      //#endregion CHECKING_DATABASE
+    });
+  });
+
+  describe("PUT/:id", () => {
+    //jwt used to authenticate when posting
+    let jwt;
+    let requestPayload;
+    let id;
+
+    beforeEach(async () => {
+      jwt = await testAdmin.generateJWT();
+      id = testUser._id;
+      requestPayload = {
+        email: testUser.email,
+        name: "editedTestUser",
+        permissions: 2,
+        password: "9876"
+      };
+    });
+
+    let exec = async () => {
+      if (exists(jwt))
+        return request(server)
+          .put(`/api/users/${id}`)
+          .set(config.get("tokenHeader"), jwt)
+          .send(requestPayload);
+      else
+        return request(server)
+          .put(`/api/users/${id}`)
+          .send(requestPayload);
+    };
+
+    it("should return 200, edit user, and return it - if user exists", async () => {
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(200);
+
+      let expectedPayload = {
+        _id: testUser._id.toString(),
+        name: requestPayload.name,
+        email: requestPayload.email,
+        permissions: requestPayload.permissions,
+        modelIds: modelsOfTestUser.map(model => model._id.toString()),
+        modelNames: modelsOfTestUser.map(model => model.name)
+      };
+
+      expect(response.body).toEqual(expectedPayload);
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //User should also be edited in database
+
+      //Getting user from db
+      let userFromDatabase = await User.findOne({ _id: id });
+      expect(userFromDatabase).toBeDefined();
+
+      //Checking payload
+      let userFromDatabasePayload = await userFromDatabase.getPayload();
+      expect(userFromDatabasePayload).toEqual(expectedPayload);
+
+      //Checking password
+      let newPasswordMatches = await hashedStringMatch(
+        requestPayload.password,
+        userFromDatabase.password
+      );
+
+      expect(newPasswordMatches).toEqual(true);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should return 200, edit user, and return it - if user exists and password is not defined", async () => {
+      delete requestPayload.password;
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(200);
+
+      let expectedPayload = {
+        _id: testUser._id.toString(),
+        name: requestPayload.name,
+        email: requestPayload.email,
+        permissions: requestPayload.permissions,
+        modelIds: modelsOfTestUser.map(model => model._id.toString()),
+        modelNames: modelsOfTestUser.map(model => model.name)
+      };
+
+      expect(response.body).toEqual(expectedPayload);
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //User should also be edited in database
+
+      //Getting user from db
+      let userFromDatabase = await User.findOne({ _id: id });
+      expect(userFromDatabase).toBeDefined();
+
+      //Checking payload
+      let userFromDatabasePayload = await userFromDatabase.getPayload();
+      expect(userFromDatabasePayload).toEqual(expectedPayload);
+
+      //Checking password - it should have not been changed
+      let newPasswordMatches = await hashedStringMatch(
+        "4321",
+        userFromDatabase.password
+      );
+
+      expect(newPasswordMatches).toEqual(true);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should return 400, and not edit user - if user exists but password is shorter than 4 signs", async () => {
+      requestPayload.password = "123";
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(400);
+
+      expect(response.text).toContain(
+        '"password" length must be at least 4 characters long'
+      );
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //User should not be edited in database
+      let expectedPayload = await testUser.getPayload();
+
+      //Getting user from db
+      let userFromDatabase = await User.findOne({ _id: id });
+      expect(userFromDatabase).toBeDefined();
+
+      //Checking payload
+      let userFromDatabasePayload = await userFromDatabase.getPayload();
+      expect(userFromDatabasePayload).toEqual(expectedPayload);
+
+      //Checking password - it should have not been changed
+      let newPasswordMatches = await hashedStringMatch(
+        "4321",
+        userFromDatabase.password
+      );
+
+      expect(newPasswordMatches).toEqual(true);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should return 400, and not edit user - if user exists but password is longer than 4 signs", async () => {
+      requestPayload.password = "12345";
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(400);
+
+      expect(response.text).toContain(
+        '"password" length must be less than or equal to 4 characters long'
+      );
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //User should not be edited in database
+      let expectedPayload = await testUser.getPayload();
+
+      //Getting user from db
+      let userFromDatabase = await User.findOne({ _id: id });
+      expect(userFromDatabase).toBeDefined();
+
+      //Checking payload
+      let userFromDatabasePayload = await userFromDatabase.getPayload();
+      expect(userFromDatabasePayload).toEqual(expectedPayload);
+
+      //Checking password - it should have not been changed
+      let newPasswordMatches = await hashedStringMatch(
+        "4321",
+        userFromDatabase.password
+      );
+
+      expect(newPasswordMatches).toEqual(true);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should return 400, and not edit user - if user exists but password is null", async () => {
+      requestPayload.password = null;
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(400);
+
+      expect(response.text).toContain('"password" must be a string');
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //User should not be edited in database
+      let expectedPayload = await testUser.getPayload();
+
+      //Getting user from db
+      let userFromDatabase = await User.findOne({ _id: id });
+      expect(userFromDatabase).toBeDefined();
+
+      //Checking payload
+      let userFromDatabasePayload = await userFromDatabase.getPayload();
+      expect(userFromDatabasePayload).toEqual(expectedPayload);
+
+      //Checking password - it should have not been changed
+      let newPasswordMatches = await hashedStringMatch(
+        "4321",
+        userFromDatabase.password
+      );
+
+      expect(newPasswordMatches).toEqual(true);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should return 400, and not edit user - if user exists but password is empty", async () => {
+      requestPayload.password = "";
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(400);
+
+      expect(response.text).toContain('"password" is not allowed to be empty');
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //User should not be edited in database
+      let expectedPayload = await testUser.getPayload();
+
+      //Getting user from db
+      let userFromDatabase = await User.findOne({ _id: id });
+      expect(userFromDatabase).toBeDefined();
+
+      //Checking payload
+      let userFromDatabasePayload = await userFromDatabase.getPayload();
+      expect(userFromDatabasePayload).toEqual(expectedPayload);
+
+      //Checking password - it should have not been changed
+      let newPasswordMatches = await hashedStringMatch(
+        "4321",
+        userFromDatabase.password
+      );
+
+      expect(newPasswordMatches).toEqual(true);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should return 404, and not edit any user- if user of given id does not exist", async () => {
+      //generating new random id
+      id = mongoose.Types.ObjectId();
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(404);
+      expect(response.text).toContain("User not found");
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //Database should contain all users - nothing should be changed
+      let idOfAllUsers = _.sortBy(
+        (await User.find({})).map(user => user._id.toString()),
+        id => id
+      );
+
+      let expectedUserIds = _.sortBy(
+        [
+          uselessUser._id.toString(),
+          testUser._id.toString(),
+          testAdmin._id.toString(),
+          testUserAndAdmin._id.toString()
+        ],
+        id => id
+      );
+
+      expect(idOfAllUsers).toEqual(expectedUserIds);
+
+      //Database should contain all models - nothing should be changed
+      let idOfAllModels = _.sortBy(
+        (await Model.find({})).map(model => model._id.toString()),
+        id => id
+      );
+
+      let expectedModelIds = _.sortBy(
+        [
+          ...modelsOfUselessUser,
+          ...modelsOfTestAdmin,
+          ...modelsOfTestUserAndAdmin,
+          ...modelsOfTestUser
+        ].map(user => user._id.toString()),
+        id => id
+      );
+
+      expect(idOfAllModels).toEqual(expectedModelIds);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should return 404, and not edit any user- if user of given id is invalid", async () => {
+      //generating new random id
+      id = "testId";
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(404);
+      expect(response.text).toContain("Invalid id...");
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //Database should contain all users - nothing should be changed
+      let idOfAllUsers = _.sortBy(
+        (await User.find({})).map(user => user._id.toString()),
+        id => id
+      );
+
+      let expectedUserIds = _.sortBy(
+        [
+          uselessUser._id.toString(),
+          testUser._id.toString(),
+          testAdmin._id.toString(),
+          testUserAndAdmin._id.toString()
+        ],
+        id => id
+      );
+
+      expect(idOfAllUsers).toEqual(expectedUserIds);
+
+      //Database should contain all models - nothing should be changed
+      let idOfAllModels = _.sortBy(
+        (await Model.find({})).map(model => model._id.toString()),
+        id => id
+      );
+
+      let expectedModelIds = _.sortBy(
+        [
+          ...modelsOfUselessUser,
+          ...modelsOfTestAdmin,
+          ...modelsOfTestUserAndAdmin,
+          ...modelsOfTestUser
+        ].map(user => user._id.toString()),
+        id => id
+      );
+
+      expect(idOfAllModels).toEqual(expectedModelIds);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should return 400, and not edit any user- if users email is different than email in payload", async () => {
+      //generating new random id
+      requestPayload.email = "testEmail1234@1234.com.pl";
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(400);
+      expect(response.text).toContain("Invalid email for given user");
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //Database should contain all users - nothing should be changed
+      let idOfAllUsers = _.sortBy(
+        (await User.find({})).map(user => user._id.toString()),
+        id => id
+      );
+
+      let expectedUserIds = _.sortBy(
+        [
+          uselessUser._id.toString(),
+          testUser._id.toString(),
+          testAdmin._id.toString(),
+          testUserAndAdmin._id.toString()
+        ],
+        id => id
+      );
+
+      expect(idOfAllUsers).toEqual(expectedUserIds);
+
+      //Database should contain all models - nothing should be changed
+      let idOfAllModels = _.sortBy(
+        (await Model.find({})).map(model => model._id.toString()),
+        id => id
+      );
+
+      let expectedModelIds = _.sortBy(
+        [
+          ...modelsOfUselessUser,
+          ...modelsOfTestAdmin,
+          ...modelsOfTestUserAndAdmin,
+          ...modelsOfTestUser
+        ].map(user => user._id.toString()),
+        id => id
+      );
+
+      expect(idOfAllModels).toEqual(expectedModelIds);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should return 400, and not edit any user- if users email is not defined", async () => {
+      //generating new random id
+      delete requestPayload.email;
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(400);
+      expect(response.text).toContain('"email" is required');
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //Database should contain all users - nothing should be changed
+      let idOfAllUsers = _.sortBy(
+        (await User.find({})).map(user => user._id.toString()),
+        id => id
+      );
+
+      let expectedUserIds = _.sortBy(
+        [
+          uselessUser._id.toString(),
+          testUser._id.toString(),
+          testAdmin._id.toString(),
+          testUserAndAdmin._id.toString()
+        ],
+        id => id
+      );
+
+      expect(idOfAllUsers).toEqual(expectedUserIds);
+
+      //Database should contain all models - nothing should be changed
+      let idOfAllModels = _.sortBy(
+        (await Model.find({})).map(model => model._id.toString()),
+        id => id
+      );
+
+      let expectedModelIds = _.sortBy(
+        [
+          ...modelsOfUselessUser,
+          ...modelsOfTestAdmin,
+          ...modelsOfTestUserAndAdmin,
+          ...modelsOfTestUser
+        ].map(user => user._id.toString()),
+        id => id
+      );
+
+      expect(idOfAllModels).toEqual(expectedModelIds);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should return 400, and not edit any user- if users email is null", async () => {
+      //generating new random id
+      requestPayload.email = null;
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(400);
+      expect(response.text).toContain('"email" must be a string');
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //Database should contain all users - nothing should be changed
+      let idOfAllUsers = _.sortBy(
+        (await User.find({})).map(user => user._id.toString()),
+        id => id
+      );
+
+      let expectedUserIds = _.sortBy(
+        [
+          uselessUser._id.toString(),
+          testUser._id.toString(),
+          testAdmin._id.toString(),
+          testUserAndAdmin._id.toString()
+        ],
+        id => id
+      );
+
+      expect(idOfAllUsers).toEqual(expectedUserIds);
+
+      //Database should contain all models - nothing should be changed
+      let idOfAllModels = _.sortBy(
+        (await Model.find({})).map(model => model._id.toString()),
+        id => id
+      );
+
+      let expectedModelIds = _.sortBy(
+        [
+          ...modelsOfUselessUser,
+          ...modelsOfTestAdmin,
+          ...modelsOfTestUserAndAdmin,
+          ...modelsOfTestUser
+        ].map(user => user._id.toString()),
+        id => id
+      );
+
+      expect(idOfAllModels).toEqual(expectedModelIds);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should return 400, and not edit any user- if users email is an empty string", async () => {
+      //generating new random id
+      requestPayload.email = "";
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(400);
+      expect(response.text).toContain('"email" is not allowed to be empty');
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //Database should contain all users - nothing should be changed
+      let idOfAllUsers = _.sortBy(
+        (await User.find({})).map(user => user._id.toString()),
+        id => id
+      );
+
+      let expectedUserIds = _.sortBy(
+        [
+          uselessUser._id.toString(),
+          testUser._id.toString(),
+          testAdmin._id.toString(),
+          testUserAndAdmin._id.toString()
+        ],
+        id => id
+      );
+
+      expect(idOfAllUsers).toEqual(expectedUserIds);
+
+      //Database should contain all models - nothing should be changed
+      let idOfAllModels = _.sortBy(
+        (await Model.find({})).map(model => model._id.toString()),
+        id => id
+      );
+
+      let expectedModelIds = _.sortBy(
+        [
+          ...modelsOfUselessUser,
+          ...modelsOfTestAdmin,
+          ...modelsOfTestUserAndAdmin,
+          ...modelsOfTestUser
+        ].map(user => user._id.toString()),
+        id => id
+      );
+
+      expect(idOfAllModels).toEqual(expectedModelIds);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should return 400, and not edit any user- if users email is not a valid email", async () => {
+      //generating new random id
+      requestPayload.email = "abcd1234";
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(400);
+      expect(response.text).toContain('"email" must be a valid email');
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //Database should contain all users - nothing should be changed
+      let idOfAllUsers = _.sortBy(
+        (await User.find({})).map(user => user._id.toString()),
+        id => id
+      );
+
+      let expectedUserIds = _.sortBy(
+        [
+          uselessUser._id.toString(),
+          testUser._id.toString(),
+          testAdmin._id.toString(),
+          testUserAndAdmin._id.toString()
+        ],
+        id => id
+      );
+
+      expect(idOfAllUsers).toEqual(expectedUserIds);
+
+      //Database should contain all models - nothing should be changed
+      let idOfAllModels = _.sortBy(
+        (await Model.find({})).map(model => model._id.toString()),
+        id => id
+      );
+
+      let expectedModelIds = _.sortBy(
+        [
+          ...modelsOfUselessUser,
+          ...modelsOfTestAdmin,
+          ...modelsOfTestUserAndAdmin,
+          ...modelsOfTestUser
+        ].map(user => user._id.toString()),
+        id => id
+      );
+
+      expect(idOfAllModels).toEqual(expectedModelIds);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should return 400, and not edit any user- if users name is not defined", async () => {
+      //generating new random id
+      delete requestPayload.name;
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(400);
+      expect(response.text).toContain('"name" is required');
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //Database should contain all users - nothing should be changed
+      let idOfAllUsers = _.sortBy(
+        (await User.find({})).map(user => user._id.toString()),
+        id => id
+      );
+
+      let expectedUserIds = _.sortBy(
+        [
+          uselessUser._id.toString(),
+          testUser._id.toString(),
+          testAdmin._id.toString(),
+          testUserAndAdmin._id.toString()
+        ],
+        id => id
+      );
+
+      expect(idOfAllUsers).toEqual(expectedUserIds);
+
+      //Database should contain all models - nothing should be changed
+      let idOfAllModels = _.sortBy(
+        (await Model.find({})).map(model => model._id.toString()),
+        id => id
+      );
+
+      let expectedModelIds = _.sortBy(
+        [
+          ...modelsOfUselessUser,
+          ...modelsOfTestAdmin,
+          ...modelsOfTestUserAndAdmin,
+          ...modelsOfTestUser
+        ].map(user => user._id.toString()),
+        id => id
+      );
+
+      expect(idOfAllModels).toEqual(expectedModelIds);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should return 400, and not edit any user- if users name is shorter than 3", async () => {
+      //generating new random id
+      requestPayload.name = "ab";
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(400);
+      expect(response.text).toContain(
+        '"name" length must be at least 3 characters long'
+      );
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //Database should contain all users - nothing should be changed
+      let idOfAllUsers = _.sortBy(
+        (await User.find({})).map(user => user._id.toString()),
+        id => id
+      );
+
+      let expectedUserIds = _.sortBy(
+        [
+          uselessUser._id.toString(),
+          testUser._id.toString(),
+          testAdmin._id.toString(),
+          testUserAndAdmin._id.toString()
+        ],
+        id => id
+      );
+
+      expect(idOfAllUsers).toEqual(expectedUserIds);
+
+      //Database should contain all models - nothing should be changed
+      let idOfAllModels = _.sortBy(
+        (await Model.find({})).map(model => model._id.toString()),
+        id => id
+      );
+
+      let expectedModelIds = _.sortBy(
+        [
+          ...modelsOfUselessUser,
+          ...modelsOfTestAdmin,
+          ...modelsOfTestUserAndAdmin,
+          ...modelsOfTestUser
+        ].map(user => user._id.toString()),
+        id => id
+      );
+
+      expect(idOfAllModels).toEqual(expectedModelIds);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should return 200, edit user, and return it - if users name length is equal to 3", async () => {
+      requestPayload.name = "abc";
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(200);
+
+      let expectedPayload = {
+        _id: testUser._id.toString(),
+        name: requestPayload.name,
+        email: requestPayload.email,
+        permissions: requestPayload.permissions,
+        modelIds: modelsOfTestUser.map(model => model._id.toString()),
+        modelNames: modelsOfTestUser.map(model => model.name)
+      };
+
+      expect(response.body).toEqual(expectedPayload);
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //User should also be edited in database
+
+      //Getting user from db
+      let userFromDatabase = await User.findOne({ _id: id });
+      expect(userFromDatabase).toBeDefined();
+
+      //Checking payload
+      let userFromDatabasePayload = await userFromDatabase.getPayload();
+      expect(userFromDatabasePayload).toEqual(expectedPayload);
+
+      //Checking password
+      let newPasswordMatches = await hashedStringMatch(
+        requestPayload.password,
+        userFromDatabase.password
+      );
+
+      expect(newPasswordMatches).toEqual(true);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should return 400, and not edit any user- if users name is longer than 100", async () => {
+      //101 signs
+      requestPayload.name = Array(102).join("n");
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(400);
+      expect(response.text).toContain(
+        '"name" length must be less than or equal to 100 characters long'
+      );
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //Database should contain all users - nothing should be changed
+      let idOfAllUsers = _.sortBy(
+        (await User.find({})).map(user => user._id.toString()),
+        id => id
+      );
+
+      let expectedUserIds = _.sortBy(
+        [
+          uselessUser._id.toString(),
+          testUser._id.toString(),
+          testAdmin._id.toString(),
+          testUserAndAdmin._id.toString()
+        ],
+        id => id
+      );
+
+      expect(idOfAllUsers).toEqual(expectedUserIds);
+
+      //Database should contain all models - nothing should be changed
+      let idOfAllModels = _.sortBy(
+        (await Model.find({})).map(model => model._id.toString()),
+        id => id
+      );
+
+      let expectedModelIds = _.sortBy(
+        [
+          ...modelsOfUselessUser,
+          ...modelsOfTestAdmin,
+          ...modelsOfTestUserAndAdmin,
+          ...modelsOfTestUser
+        ].map(user => user._id.toString()),
+        id => id
+      );
+
+      expect(idOfAllModels).toEqual(expectedModelIds);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should return 200, edit user, and return it - if users name length is equal to 100", async () => {
+      //101 signs
+      requestPayload.name = Array(101).join("n");
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(200);
+
+      let expectedPayload = {
+        _id: testUser._id.toString(),
+        name: requestPayload.name,
+        email: requestPayload.email,
+        permissions: requestPayload.permissions,
+        modelIds: modelsOfTestUser.map(model => model._id.toString()),
+        modelNames: modelsOfTestUser.map(model => model.name)
+      };
+
+      expect(response.body).toEqual(expectedPayload);
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //User should also be edited in database
+
+      //Getting user from db
+      let userFromDatabase = await User.findOne({ _id: id });
+      expect(userFromDatabase).toBeDefined();
+
+      //Checking payload
+      let userFromDatabasePayload = await userFromDatabase.getPayload();
+      expect(userFromDatabasePayload).toEqual(expectedPayload);
+
+      //Checking password
+      let newPasswordMatches = await hashedStringMatch(
+        requestPayload.password,
+        userFromDatabase.password
+      );
+
+      expect(newPasswordMatches).toEqual(true);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should return 400, and not edit any user- if users permissions is not defined", async () => {
+      delete requestPayload.permissions;
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(400);
+      expect(response.text).toContain('"permissions" is required');
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //Database should contain all users - nothing should be changed
+      let idOfAllUsers = _.sortBy(
+        (await User.find({})).map(user => user._id.toString()),
+        id => id
+      );
+
+      let expectedUserIds = _.sortBy(
+        [
+          uselessUser._id.toString(),
+          testUser._id.toString(),
+          testAdmin._id.toString(),
+          testUserAndAdmin._id.toString()
+        ],
+        id => id
+      );
+
+      expect(idOfAllUsers).toEqual(expectedUserIds);
+
+      //Database should contain all models - nothing should be changed
+      let idOfAllModels = _.sortBy(
+        (await Model.find({})).map(model => model._id.toString()),
+        id => id
+      );
+
+      let expectedModelIds = _.sortBy(
+        [
+          ...modelsOfUselessUser,
+          ...modelsOfTestAdmin,
+          ...modelsOfTestUserAndAdmin,
+          ...modelsOfTestUser
+        ].map(user => user._id.toString()),
+        id => id
+      );
+
+      expect(idOfAllModels).toEqual(expectedModelIds);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should return 400, and not edit any user- if users permissions is not a number", async () => {
+      requestPayload.permissions = "abc";
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(400);
+      expect(response.text).toContain('"permissions" must be a number');
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //Database should contain all users - nothing should be changed
+      let idOfAllUsers = _.sortBy(
+        (await User.find({})).map(user => user._id.toString()),
+        id => id
+      );
+
+      let expectedUserIds = _.sortBy(
+        [
+          uselessUser._id.toString(),
+          testUser._id.toString(),
+          testAdmin._id.toString(),
+          testUserAndAdmin._id.toString()
+        ],
+        id => id
+      );
+
+      expect(idOfAllUsers).toEqual(expectedUserIds);
+
+      //Database should contain all models - nothing should be changed
+      let idOfAllModels = _.sortBy(
+        (await Model.find({})).map(model => model._id.toString()),
+        id => id
+      );
+
+      let expectedModelIds = _.sortBy(
+        [
+          ...modelsOfUselessUser,
+          ...modelsOfTestAdmin,
+          ...modelsOfTestUserAndAdmin,
+          ...modelsOfTestUser
+        ].map(user => user._id.toString()),
+        id => id
+      );
+
+      expect(idOfAllModels).toEqual(expectedModelIds);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should return 400, and not edit any user- if users permissions is smaller than 0", async () => {
+      requestPayload.permissions = -1;
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(400);
+      expect(response.text).toContain(
+        '"permissions" must be larger than or equal to 0'
+      );
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //Database should contain all users - nothing should be changed
+      let idOfAllUsers = _.sortBy(
+        (await User.find({})).map(user => user._id.toString()),
+        id => id
+      );
+
+      let expectedUserIds = _.sortBy(
+        [
+          uselessUser._id.toString(),
+          testUser._id.toString(),
+          testAdmin._id.toString(),
+          testUserAndAdmin._id.toString()
+        ],
+        id => id
+      );
+
+      expect(idOfAllUsers).toEqual(expectedUserIds);
+
+      //Database should contain all models - nothing should be changed
+      let idOfAllModels = _.sortBy(
+        (await Model.find({})).map(model => model._id.toString()),
+        id => id
+      );
+
+      let expectedModelIds = _.sortBy(
+        [
+          ...modelsOfUselessUser,
+          ...modelsOfTestAdmin,
+          ...modelsOfTestUserAndAdmin,
+          ...modelsOfTestUser
+        ].map(user => user._id.toString()),
+        id => id
+      );
+
+      expect(idOfAllModels).toEqual(expectedModelIds);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should return 200, edit user, and return it - if  users permissions is 0", async () => {
+      //101 signs
+      requestPayload.permissions = 0;
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(200);
+
+      let expectedPayload = {
+        _id: testUser._id.toString(),
+        name: requestPayload.name,
+        email: requestPayload.email,
+        permissions: requestPayload.permissions,
+        modelIds: modelsOfTestUser.map(model => model._id.toString()),
+        modelNames: modelsOfTestUser.map(model => model.name)
+      };
+
+      expect(response.body).toEqual(expectedPayload);
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //User should also be edited in database
+
+      //Getting user from db
+      let userFromDatabase = await User.findOne({ _id: id });
+      expect(userFromDatabase).toBeDefined();
+
+      //Checking payload
+      let userFromDatabasePayload = await userFromDatabase.getPayload();
+      expect(userFromDatabasePayload).toEqual(expectedPayload);
+
+      //Checking password
+      let newPasswordMatches = await hashedStringMatch(
+        requestPayload.password,
+        userFromDatabase.password
+      );
+
+      expect(newPasswordMatches).toEqual(true);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should return 400, and not edit any user- if users permissions is greater than 255", async () => {
+      requestPayload.permissions = 256;
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(400);
+      expect(response.text).toContain(
+        '"permissions" must be less than or equal to 255'
+      );
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //Database should contain all users - nothing should be changed
+      let idOfAllUsers = _.sortBy(
+        (await User.find({})).map(user => user._id.toString()),
+        id => id
+      );
+
+      let expectedUserIds = _.sortBy(
+        [
+          uselessUser._id.toString(),
+          testUser._id.toString(),
+          testAdmin._id.toString(),
+          testUserAndAdmin._id.toString()
+        ],
+        id => id
+      );
+
+      expect(idOfAllUsers).toEqual(expectedUserIds);
+
+      //Database should contain all models - nothing should be changed
+      let idOfAllModels = _.sortBy(
+        (await Model.find({})).map(model => model._id.toString()),
+        id => id
+      );
+
+      let expectedModelIds = _.sortBy(
+        [
+          ...modelsOfUselessUser,
+          ...modelsOfTestAdmin,
+          ...modelsOfTestUserAndAdmin,
+          ...modelsOfTestUser
+        ].map(user => user._id.toString()),
+        id => id
+      );
+
+      expect(idOfAllModels).toEqual(expectedModelIds);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should return 200, edit user, and return it - if  users permissions is 255", async () => {
+      //101 signs
+      requestPayload.permissions = 255;
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(200);
+
+      let expectedPayload = {
+        _id: testUser._id.toString(),
+        name: requestPayload.name,
+        email: requestPayload.email,
+        permissions: requestPayload.permissions,
+        modelIds: modelsOfTestUser.map(model => model._id.toString()),
+        modelNames: modelsOfTestUser.map(model => model.name)
+      };
+
+      expect(response.body).toEqual(expectedPayload);
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //User should also be edited in database
+
+      //Getting user from db
+      let userFromDatabase = await User.findOne({ _id: id });
+      expect(userFromDatabase).toBeDefined();
+
+      //Checking payload
+      let userFromDatabasePayload = await userFromDatabase.getPayload();
+      expect(userFromDatabasePayload).toEqual(expectedPayload);
+
+      //Checking password
+      let newPasswordMatches = await hashedStringMatch(
+        requestPayload.password,
+        userFromDatabase.password
+      );
+
+      expect(newPasswordMatches).toEqual(true);
 
       //#endregion CHECKING_DATABASE
     });

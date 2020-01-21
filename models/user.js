@@ -122,8 +122,8 @@ userSchema.methods.getModelLists = async function() {
   let modelNames = [];
 
   for (let model of modelList) {
-    modelIds.push(model._id);
-    modelNames.push(model.name);
+    modelIds.push(model._id.toString());
+    modelNames.push(model.name.toString());
   }
 
   return {

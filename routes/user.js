@@ -122,7 +122,7 @@ router.put(
     //Saving changes
     await user.save();
 
-    let payloadToReturn = user.getPayload();
+    let payloadToReturn = await user.getPayload();
 
     return res.status(200).send(payloadToReturn);
   }
