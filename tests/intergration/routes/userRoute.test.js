@@ -5,6 +5,7 @@ const request = require("supertest");
 const bcrypt = require("bcrypt");
 const config = require("config");
 const jsonWebToken = require("jsonwebtoken");
+const mongoose = require("mongoose");
 let { User } = require("../../../models/user");
 let { Model } = require("../../../models/model");
 let {
@@ -1799,15 +1800,6 @@ describe("/api/users", () => {
       expect(response.text).toContain("Invalid token provided");
 
       //#endregion CHECKING_RESPONSE
-
-      //#region CHECKING_DATABASE
-
-      //Only four users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser
-      let userCount = await User.countDocuments({});
-
-      expect(userCount).toEqual(4);
-
-      //#endregion CHECKING_DATABASE
     });
   });
 
@@ -1838,6 +1830,184 @@ describe("/api/users", () => {
 
       expect(response).toBeDefined();
       expect(response.status).toEqual(200);
+
+      let expectedPayload = {
+        _id: testUser._id.toString(),
+        name: testUser.name,
+        email: testUser.email,
+        permissions: testUser.permissions,
+        modelIds: modelsOfTestUser.map(model => model._id.toString()),
+        modelNames: modelsOfTestUser.map(model => model.name)
+      };
+
+      expect(response.body).toEqual(expectedPayload);
+    });
+
+    it("should return 200 and user of given id - if user exists and has no models assigned", async () => {
+      await Model.deleteMany({});
+
+      let response = await exec();
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(200);
+
+      let expectedPayload = {
+        _id: testUser._id.toString(),
+        name: testUser.name,
+        email: testUser.email,
+        permissions: testUser.permissions,
+        modelIds: [],
+        modelNames: []
+      };
+
+      expect(response.body).toEqual(expectedPayload);
+    });
+
+    it("should return 404 if id is not valid", async () => {
+      id = "testUserId";
+
+      let response = await exec();
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(404);
+      expect(response.text).toContain("Invalid id...");
+    });
+
+    it("should return 404 if use of given id doest not exist", async () => {
+      //Generating new random id
+      id = mongoose.Types.ObjectId();
+
+      let response = await exec();
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(404);
+      expect(response.text).toContain("User not found");
+    });
+
+    it("should return 404 if use of given id doest not exist", async () => {
+      //Generating new random id
+      id = mongoose.Types.ObjectId();
+
+      let response = await exec();
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(404);
+      expect(response.text).toContain("User not found");
+    });
+
+    it("should not return any user and return 401 if jwt has not been given", async () => {
+      jwt = undefined;
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(401);
+      expect(response.text).toBeDefined();
+      expect(response.text).toContain("Access denied. No token provided");
+
+      //#endregion CHECKING_RESPONSE
+    });
+
+    it("should not return any user and return 403 if jwt of user has been given", async () => {
+      jwt = await testUser.generateJWT();
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(403);
+      expect(response.text).toBeDefined();
+      expect(response.text).toContain("Access forbidden");
+
+      //#endregion CHECKING_RESPONSE
+    });
+
+    it("should not return any user and return 403 if jwt of useless (with permissions set to 0) user has been given", async () => {
+      jwt = await uselessUser.generateJWT();
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(403);
+      expect(response.text).toBeDefined();
+      expect(response.text).toContain("Access forbidden");
+
+      //#endregion CHECKING_RESPONSE
+    });
+
+    it("should return users and return 200 with user payloadif jwt of adminAndUser user is given", async () => {
+      jwt = await testUserAndAdmin.generateJWT();
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(200);
+
+      let expectedPayload = {
+        _id: testUser._id.toString(),
+        name: testUser.name,
+        email: testUser.email,
+        permissions: testUser.permissions,
+        modelIds: modelsOfTestUser.map(model => model._id.toString()),
+        modelNames: modelsOfTestUser.map(model => model.name)
+      };
+
+      expect(response.body).toEqual(expectedPayload);
+
+      //#endregion CHECKING_RESPONSE
+    });
+
+    it("should not return any user and return 400 if invalid jwt has been given", async () => {
+      jwt = "abcd1234";
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(400);
+      expect(response.text).toBeDefined();
+      expect(response.text).toContain("Invalid token provided");
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //Only four users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser
+      let userCount = await User.countDocuments({});
+
+      expect(userCount).toEqual(4);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should not return any user and return 400 if  jwt from different private key was provided", async () => {
+      let fakeUserPayload = {
+        _id: testAdmin._id,
+        email: testAdmin.email,
+        name: testAdmin.name,
+        permissions: testAdmin.permissions
+      };
+
+      jwt = await jsonWebToken.sign(fakeUserPayload, "differentTestPrivateKey");
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(400);
+      expect(response.text).toBeDefined();
+      expect(response.text).toContain("Invalid token provided");
+
+      //#endregion CHECKING_RESPONSE
     });
   });
 });
