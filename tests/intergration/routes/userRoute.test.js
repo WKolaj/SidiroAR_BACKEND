@@ -2010,4 +2010,608 @@ describe("/api/users", () => {
       //#endregion CHECKING_RESPONSE
     });
   });
+
+  describe("DELETE/:id", () => {
+    //jwt used to authenticate when posting
+    let jwt;
+    let id;
+
+    beforeEach(async () => {
+      jwt = await testAdmin.generateJWT();
+      id = testUser._id;
+    });
+
+    let exec = async () => {
+      if (exists(jwt))
+        return request(server)
+          .delete(`/api/users/${id}`)
+          .set(config.get("tokenHeader"), jwt)
+          .send();
+      else
+        return request(server)
+          .delete(`/api/users/${id}`)
+          .send();
+    };
+
+    it("should return 200, delete user, its models and return it - if user exists", async () => {
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(200);
+
+      let expectedPayload = {
+        _id: testUser._id.toString(),
+        name: testUser.name,
+        email: testUser.email,
+        permissions: testUser.permissions,
+        modelIds: modelsOfTestUser.map(model => model._id.toString()),
+        modelNames: modelsOfTestUser.map(model => model.name)
+      };
+
+      expect(response.body).toEqual(expectedPayload);
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //Database should contain all user except deleted one (testUser)
+      let idOfAllUsers = _.sortBy(
+        (await User.find({})).map(user => user._id.toString()),
+        id => id
+      );
+
+      let expectedUserIds = _.sortBy(
+        [
+          uselessUser._id.toString(),
+          testAdmin._id.toString(),
+          testUserAndAdmin._id.toString()
+        ],
+        id => id
+      );
+
+      expect(idOfAllUsers).toEqual(expectedUserIds);
+
+      //Database should contain all models except models of deleted user (testUser)
+      let idOfAllModels = _.sortBy(
+        (await Model.find({})).map(model => model._id.toString()),
+        id => id
+      );
+
+      let expectedModelIds = _.sortBy(
+        [
+          ...modelsOfUselessUser,
+          ...modelsOfTestAdmin,
+          ...modelsOfTestUserAndAdmin
+        ].map(user => user._id.toString()),
+        id => id
+      );
+
+      expect(idOfAllModels).toEqual(expectedModelIds);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should return 200, delete user,  and return it - if user exists and has no models assigned", async () => {
+      //Deleting all models associated with this user
+      await Model.deleteMany({ user: id });
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(200);
+
+      let expectedPayload = {
+        _id: testUser._id.toString(),
+        name: testUser.name,
+        email: testUser.email,
+        permissions: testUser.permissions,
+        modelIds: [],
+        modelNames: []
+      };
+
+      expect(response.body).toEqual(expectedPayload);
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //Database should contain all user except deleted one (testUser)
+      let idOfAllUsers = _.sortBy(
+        (await User.find({})).map(user => user._id.toString()),
+        id => id
+      );
+
+      let expectedUserIds = _.sortBy(
+        [
+          uselessUser._id.toString(),
+          testAdmin._id.toString(),
+          testUserAndAdmin._id.toString()
+        ],
+        id => id
+      );
+
+      expect(idOfAllUsers).toEqual(expectedUserIds);
+
+      //Database should contain all models except models of deleted user (testUser)
+      let idOfAllModels = _.sortBy(
+        (await Model.find({})).map(model => model._id.toString()),
+        id => id
+      );
+
+      let expectedModelIds = _.sortBy(
+        [
+          ...modelsOfUselessUser,
+          ...modelsOfTestAdmin,
+          ...modelsOfTestUserAndAdmin
+        ].map(user => user._id.toString()),
+        id => id
+      );
+
+      expect(idOfAllModels).toEqual(expectedModelIds);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should return 404 if id is not valid", async () => {
+      id = "testUserId";
+
+      let response = await exec();
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(404);
+      expect(response.text).toContain("Invalid id...");
+
+      //#region CHECKING_DATABASE
+
+      //Database should contain all users - nothing should be deleted
+      let idOfAllUsers = _.sortBy(
+        (await User.find({})).map(user => user._id.toString()),
+        id => id
+      );
+
+      let expectedUserIds = _.sortBy(
+        [
+          uselessUser._id.toString(),
+          testUser._id.toString(),
+          testAdmin._id.toString(),
+          testUserAndAdmin._id.toString()
+        ],
+        id => id
+      );
+
+      expect(idOfAllUsers).toEqual(expectedUserIds);
+
+      //Database should contain all models - nothing should be deleted
+      let idOfAllModels = _.sortBy(
+        (await Model.find({})).map(model => model._id.toString()),
+        id => id
+      );
+
+      let expectedModelIds = _.sortBy(
+        [
+          ...modelsOfUselessUser,
+          ...modelsOfTestAdmin,
+          ...modelsOfTestUserAndAdmin,
+          ...modelsOfTestUser
+        ].map(user => user._id.toString()),
+        id => id
+      );
+
+      expect(idOfAllModels).toEqual(expectedModelIds);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should return 404 if use of given id doest not exist", async () => {
+      //Generating new random id
+      id = mongoose.Types.ObjectId();
+
+      let response = await exec();
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(404);
+      expect(response.text).toContain("User not found");
+
+      //#region CHECKING_DATABASE
+
+      //Database should contain all users - nothing should be deleted
+      let idOfAllUsers = _.sortBy(
+        (await User.find({})).map(user => user._id.toString()),
+        id => id
+      );
+
+      let expectedUserIds = _.sortBy(
+        [
+          uselessUser._id.toString(),
+          testUser._id.toString(),
+          testAdmin._id.toString(),
+          testUserAndAdmin._id.toString()
+        ],
+        id => id
+      );
+
+      expect(idOfAllUsers).toEqual(expectedUserIds);
+
+      //Database should contain all models - nothing should be deleted
+      let idOfAllModels = _.sortBy(
+        (await Model.find({})).map(model => model._id.toString()),
+        id => id
+      );
+
+      let expectedModelIds = _.sortBy(
+        [
+          ...modelsOfUselessUser,
+          ...modelsOfTestAdmin,
+          ...modelsOfTestUserAndAdmin,
+          ...modelsOfTestUser
+        ].map(user => user._id.toString()),
+        id => id
+      );
+
+      expect(idOfAllModels).toEqual(expectedModelIds);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should return 404 if use of given id doest not exist", async () => {
+      //Generating new random id
+      id = mongoose.Types.ObjectId();
+
+      let response = await exec();
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(404);
+      expect(response.text).toContain("User not found");
+
+      //#region CHECKING_DATABASE
+
+      //Database should contain all users - nothing should be deleted
+      let idOfAllUsers = _.sortBy(
+        (await User.find({})).map(user => user._id.toString()),
+        id => id
+      );
+
+      let expectedUserIds = _.sortBy(
+        [
+          uselessUser._id.toString(),
+          testUser._id.toString(),
+          testAdmin._id.toString(),
+          testUserAndAdmin._id.toString()
+        ],
+        id => id
+      );
+
+      expect(idOfAllUsers).toEqual(expectedUserIds);
+
+      //Database should contain all models - nothing should be deleted
+      let idOfAllModels = _.sortBy(
+        (await Model.find({})).map(model => model._id.toString()),
+        id => id
+      );
+
+      let expectedModelIds = _.sortBy(
+        [
+          ...modelsOfUselessUser,
+          ...modelsOfTestAdmin,
+          ...modelsOfTestUserAndAdmin,
+          ...modelsOfTestUser
+        ].map(user => user._id.toString()),
+        id => id
+      );
+
+      expect(idOfAllModels).toEqual(expectedModelIds);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should not return any user and return 401 if jwt has not been given", async () => {
+      jwt = undefined;
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(401);
+      expect(response.text).toBeDefined();
+      expect(response.text).toContain("Access denied. No token provided");
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //Database should contain all users - nothing should be deleted
+      let idOfAllUsers = _.sortBy(
+        (await User.find({})).map(user => user._id.toString()),
+        id => id
+      );
+
+      let expectedUserIds = _.sortBy(
+        [
+          uselessUser._id.toString(),
+          testUser._id.toString(),
+          testAdmin._id.toString(),
+          testUserAndAdmin._id.toString()
+        ],
+        id => id
+      );
+
+      expect(idOfAllUsers).toEqual(expectedUserIds);
+
+      //Database should contain all models - nothing should be deleted
+      let idOfAllModels = _.sortBy(
+        (await Model.find({})).map(model => model._id.toString()),
+        id => id
+      );
+
+      let expectedModelIds = _.sortBy(
+        [
+          ...modelsOfUselessUser,
+          ...modelsOfTestAdmin,
+          ...modelsOfTestUserAndAdmin,
+          ...modelsOfTestUser
+        ].map(user => user._id.toString()),
+        id => id
+      );
+
+      expect(idOfAllModels).toEqual(expectedModelIds);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should not return any user and return 403 if jwt of user has been given", async () => {
+      jwt = await testUser.generateJWT();
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(403);
+      expect(response.text).toBeDefined();
+      expect(response.text).toContain("Access forbidden");
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //Database should contain all users - nothing should be deleted
+      let idOfAllUsers = _.sortBy(
+        (await User.find({})).map(user => user._id.toString()),
+        id => id
+      );
+
+      let expectedUserIds = _.sortBy(
+        [
+          uselessUser._id.toString(),
+          testUser._id.toString(),
+          testAdmin._id.toString(),
+          testUserAndAdmin._id.toString()
+        ],
+        id => id
+      );
+
+      expect(idOfAllUsers).toEqual(expectedUserIds);
+
+      //Database should contain all models - nothing should be deleted
+      let idOfAllModels = _.sortBy(
+        (await Model.find({})).map(model => model._id.toString()),
+        id => id
+      );
+
+      let expectedModelIds = _.sortBy(
+        [
+          ...modelsOfUselessUser,
+          ...modelsOfTestAdmin,
+          ...modelsOfTestUserAndAdmin,
+          ...modelsOfTestUser
+        ].map(user => user._id.toString()),
+        id => id
+      );
+
+      expect(idOfAllModels).toEqual(expectedModelIds);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should not return any user and return 403 if jwt of useless (with permissions set to 0) user has been given", async () => {
+      jwt = await uselessUser.generateJWT();
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(403);
+      expect(response.text).toBeDefined();
+      expect(response.text).toContain("Access forbidden");
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //Database should contain all users - nothing should be deleted
+      let idOfAllUsers = _.sortBy(
+        (await User.find({})).map(user => user._id.toString()),
+        id => id
+      );
+
+      let expectedUserIds = _.sortBy(
+        [
+          uselessUser._id.toString(),
+          testUser._id.toString(),
+          testAdmin._id.toString(),
+          testUserAndAdmin._id.toString()
+        ],
+        id => id
+      );
+
+      expect(idOfAllUsers).toEqual(expectedUserIds);
+
+      //Database should contain all models - nothing should be deleted
+      let idOfAllModels = _.sortBy(
+        (await Model.find({})).map(model => model._id.toString()),
+        id => id
+      );
+
+      let expectedModelIds = _.sortBy(
+        [
+          ...modelsOfUselessUser,
+          ...modelsOfTestAdmin,
+          ...modelsOfTestUserAndAdmin,
+          ...modelsOfTestUser
+        ].map(user => user._id.toString()),
+        id => id
+      );
+
+      expect(idOfAllModels).toEqual(expectedModelIds);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should return users and return 200 with user payloadif jwt of adminAndUser user is given", async () => {
+      jwt = await testUserAndAdmin.generateJWT();
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(200);
+
+      let expectedPayload = {
+        _id: testUser._id.toString(),
+        name: testUser.name,
+        email: testUser.email,
+        permissions: testUser.permissions,
+        modelIds: modelsOfTestUser.map(model => model._id.toString()),
+        modelNames: modelsOfTestUser.map(model => model.name)
+      };
+
+      expect(response.body).toEqual(expectedPayload);
+
+      //#endregion CHECKING_RESPONSE
+    });
+
+    it("should not return any user and return 400 if invalid jwt has been given", async () => {
+      jwt = "abcd1234";
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(400);
+      expect(response.text).toBeDefined();
+      expect(response.text).toContain("Invalid token provided");
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //Database should contain all users - nothing should be deleted
+      let idOfAllUsers = _.sortBy(
+        (await User.find({})).map(user => user._id.toString()),
+        id => id
+      );
+
+      let expectedUserIds = _.sortBy(
+        [
+          uselessUser._id.toString(),
+          testUser._id.toString(),
+          testAdmin._id.toString(),
+          testUserAndAdmin._id.toString()
+        ],
+        id => id
+      );
+
+      expect(idOfAllUsers).toEqual(expectedUserIds);
+
+      //Database should contain all models - nothing should be deleted
+      let idOfAllModels = _.sortBy(
+        (await Model.find({})).map(model => model._id.toString()),
+        id => id
+      );
+
+      let expectedModelIds = _.sortBy(
+        [
+          ...modelsOfUselessUser,
+          ...modelsOfTestAdmin,
+          ...modelsOfTestUserAndAdmin,
+          ...modelsOfTestUser
+        ].map(user => user._id.toString()),
+        id => id
+      );
+
+      expect(idOfAllModels).toEqual(expectedModelIds);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should not return any user and return 400 if  jwt from different private key was provided", async () => {
+      let fakeUserPayload = {
+        _id: testAdmin._id,
+        email: testAdmin.email,
+        name: testAdmin.name,
+        permissions: testAdmin.permissions
+      };
+
+      jwt = await jsonWebToken.sign(fakeUserPayload, "differentTestPrivateKey");
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(400);
+      expect(response.text).toBeDefined();
+      expect(response.text).toContain("Invalid token provided");
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //Database should contain all users - nothing should be deleted
+      let idOfAllUsers = _.sortBy(
+        (await User.find({})).map(user => user._id.toString()),
+        id => id
+      );
+
+      let expectedUserIds = _.sortBy(
+        [
+          uselessUser._id.toString(),
+          testUser._id.toString(),
+          testAdmin._id.toString(),
+          testUserAndAdmin._id.toString()
+        ],
+        id => id
+      );
+
+      expect(idOfAllUsers).toEqual(expectedUserIds);
+
+      //Database should contain all models - nothing should be deleted
+      let idOfAllModels = _.sortBy(
+        (await Model.find({})).map(model => model._id.toString()),
+        id => id
+      );
+
+      let expectedModelIds = _.sortBy(
+        [
+          ...modelsOfUselessUser,
+          ...modelsOfTestAdmin,
+          ...modelsOfTestUserAndAdmin,
+          ...modelsOfTestUser
+        ].map(user => user._id.toString()),
+        id => id
+      );
+
+      expect(idOfAllModels).toEqual(expectedModelIds);
+
+      //#endregion CHECKING_DATABASE
+    });
+  });
 });

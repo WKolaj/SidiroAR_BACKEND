@@ -104,7 +104,14 @@ userSchema.methods.generateJWT = async function() {
 
 //Method for generating model lists of user from database
 userSchema.methods.getModels = async function() {
-  return await Model.find({ user: this._id });
+  return Model.find({ user: this._id });
+};
+
+//Method for all deleting model assigned to user
+userSchema.methods.deleteModels = async function() {
+  return Model.deleteMany({ user: this._id });
+
+  //TO DO - also delete files associated with user
 };
 
 //Method for generating two lists of ids and names of models

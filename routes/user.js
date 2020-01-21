@@ -85,9 +85,11 @@ router.delete(
 
     let payloadToReturn = await user.getPayload();
 
-    await User.findOneAndDelete({ _id: req.params.id });
+    //Deleting models of given user
+    await user.deleteModels();
 
-    //TO DO - also delete ids and names and files associated with user
+    //Deleting user
+    await User.deleteOne({ _id: req.params.id });
 
     return res.status(200).send(payloadToReturn);
   }
