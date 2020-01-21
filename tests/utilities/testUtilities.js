@@ -1,5 +1,10 @@
 const { User } = require("../../models/user");
-const { exists, hashString } = require("../../utilities/utilities");
+const { Model } = require("../../models/model");
+const {
+  exists,
+  hashString,
+  generateRandomNumberString
+} = require("../../utilities/utilities");
 
 const testUselessUserEmail = "useless@test1234abcd.com.pl";
 const testAdminEmail = "admin@test1234abcd.com.pl";
@@ -72,4 +77,28 @@ module.exports.generateTestAdminAndUser = async () => {
   await user.save();
 
   return user;
+};
+
+//Method for generating test models for given user
+module.exports.generateTestModels = async user => {
+  let modelsToReturn = [
+    new Model({
+      name: `testModel${generateRandomNumberString(4)}`,
+      user: user._id
+    }),
+    new Model({
+      name: `testModel${generateRandomNumberString(4)}`,
+      user: user._id
+    }),
+    new Model({
+      name: `testModel${generateRandomNumberString(4)}`,
+      user: user._id
+    })
+  ];
+
+  for (let model of modelsToReturn) {
+    await model.save();
+  }
+
+  return modelsToReturn;
 };

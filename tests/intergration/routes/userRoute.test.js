@@ -6,11 +6,13 @@ const bcrypt = require("bcrypt");
 const config = require("config");
 const jsonWebToken = require("jsonwebtoken");
 let { User } = require("../../../models/user");
+let { Model } = require("../../../models/model");
 let {
   generateTestAdmin,
   generateTestUser,
   generateTestAdminAndUser,
-  generateUselessUser
+  generateUselessUser,
+  generateTestModels
 } = require("../../utilities/testUtilities");
 let { exists } = require("../../../utilities/utilities");
 let server;
@@ -26,6 +28,10 @@ describe("/api/users", () => {
   let testAdmin;
   let testUser;
   let testUserAndAdmin;
+  let modelsOfUselessUser;
+  let modelsOfTestAdmin;
+  let modelsOfTestUser;
+  let modelsOfTestUserAndAdmin;
 
   beforeEach(async () => {
     //Clearing number of mock function calls
@@ -36,16 +42,27 @@ describe("/api/users", () => {
     //Clearing users in database before each test
     await User.deleteMany({});
 
+    //Clearing models
+    await Model.deleteMany({});
+
     //generating uslessUser, user, admin and adminUser
     uselessUser = await generateUselessUser();
     testAdmin = await generateTestAdmin();
     testUser = await generateTestUser();
     testUserAndAdmin = await generateTestAdminAndUser();
+
+    modelsOfUselessUser = await generateTestModels(uselessUser);
+    modelsOfTestAdmin = await generateTestModels(testAdmin);
+    modelsOfTestUser = await generateTestModels(testUser);
+    modelsOfTestUserAndAdmin = await generateTestModels(testUserAndAdmin);
   });
 
   afterEach(async () => {
     //Clearing users in database after each test
     await User.deleteMany({});
+
+    //Clearing models
+    await Model.deleteMany({});
 
     await server.close();
     sendMailMockFunction.mockClear();
@@ -1483,25 +1500,33 @@ describe("/api/users", () => {
           _id: uselessUser._id.toString(),
           name: uselessUser.name,
           email: uselessUser.email,
-          permissions: uselessUser.permissions
+          permissions: uselessUser.permissions,
+          modelIds: modelsOfUselessUser.map(model => model._id.toString()),
+          modelNames: modelsOfUselessUser.map(model => model.name)
         },
         {
           _id: testUser._id.toString(),
           name: testUser.name,
           email: testUser.email,
-          permissions: testUser.permissions
+          permissions: testUser.permissions,
+          modelIds: modelsOfTestUser.map(model => model._id.toString()),
+          modelNames: modelsOfTestUser.map(model => model.name)
         },
         {
           _id: testAdmin._id.toString(),
           name: testAdmin.name,
           email: testAdmin.email,
-          permissions: testAdmin.permissions
+          permissions: testAdmin.permissions,
+          modelIds: modelsOfTestAdmin.map(model => model._id.toString()),
+          modelNames: modelsOfTestAdmin.map(model => model.name)
         },
         {
           _id: testUserAndAdmin._id.toString(),
           name: testUserAndAdmin.name,
           email: testUserAndAdmin.email,
-          permissions: testUserAndAdmin.permissions
+          permissions: testUserAndAdmin.permissions,
+          modelIds: modelsOfTestUserAndAdmin.map(model => model._id.toString()),
+          modelNames: modelsOfTestUserAndAdmin.map(model => model.name)
         }
       ];
 
@@ -1510,7 +1535,69 @@ describe("/api/users", () => {
       let orderedResponseBody = _.orderBy(response.body, "_id", "asc");
 
       //after sorting - both array should be the same
-      expect(orderedExpectedBody).toEqual(orderedResponseBody);
+      expect(orderedResponseBody).toEqual(orderedExpectedBody);
+
+      //#endregion CHECKING_RESPONSE
+    });
+
+    it("should return 200 and a list of all users - if some users does not have any models", async () => {
+      await Model.deleteMany({});
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(200);
+      expect(response.body).toBeDefined();
+
+      //Body should contain all users payload
+      expect(response.body).toBeDefined();
+
+      //There should be 4 users - useless, normal, admin, and normal+admin
+      expect(response.body.length).toEqual(4);
+
+      let expectedBody = [
+        {
+          _id: uselessUser._id.toString(),
+          name: uselessUser.name,
+          email: uselessUser.email,
+          permissions: uselessUser.permissions,
+          modelIds: [],
+          modelNames: []
+        },
+        {
+          _id: testUser._id.toString(),
+          name: testUser.name,
+          email: testUser.email,
+          permissions: testUser.permissions,
+          modelIds: [],
+          modelNames: []
+        },
+        {
+          _id: testAdmin._id.toString(),
+          name: testAdmin.name,
+          email: testAdmin.email,
+          permissions: testAdmin.permissions,
+          modelIds: [],
+          modelNames: []
+        },
+        {
+          _id: testUserAndAdmin._id.toString(),
+          name: testUserAndAdmin.name,
+          email: testUserAndAdmin.email,
+          permissions: testUserAndAdmin.permissions,
+          modelIds: [],
+          modelNames: []
+        }
+      ];
+
+      //ordering both expected and real body by id
+      let orderedExpectedBody = _.orderBy(expectedBody, "_id", "asc");
+      let orderedResponseBody = _.orderBy(response.body, "_id", "asc");
+
+      //after sorting - both array should be the same
+      expect(orderedResponseBody).toEqual(orderedExpectedBody);
 
       //#endregion CHECKING_RESPONSE
     });
@@ -1533,7 +1620,7 @@ describe("/api/users", () => {
       //#endregion CHECKING_RESPONSE
     });
 
-    it("should return 200 and a empty list - if there is only one users", async () => {
+    it("should return 200 and proper list - if there is only one users", async () => {
       //deleting all except testUser
       await User.deleteMany({ _id: { $ne: testUser._id } });
 
@@ -1552,7 +1639,9 @@ describe("/api/users", () => {
           _id: testUser._id.toString(),
           name: testUser.name,
           email: testUser.email,
-          permissions: testUser.permissions
+          permissions: testUser.permissions,
+          modelIds: modelsOfTestUser.map(model => model._id.toString()),
+          modelNames: modelsOfTestUser.map(model => model.name)
         }
       ]);
 
@@ -1626,25 +1715,33 @@ describe("/api/users", () => {
           _id: uselessUser._id.toString(),
           name: uselessUser.name,
           email: uselessUser.email,
-          permissions: uselessUser.permissions
+          permissions: uselessUser.permissions,
+          modelIds: modelsOfUselessUser.map(model => model._id.toString()),
+          modelNames: modelsOfUselessUser.map(model => model.name)
         },
         {
           _id: testUser._id.toString(),
           name: testUser.name,
           email: testUser.email,
-          permissions: testUser.permissions
+          permissions: testUser.permissions,
+          modelIds: modelsOfTestUser.map(model => model._id.toString()),
+          modelNames: modelsOfTestUser.map(model => model.name)
         },
         {
           _id: testAdmin._id.toString(),
           name: testAdmin.name,
           email: testAdmin.email,
-          permissions: testAdmin.permissions
+          permissions: testAdmin.permissions,
+          modelIds: modelsOfTestAdmin.map(model => model._id.toString()),
+          modelNames: modelsOfTestAdmin.map(model => model.name)
         },
         {
           _id: testUserAndAdmin._id.toString(),
           name: testUserAndAdmin.name,
           email: testUserAndAdmin.email,
-          permissions: testUserAndAdmin.permissions
+          permissions: testUserAndAdmin.permissions,
+          modelIds: modelsOfTestUserAndAdmin.map(model => model._id.toString()),
+          modelNames: modelsOfTestUserAndAdmin.map(model => model.name)
         }
       ];
 
@@ -1711,6 +1808,36 @@ describe("/api/users", () => {
       expect(userCount).toEqual(4);
 
       //#endregion CHECKING_DATABASE
+    });
+  });
+
+  describe("GET/:id", () => {
+    //jwt used to authenticate when posting
+    let jwt;
+    let id;
+
+    beforeEach(async () => {
+      jwt = await testAdmin.generateJWT();
+      id = testUser._id;
+    });
+
+    let exec = async () => {
+      if (exists(jwt))
+        return request(server)
+          .get(`/api/users/${id}`)
+          .set(config.get("tokenHeader"), jwt)
+          .send();
+      else
+        return request(server)
+          .get(`/api/users/${id}`)
+          .send();
+    };
+
+    it("should return 200 and user of given id - if user exists", async () => {
+      let response = await exec();
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(200);
     });
   });
 });

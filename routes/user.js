@@ -11,20 +11,34 @@ const isUser = require("../middleware/auth/isUser");
 const _ = require("lodash");
 
 router.get("/", [hasUser, isAdmin], async (req, res) => {
-  var allUsers = (await User.find()).map(user =>
-    _.pick(user, ["_id", "name", "email", "permissions"])
-  );
+  var allUsers = await User.find();
 
-  return res.status(200).send(allUsers);
+  let payloadToReturn = [];
+
+  for (let user of allUsers) {
+    let userPayload = _.pick(user, ["_id", "name", "email", "permissions"]);
+    let { ids, names } = await user.getModelLists();
+    userPayload.modelIds = ids;
+    userPayload.modelNames = names;
+    payloadToReturn.push(userPayload);
+  }
+
+  return res.status(200).send(payloadToReturn);
 });
 
 router.get("/:id", [hasUser, isAdmin, validateObjectId], async (req, res) => {
   let user = await User.findById(req.params.id);
   if (!exists(user)) return res.status(404).send("User not found");
 
-  return res
-    .status(200)
-    .send(_.pick(user, ["_id", "name", "email", "permissions"]));
+  //Building payload to return
+  let payloadToReturn = _.pick(user, ["_id", "name", "email", "permissions"]);
+
+  //Getting and assiging all models associated with user
+  let { ids, names } = await user.getModelLists();
+  payloadToReturn.modelIds = ids;
+  payloadToReturn.modelNames = names;
+
+  return res.status(200).send(payloadToReturn);
 });
 
 router.post(
