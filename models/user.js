@@ -53,6 +53,7 @@ function validateUser(user) {
       .regex(/^\d+$/)
       .min(4)
       .max(4),
+    oldPassword: Joi.string(),
     permissions: Joi.number()
       .integer()
       .min(0)

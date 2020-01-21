@@ -4,7 +4,11 @@ const { User, validateUser } = require("../models/user");
 const { sendMail } = require("../services/EmailService");
 const validate = require("../middleware/validate");
 const validateObjectId = require("../middleware/validateObjectId");
-const { exists, hashString } = require("../utilities/utilities");
+const {
+  exists,
+  hashString,
+  hashedStringMatch
+} = require("../utilities/utilities");
 const hasUser = require("../middleware/auth/hasUser");
 const isAdmin = require("../middleware/auth/isAdmin");
 const isUser = require("../middleware/auth/isUser");
@@ -100,6 +104,49 @@ router.delete(
 
     //Deleting user
     await User.deleteOne({ _id: req.params.id });
+
+    return res.status(200).send(payloadToReturn);
+  }
+);
+
+router.put(
+  "/me",
+  [hasUser, isUser, validate(validateUser)],
+  async (req, res) => {
+    let user = await User.findOne({ _id: req.user._id });
+    if (!exists(user)) return res.status(404).send("User not found");
+
+    //Checking if given email is proper
+    if (req.body.email !== user.email)
+      return res.status(400).send("Invalid email for given user");
+
+    //Checking if given permissions is proper
+    if (req.body.permissions !== user.permissions)
+      return res.status(400).send("Invalid permissions for given user");
+
+    if (exists(req.body.name)) user.name = req.body.name;
+
+    //Checking if password exists - and edit it if exists
+    if (exists(req.body.password)) {
+      //old Password should also be defined and has to be valid
+      if (!exists(req.body.oldPassword))
+        return res.status(400).send("Old password should be provided");
+
+      let oldPasswordMatches = await hashedStringMatch(
+        req.body.oldPassword,
+        user.password
+      );
+      if (!oldPasswordMatches)
+        return res.status(400).send("Invalid old password");
+
+      //changing password
+      user.password = await hashString(req.body.password);
+    }
+
+    //Saving changes
+    await user.save();
+
+    let payloadToReturn = await user.getPayload();
 
     return res.status(200).send(payloadToReturn);
   }
