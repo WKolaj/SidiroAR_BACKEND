@@ -22,6 +22,16 @@ router.get("/", [hasUser, isAdmin], async (req, res) => {
   return res.status(200).send(payloadToReturn);
 });
 
+router.get("/me", [hasUser, isUser], async (req, res) => {
+  let user = await User.findOne({ _id: req.user._id });
+  if (!exists(user)) return res.status(404).send("User not found");
+
+  //Building payload to return
+  let payloadToReturn = await user.getPayload();
+
+  return res.status(200).send(payloadToReturn);
+});
+
 router.get("/:id", [hasUser, isAdmin, validateObjectId], async (req, res) => {
   let user = await User.findOne({ _id: req.params.id });
   if (!exists(user)) return res.status(404).send("User not found");
