@@ -16,11 +16,7 @@ router.get("/", [hasUser, isAdmin], async (req, res) => {
   let payloadToReturn = [];
 
   for (let user of allUsers) {
-    let userPayload = _.pick(user, ["_id", "name", "email", "permissions"]);
-    let { ids, names } = await user.getModelLists();
-    userPayload.modelIds = ids;
-    userPayload.modelNames = names;
-    payloadToReturn.push(userPayload);
+    payloadToReturn.push(await user.getPayload());
   }
 
   return res.status(200).send(payloadToReturn);
@@ -31,12 +27,7 @@ router.get("/:id", [hasUser, isAdmin, validateObjectId], async (req, res) => {
   if (!exists(user)) return res.status(404).send("User not found");
 
   //Building payload to return
-  let payloadToReturn = _.pick(user, ["_id", "name", "email", "permissions"]);
-
-  //Getting and assiging all models associated with user
-  let { ids, names } = await user.getModelLists();
-  payloadToReturn.modelIds = ids;
-  payloadToReturn.modelNames = names;
+  let payloadToReturn = await user.getPayload();
 
   return res.status(200).send(payloadToReturn);
 });
@@ -76,19 +67,10 @@ router.post(
     );
 
     //Building payload to return
-    let payloadToReturn = _.pick(user, [
-      "_id",
-      "name",
-      "email",
-      "password",
-      "permissions"
-    ]);
-    payloadToReturn.password = passwordBeforeHash;
+    let payloadToReturn = await user.getPayload();
 
-    //Getting and assiging all models associated with user
-    let { ids, names } = await user.getModelLists();
-    payloadToReturn.modelIds = ids;
-    payloadToReturn.modelNames = names;
+    //Assigning password additionaly
+    payloadToReturn.password = passwordBeforeHash;
 
     return res.status(200).send(payloadToReturn);
   }
@@ -101,13 +83,13 @@ router.delete(
     let user = await User.findById(req.params.id);
     if (!exists(user)) return res.status(404).send("User not found");
 
+    let payloadToReturn = await user.getPayload();
+
     await User.findOneAndDelete({ _id: req.params.id });
 
     //TO DO - also delete ids and names and files associated with user
 
-    return res
-      .status(200)
-      .send(_.pick(user, ["_id", "name", "email", "permissions"]));
+    return res.status(200).send(payloadToReturn);
   }
 );
 
@@ -138,9 +120,7 @@ router.put(
     //Saving changes
     await user.save();
 
-    let payloadToReturn = _.pick(user, ["_id", "name", "email", "permissions"]);
-
-    if (exists(passwordToChange)) payloadToReturn.password = passwordToChange;
+    let payloadToReturn = user.getPayload();
 
     return res.status(200).send(payloadToReturn);
   }

@@ -30,12 +30,7 @@ router.post("/", async (req, res) => {
     return res.status(400).send("Invalid email or password");
 
   //Creating payload to return
-  let payloadToReturn = _.pick(user, ["_id", "name", "email", "permissions"]);
-
-  //Assigning models to payload to return
-  let userModelLists = await user.getModelLists();
-  payloadToReturn.modelIds = userModelLists.ids;
-  payloadToReturn.modelNames = userModelLists.names;
+  let payloadToReturn = await user.getPayload();
 
   //assigning jwt to payload to return
   let jwt = await user.generateJWT();

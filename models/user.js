@@ -125,5 +125,21 @@ userSchema.methods.getModelLists = async function() {
   };
 };
 
+//Method for generating payload of user
+userSchema.methods.getPayload = async function() {
+  let { ids, names } = await this.getModelLists();
+
+  let userPayload = {
+    _id: this._id.toString(),
+    email: this.email,
+    name: this.name,
+    permissions: this.permissions,
+    modelNames: names,
+    modelIds: ids
+  };
+
+  return userPayload;
+};
+
 exports.User = mongoose.model("User", userSchema);
 exports.validateUser = validateUser;
