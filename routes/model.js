@@ -11,6 +11,31 @@ const isAdmin = require("../middleware/auth/isAdmin");
 const isUser = require("../middleware/auth/isUser");
 const _ = require("lodash");
 
+router.get("/:userId", [hasUser, isAdmin], async (req, res) => {
+  //Returning if userId is not defined or invalid
+  if (!mongoose.Types.ObjectId.isValid(req.params.userId))
+    return res.status("404").send("Invalid user id...");
+
+  //Check if user exists
+  let user = await User.findOne({ _id: req.params.userId });
+  if (!exists(user)) return res.status("404").send("User not found...");
+
+  //Finding model based on user id
+  let models = await Model.find({
+    user: req.params.userId
+  });
+
+  //Returning all models payload
+  let payloadToReturn = [];
+
+  for (let model of models) {
+    let payload = await model.getPayload();
+    payloadToReturn.push(payload);
+  }
+
+  return res.status(200).send(payloadToReturn);
+});
+
 router.get(
   "/:userId/:id",
   [hasUser, isAdmin, validateObjectId],
