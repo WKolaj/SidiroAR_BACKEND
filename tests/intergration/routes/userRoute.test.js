@@ -24,7 +24,7 @@ let sendMailMockFunction = jest.fn(
 );
 EmailService.sendMail = sendMailMockFunction;
 
-describe("/api/users", () => {
+describe("/api/user", () => {
   let uselessUser;
   let testAdmin;
   let testUser;
@@ -88,12 +88,12 @@ describe("/api/users", () => {
     let exec = async () => {
       if (exists(jwt))
         return request(server)
-          .post("/api/users")
+          .post("/api/user")
           .set(config.get("tokenHeader"), jwt)
           .send(requestPayload);
       else
         return request(server)
-          .post("/api/users")
+          .post("/api/user")
           .send(requestPayload);
     };
 
@@ -176,7 +176,7 @@ describe("/api/users", () => {
       };
 
       let response = await request(server)
-        .post("/api/users")
+        .post("/api/user")
         .set(config.get("tokenHeader"), jwt)
         .send(requestPayload);
 
@@ -1472,12 +1472,12 @@ describe("/api/users", () => {
     let exec = async () => {
       if (exists(jwt))
         return request(server)
-          .get("/api/users")
+          .get("/api/user")
           .set(config.get("tokenHeader"), jwt)
           .send();
       else
         return request(server)
-          .get("/api/users")
+          .get("/api/user")
           .send();
     };
 
@@ -1816,12 +1816,12 @@ describe("/api/users", () => {
     let exec = async () => {
       if (exists(jwt))
         return request(server)
-          .get(`/api/users/${id}`)
+          .get(`/api/user/${id}`)
           .set(config.get("tokenHeader"), jwt)
           .send();
       else
         return request(server)
-          .get(`/api/users/${id}`)
+          .get(`/api/user/${id}`)
           .send();
     };
 
@@ -2024,12 +2024,12 @@ describe("/api/users", () => {
     let exec = async () => {
       if (exists(jwt))
         return request(server)
-          .delete(`/api/users/${id}`)
+          .delete(`/api/user/${id}`)
           .set(config.get("tokenHeader"), jwt)
           .send();
       else
         return request(server)
-          .delete(`/api/users/${id}`)
+          .delete(`/api/user/${id}`)
           .send();
     };
 
@@ -2635,12 +2635,12 @@ describe("/api/users", () => {
     let exec = async () => {
       if (exists(jwt))
         return request(server)
-          .put(`/api/users/${id}`)
+          .put(`/api/user/${id}`)
           .set(config.get("tokenHeader"), jwt)
           .send(requestPayload);
       else
         return request(server)
-          .put(`/api/users/${id}`)
+          .put(`/api/user/${id}`)
           .send(requestPayload);
     };
 
@@ -4185,12 +4185,12 @@ describe("/api/users", () => {
     let exec = async () => {
       if (exists(jwt))
         return request(server)
-          .get(`/api/users/me`)
+          .get(`/api/user/me`)
           .set(config.get("tokenHeader"), jwt)
           .send();
       else
         return request(server)
-          .get(`/api/users/me`)
+          .get(`/api/user/me`)
           .send();
     };
 
@@ -4374,12 +4374,12 @@ describe("/api/users", () => {
     let exec = async () => {
       if (exists(jwt))
         return request(server)
-          .put(`/api/users/me`)
+          .put(`/api/user/me`)
           .set(config.get("tokenHeader"), jwt)
           .send(requestPayload);
       else
         return request(server)
-          .put(`/api/users/me`)
+          .put(`/api/user/me`)
           .send(requestPayload);
     };
 
