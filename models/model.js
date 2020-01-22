@@ -8,7 +8,7 @@ const modelSchema = new mongoose.Schema({
     type: String,
     required: true,
     minlength: 3,
-    maxlength: 50
+    maxlength: 100
   },
   user: {
     type: mongoose.Schema.Types.ObjectId,
@@ -17,13 +17,14 @@ const modelSchema = new mongoose.Schema({
   }
 });
 
+//user has to be optional - it is given as params in endpoint
 function validateModel(model) {
   const schema = {
     name: Joi.string()
       .min(3)
-      .max(50)
+      .max(100)
       .required(),
-    user: Joi.objectId().required()
+    user: Joi.objectId()
   };
 
   return Joi.validate(model, schema);

@@ -57,4 +57,59 @@ router.get(
   }
 );
 
+router.post(
+  "/:userId",
+  [hasUser, isAdmin, validate(validateModel)],
+  async (req, res) => {
+    //Returning if userId is not defined or invalid
+    if (!mongoose.Types.ObjectId.isValid(req.params.userId))
+      return res.status("404").send("Invalid user id...");
+
+    //Check if user exists
+    let user = await User.findOne({ _id: req.params.userId });
+    if (!exists(user)) return res.status("404").send("User not found...");
+
+    //Generating new model
+    let model = new Model({ name: req.body.name, user: req.params.userId });
+
+    await model.save();
+
+    //Generating payload to return
+    let payloadToReturn = await model.getPayload();
+
+    return res.status(200).send(payloadToReturn);
+  }
+);
+
+router.delete(
+  "/:userId/:id",
+  [hasUser, isAdmin, validateObjectId],
+  async (req, res) => {
+    //Returning if userId is not defined or invalid
+    if (!mongoose.Types.ObjectId.isValid(req.params.userId))
+      return res.status("404").send("Invalid user id...");
+
+    //Check if user exists
+    let user = await User.findOne({ _id: req.params.userId });
+    if (!exists(user)) return res.status("404").send("User not found...");
+
+    //Finding model to delete
+    let model = await Model.findOne({
+      _id: req.params.id,
+      user: req.params.userId
+    });
+
+    //Returning if model not found
+    if (!exists(model)) return res.status("404").send("Model not found...");
+
+    //Generating payload to return of deleted model
+    let payloadToReturn = await model.getPayload();
+
+    //removing model
+    await Model.deleteOne({ _id: req.params.id });
+
+    return res.status(200).send(payloadToReturn);
+  }
+);
+
 module.exports = router;
