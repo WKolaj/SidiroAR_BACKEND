@@ -112,4 +112,44 @@ router.delete(
   }
 );
 
+router.put(
+  "/:userId/:id",
+  [hasUser, isAdmin, validateObjectId, validate(validateModel)],
+  async (req, res) => {
+    //Returning if userId is not defined or invalid
+    if (!mongoose.Types.ObjectId.isValid(req.params.userId))
+      return res.status("404").send("Invalid user id...");
+
+    //Check if user exists
+    let user = await User.findOne({ _id: req.params.userId });
+    if (!exists(user)) return res.status("404").send("User not found...");
+
+    //Finding model to edit
+    let model = await Model.findOne({
+      _id: req.params.id,
+      user: req.params.userId
+    });
+
+    //Returning if model not found
+    if (!exists(model)) return res.status("404").send("Model not found...");
+
+    //If user exists in body and is different than user of model - return 400
+    if (exists(req.body.user) && req.body.user !== model.user.toString())
+      return res.status("400").send("Model of user cannot be changed");
+
+    //Editing model
+
+    //Editing name if exists
+    if (exists(req.body.name)) model.name = req.body.name;
+
+    //saving edited parameters to database
+    await model.save();
+
+    //Generating payload to return of deleted model
+    let payloadToReturn = await model.getPayload();
+
+    return res.status(200).send(payloadToReturn);
+  }
+);
+
 module.exports = router;

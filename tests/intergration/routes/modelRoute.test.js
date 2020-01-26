@@ -2109,4 +2109,1006 @@ describe("/api/models", () => {
       //#endregion CHECK_DATABASE
     });
   });
+
+  describe("PUT/:userId/:id", () => {
+    //jwt used to authenticate when posting
+    let jwt;
+    let userId;
+    let modelId;
+    let requestPayload;
+
+    beforeEach(async () => {
+      jwt = await testAdmin.generateJWT();
+      userId = testUser._id;
+      modelId = modelsOfTestUser[1]._id;
+      requestPayload = {
+        name: "new test model"
+      };
+    });
+
+    let exec = async () => {
+      if (exists(jwt))
+        return request(server)
+          .put(`/api/model/${userId}/${modelId}`)
+          .set(config.get("tokenHeader"), jwt)
+          .send(requestPayload);
+      else
+        return request(server)
+          .put(`/api/model/${userId}/${modelId}`)
+          .send(requestPayload);
+    };
+
+    it("should return 200, edit model and return it - if user and model exist", async () => {
+      let response = await exec();
+
+      //#region CHECK_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(200);
+
+      let expectedPayload = {
+        _id: modelsOfTestUser[1]._id.toString(),
+        name: requestPayload.name,
+        user: userId.toString()
+      };
+
+      expect(response.body).toEqual(expectedPayload);
+
+      //#endregion CHECK_RESPONSE
+
+      //#region CHECK_DATABASE
+
+      //Checking all models associated with this user - not only edited one
+
+      //Generting and sorting  model payload from database
+      let modelsFromDatabasePayload = [];
+
+      let modelsFromDatabase = await Model.find({ user: userId });
+
+      for (let model of modelsFromDatabase) {
+        modelsFromDatabasePayload.push(await model.getPayload());
+      }
+
+      modelsFromDatabase = _.sortBy(modelsFromDatabase, "_id", "asc");
+
+      //Generting and sorting expected model payload
+      let expectedModelsPayload = [];
+
+      for (let model of modelsOfTestUser) {
+        //Adding normal model to expected models
+        //if it is a edited model - adding edited parameters
+        if (model === modelsOfTestUser[1]) {
+          expectedModelsPayload.push({
+            _id: modelsOfTestUser[1]._id.toString(),
+            name: requestPayload.name,
+            user: userId.toString()
+          });
+        } else {
+          expectedModelsPayload.push(await model.getPayload());
+        }
+      }
+
+      expectedModelsPayload = _.sortBy(expectedModelsPayload, "_id", "asc");
+
+      //Both collection should be equal
+      expect(modelsFromDatabasePayload).toEqual(expectedModelsPayload);
+
+      //#endregion CHECK_DATABASE
+    });
+
+    it("should return 400 and not edit model  - if name is undefined", async () => {
+      delete requestPayload.name;
+      let response = await exec();
+
+      //#region CHECK_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(400);
+      expect(response.text).toContain('"name" is required');
+
+      //#endregion CHECK_RESPONSE
+
+      //#region CHECK_DATABASE
+
+      //Checking all models associated with this user - not only edited one
+
+      //Generting and sorting  model payload from database
+      let modelsFromDatabasePayload = [];
+
+      let modelsFromDatabase = await Model.find({ user: userId });
+
+      for (let model of modelsFromDatabase) {
+        modelsFromDatabasePayload.push(await model.getPayload());
+      }
+
+      modelsFromDatabase = _.sortBy(modelsFromDatabase, "_id", "asc");
+
+      //Generting and sorting expected model payload
+      let expectedModelsPayload = [];
+
+      for (let model of modelsOfTestUser) {
+        expectedModelsPayload.push(await model.getPayload());
+      }
+
+      expectedModelsPayload = _.sortBy(expectedModelsPayload, "_id", "asc");
+
+      //Both collection should be equal
+      expect(modelsFromDatabasePayload).toEqual(expectedModelsPayload);
+
+      //#endregion CHECK_DATABASE
+    });
+
+    it("should return 400 and not edit model  - if name is null", async () => {
+      requestPayload.name = null;
+      let response = await exec();
+
+      //#region CHECK_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(400);
+      expect(response.text).toContain('"name" must be a string');
+
+      //#endregion CHECK_RESPONSE
+
+      //#region CHECK_DATABASE
+
+      //Checking all models associated with this user - not only edited one
+
+      //Generting and sorting  model payload from database
+      let modelsFromDatabasePayload = [];
+
+      let modelsFromDatabase = await Model.find({ user: userId });
+
+      for (let model of modelsFromDatabase) {
+        modelsFromDatabasePayload.push(await model.getPayload());
+      }
+
+      modelsFromDatabase = _.sortBy(modelsFromDatabase, "_id", "asc");
+
+      //Generting and sorting expected model payload
+      let expectedModelsPayload = [];
+
+      for (let model of modelsOfTestUser) {
+        expectedModelsPayload.push(await model.getPayload());
+      }
+
+      expectedModelsPayload = _.sortBy(expectedModelsPayload, "_id", "asc");
+
+      //Both collection should be equal
+      expect(modelsFromDatabasePayload).toEqual(expectedModelsPayload);
+
+      //#endregion CHECK_DATABASE
+    });
+
+    it("should return 400 and not edit model  - if name is empty", async () => {
+      requestPayload.name = "";
+      let response = await exec();
+
+      //#region CHECK_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(400);
+      expect(response.text).toContain('"name" is not allowed to be empty');
+
+      //#endregion CHECK_RESPONSE
+
+      //#region CHECK_DATABASE
+
+      //Checking all models associated with this user - not only edited one
+
+      //Generting and sorting  model payload from database
+      let modelsFromDatabasePayload = [];
+
+      let modelsFromDatabase = await Model.find({ user: userId });
+
+      for (let model of modelsFromDatabase) {
+        modelsFromDatabasePayload.push(await model.getPayload());
+      }
+
+      modelsFromDatabase = _.sortBy(modelsFromDatabase, "_id", "asc");
+
+      //Generting and sorting expected model payload
+      let expectedModelsPayload = [];
+
+      for (let model of modelsOfTestUser) {
+        expectedModelsPayload.push(await model.getPayload());
+      }
+
+      expectedModelsPayload = _.sortBy(expectedModelsPayload, "_id", "asc");
+
+      //Both collection should be equal
+      expect(modelsFromDatabasePayload).toEqual(expectedModelsPayload);
+
+      //#endregion CHECK_DATABASE
+    });
+
+    it("should return 400 and not edit model  - if name is shorter than 3 signs", async () => {
+      requestPayload.name = new Array(3).join("n");
+      let response = await exec();
+
+      //#region CHECK_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(400);
+      expect(response.text).toContain(
+        '"name" length must be at least 3 characters long'
+      );
+
+      //#endregion CHECK_RESPONSE
+
+      //#region CHECK_DATABASE
+
+      //Checking all models associated with this user - not only edited one
+
+      //Generting and sorting  model payload from database
+      let modelsFromDatabasePayload = [];
+
+      let modelsFromDatabase = await Model.find({ user: userId });
+
+      for (let model of modelsFromDatabase) {
+        modelsFromDatabasePayload.push(await model.getPayload());
+      }
+
+      modelsFromDatabase = _.sortBy(modelsFromDatabase, "_id", "asc");
+
+      //Generting and sorting expected model payload
+      let expectedModelsPayload = [];
+
+      for (let model of modelsOfTestUser) {
+        expectedModelsPayload.push(await model.getPayload());
+      }
+
+      expectedModelsPayload = _.sortBy(expectedModelsPayload, "_id", "asc");
+
+      //Both collection should be equal
+      expect(modelsFromDatabasePayload).toEqual(expectedModelsPayload);
+
+      //#endregion CHECK_DATABASE
+    });
+
+    it("should return 400 and not edit model  - if name is shorter than 100 signs", async () => {
+      requestPayload.name = new Array(102).join("n");
+      let response = await exec();
+
+      //#region CHECK_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(400);
+      expect(response.text).toContain(
+        '"name" length must be less than or equal to 100 characters long'
+      );
+
+      //#endregion CHECK_RESPONSE
+
+      //#region CHECK_DATABASE
+
+      //Checking all models associated with this user - not only edited one
+
+      //Generting and sorting  model payload from database
+      let modelsFromDatabasePayload = [];
+
+      let modelsFromDatabase = await Model.find({ user: userId });
+
+      for (let model of modelsFromDatabase) {
+        modelsFromDatabasePayload.push(await model.getPayload());
+      }
+
+      modelsFromDatabase = _.sortBy(modelsFromDatabase, "_id", "asc");
+
+      //Generting and sorting expected model payload
+      let expectedModelsPayload = [];
+
+      for (let model of modelsOfTestUser) {
+        expectedModelsPayload.push(await model.getPayload());
+      }
+
+      expectedModelsPayload = _.sortBy(expectedModelsPayload, "_id", "asc");
+
+      //Both collection should be equal
+      expect(modelsFromDatabasePayload).toEqual(expectedModelsPayload);
+
+      //#endregion CHECK_DATABASE
+    });
+
+    it("should return 200 and edit model  - if name is exactly 3 signs", async () => {
+      requestPayload.name = new Array(4).join("n");
+      let response = await exec();
+
+      //#region CHECK_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(200);
+
+      let expectedPayload = {
+        _id: modelsOfTestUser[1]._id.toString(),
+        name: requestPayload.name,
+        user: userId.toString()
+      };
+
+      expect(response.body).toEqual(expectedPayload);
+
+      //#endregion CHECK_RESPONSE
+
+      //#region CHECK_DATABASE
+
+      //Checking all models associated with this user - not only edited one
+
+      //Generting and sorting  model payload from database
+      let modelsFromDatabasePayload = [];
+
+      let modelsFromDatabase = await Model.find({ user: userId });
+
+      for (let model of modelsFromDatabase) {
+        modelsFromDatabasePayload.push(await model.getPayload());
+      }
+
+      modelsFromDatabase = _.sortBy(modelsFromDatabase, "_id", "asc");
+
+      //Generting and sorting expected model payload
+      let expectedModelsPayload = [];
+
+      for (let model of modelsOfTestUser) {
+        //Adding normal model to expected models
+        //if it is a edited model - adding edited parameters
+        if (model === modelsOfTestUser[1]) {
+          expectedModelsPayload.push({
+            _id: modelsOfTestUser[1]._id.toString(),
+            name: requestPayload.name,
+            user: userId.toString()
+          });
+        } else {
+          expectedModelsPayload.push(await model.getPayload());
+        }
+      }
+
+      expectedModelsPayload = _.sortBy(expectedModelsPayload, "_id", "asc");
+
+      //Both collection should be equal
+      expect(modelsFromDatabasePayload).toEqual(expectedModelsPayload);
+
+      //#endregion CHECK_DATABASE
+    });
+
+    it("should return 200 and edit model  - if name is exactly 100 signs", async () => {
+      requestPayload.name = new Array(101).join("n");
+      let response = await exec();
+
+      //#region CHECK_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(200);
+
+      let expectedPayload = {
+        _id: modelsOfTestUser[1]._id.toString(),
+        name: requestPayload.name,
+        user: userId.toString()
+      };
+
+      expect(response.body).toEqual(expectedPayload);
+
+      //#endregion CHECK_RESPONSE
+
+      //#region CHECK_DATABASE
+
+      //Checking all models associated with this user - not only edited one
+
+      //Generting and sorting  model payload from database
+      let modelsFromDatabasePayload = [];
+
+      let modelsFromDatabase = await Model.find({ user: userId });
+
+      for (let model of modelsFromDatabase) {
+        modelsFromDatabasePayload.push(await model.getPayload());
+      }
+
+      modelsFromDatabase = _.sortBy(modelsFromDatabase, "_id", "asc");
+
+      //Generting and sorting expected model payload
+      let expectedModelsPayload = [];
+
+      for (let model of modelsOfTestUser) {
+        //Adding normal model to expected models
+        //if it is a edited model - adding edited parameters
+        if (model === modelsOfTestUser[1]) {
+          expectedModelsPayload.push({
+            _id: modelsOfTestUser[1]._id.toString(),
+            name: requestPayload.name,
+            user: userId.toString()
+          });
+        } else {
+          expectedModelsPayload.push(await model.getPayload());
+        }
+      }
+
+      expectedModelsPayload = _.sortBy(expectedModelsPayload, "_id", "asc");
+
+      //Both collection should be equal
+      expect(modelsFromDatabasePayload).toEqual(expectedModelsPayload);
+
+      //#endregion CHECK_DATABASE
+    });
+
+    it("should return 200 and edit model  - if user is defined in payload and it is exactly the user of model", async () => {
+      requestPayload.user = modelsOfTestUser[1].user;
+      let response = await exec();
+
+      //#region CHECK_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(200);
+
+      let expectedPayload = {
+        _id: modelsOfTestUser[1]._id.toString(),
+        name: requestPayload.name,
+        user: userId.toString()
+      };
+
+      expect(response.body).toEqual(expectedPayload);
+
+      //#endregion CHECK_RESPONSE
+
+      //#region CHECK_DATABASE
+
+      //Checking all models associated with this user - not only edited one
+
+      //Generting and sorting  model payload from database
+      let modelsFromDatabasePayload = [];
+
+      let modelsFromDatabase = await Model.find({ user: userId });
+
+      for (let model of modelsFromDatabase) {
+        modelsFromDatabasePayload.push(await model.getPayload());
+      }
+
+      modelsFromDatabase = _.sortBy(modelsFromDatabase, "_id", "asc");
+
+      //Generting and sorting expected model payload
+      let expectedModelsPayload = [];
+
+      for (let model of modelsOfTestUser) {
+        //Adding normal model to expected models
+        //if it is a edited model - adding edited parameters
+        if (model === modelsOfTestUser[1]) {
+          expectedModelsPayload.push({
+            _id: modelsOfTestUser[1]._id.toString(),
+            name: requestPayload.name,
+            user: userId.toString()
+          });
+        } else {
+          expectedModelsPayload.push(await model.getPayload());
+        }
+      }
+
+      expectedModelsPayload = _.sortBy(expectedModelsPayload, "_id", "asc");
+
+      //Both collection should be equal
+      expect(modelsFromDatabasePayload).toEqual(expectedModelsPayload);
+
+      //#endregion CHECK_DATABASE
+    });
+
+    it("should return 400 and not edit model  - if user is defined in payload but it is not the user of model", async () => {
+      requestPayload.user = testUserAndAdmin._id;
+      let response = await exec();
+
+      //#region CHECK_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(400);
+      expect(response.text).toEqual("Model of user cannot be changed");
+
+      //#endregion CHECK_RESPONSE
+
+      //#region CHECK_DATABASE
+
+      //Checking all models associated with this user - not only edited one
+
+      //Generting and sorting  model payload from database
+      let modelsFromDatabasePayload = [];
+
+      let modelsFromDatabase = await Model.find({ user: userId });
+
+      for (let model of modelsFromDatabase) {
+        modelsFromDatabasePayload.push(await model.getPayload());
+      }
+
+      modelsFromDatabase = _.sortBy(modelsFromDatabase, "_id", "asc");
+
+      //Generting and sorting expected model payload
+      let expectedModelsPayload = [];
+
+      for (let model of modelsOfTestUser) {
+        expectedModelsPayload.push(await model.getPayload());
+      }
+
+      expectedModelsPayload = _.sortBy(expectedModelsPayload, "_id", "asc");
+
+      //Both collection should be equal
+      expect(modelsFromDatabasePayload).toEqual(expectedModelsPayload);
+
+      //#endregion CHECK_DATABASE
+    });
+
+    it("should return 404 - if model doesnt exist", async () => {
+      modelId = mongoose.Types.ObjectId();
+
+      let response = await exec();
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(404);
+      expect(response.text).toEqual("Model not found...");
+
+      //#region CHECK_DATABASE
+
+      //Checking all models associated with this user - not only edited one
+
+      //Generting and sorting  model payload from database
+      let modelsFromDatabasePayload = [];
+
+      let modelsFromDatabase = await Model.find({ user: userId });
+
+      for (let model of modelsFromDatabase) {
+        modelsFromDatabasePayload.push(await model.getPayload());
+      }
+
+      modelsFromDatabase = _.sortBy(modelsFromDatabase, "_id", "asc");
+
+      //Generting and sorting expected model payload
+      let expectedModelsPayload = [];
+
+      for (let model of modelsOfTestUser) {
+        expectedModelsPayload.push(await model.getPayload());
+      }
+
+      expectedModelsPayload = _.sortBy(expectedModelsPayload, "_id", "asc");
+
+      //Both collection should be equal
+      expect(modelsFromDatabasePayload).toEqual(expectedModelsPayload);
+
+      //#endregion CHECK_DATABASE
+    });
+
+    it("should return 404 - if user doesnt exist", async () => {
+      userId = mongoose.Types.ObjectId();
+
+      let response = await exec();
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(404);
+      expect(response.text).toEqual("User not found...");
+
+      //#region CHECK_DATABASE
+
+      //Checking all models associated with this user - not only edited one
+
+      //Generting and sorting  model payload from database
+      let modelsFromDatabasePayload = [];
+
+      let modelsFromDatabase = await Model.find({ user: testUser._id });
+
+      for (let model of modelsFromDatabase) {
+        modelsFromDatabasePayload.push(await model.getPayload());
+      }
+
+      modelsFromDatabase = _.sortBy(modelsFromDatabase, "_id", "asc");
+
+      //Generting and sorting expected model payload
+      let expectedModelsPayload = [];
+
+      for (let model of modelsOfTestUser) {
+        expectedModelsPayload.push(await model.getPayload());
+      }
+
+      expectedModelsPayload = _.sortBy(expectedModelsPayload, "_id", "asc");
+
+      //Both collection should be equal
+      expect(modelsFromDatabasePayload).toEqual(expectedModelsPayload);
+
+      //#endregion CHECK_DATABASE
+    });
+
+    it("should return 404 - if user and model dont exist", async () => {
+      userId = mongoose.Types.ObjectId();
+      modelId = mongoose.Types.ObjectId();
+
+      let response = await exec();
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(404);
+      expect(response.text).toEqual("User not found...");
+
+      //#region CHECK_DATABASE
+
+      //Checking all models associated with this user - not only edited one
+
+      //Generting and sorting  model payload from database
+      let modelsFromDatabasePayload = [];
+
+      let modelsFromDatabase = await Model.find({ user: testUser._id });
+
+      for (let model of modelsFromDatabase) {
+        modelsFromDatabasePayload.push(await model.getPayload());
+      }
+
+      modelsFromDatabase = _.sortBy(modelsFromDatabase, "_id", "asc");
+
+      //Generting and sorting expected model payload
+      let expectedModelsPayload = [];
+
+      for (let model of modelsOfTestUser) {
+        expectedModelsPayload.push(await model.getPayload());
+      }
+
+      expectedModelsPayload = _.sortBy(expectedModelsPayload, "_id", "asc");
+
+      //Both collection should be equal
+      expect(modelsFromDatabasePayload).toEqual(expectedModelsPayload);
+
+      //#endregion CHECK_DATABASE
+    });
+
+    it("should return 404 - if user Id is invalid", async () => {
+      userId = "abcd";
+
+      let response = await exec();
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(404);
+      expect(response.text).toEqual("Invalid user id...");
+
+      //#region CHECK_DATABASE
+
+      //Checking all models associated with this user - not only edited one
+
+      //Generting and sorting  model payload from database
+      let modelsFromDatabasePayload = [];
+
+      let modelsFromDatabase = await Model.find({ user: testUser._id });
+
+      for (let model of modelsFromDatabase) {
+        modelsFromDatabasePayload.push(await model.getPayload());
+      }
+
+      modelsFromDatabase = _.sortBy(modelsFromDatabase, "_id", "asc");
+
+      //Generting and sorting expected model payload
+      let expectedModelsPayload = [];
+
+      for (let model of modelsOfTestUser) {
+        expectedModelsPayload.push(await model.getPayload());
+      }
+
+      expectedModelsPayload = _.sortBy(expectedModelsPayload, "_id", "asc");
+
+      //Both collection should be equal
+      expect(modelsFromDatabasePayload).toEqual(expectedModelsPayload);
+
+      //#endregion CHECK_DATABASE
+    });
+
+    it("should return 404 - if model Id is invalid", async () => {
+      modelId = "abcd";
+
+      let response = await exec();
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(404);
+      expect(response.text).toEqual("Invalid id...");
+
+      //#region CHECK_DATABASE
+
+      //Checking all models associated with this user - not only edited one
+
+      //Generting and sorting  model payload from database
+      let modelsFromDatabasePayload = [];
+
+      let modelsFromDatabase = await Model.find({ user: userId });
+
+      for (let model of modelsFromDatabase) {
+        modelsFromDatabasePayload.push(await model.getPayload());
+      }
+
+      modelsFromDatabase = _.sortBy(modelsFromDatabase, "_id", "asc");
+
+      //Generting and sorting expected model payload
+      let expectedModelsPayload = [];
+
+      for (let model of modelsOfTestUser) {
+        expectedModelsPayload.push(await model.getPayload());
+      }
+
+      expectedModelsPayload = _.sortBy(expectedModelsPayload, "_id", "asc");
+
+      //Both collection should be equal
+      expect(modelsFromDatabasePayload).toEqual(expectedModelsPayload);
+
+      //#endregion CHECK_DATABASE
+    });
+
+    it("should not edit model and return 401 if jwt has not been given", async () => {
+      jwt = undefined;
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(401);
+      expect(response.text).toBeDefined();
+      expect(response.text).toContain("Access denied. No token provided");
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECK_DATABASE
+
+      //Checking all models associated with this user - not only edited one
+
+      //Generting and sorting  model payload from database
+      let modelsFromDatabasePayload = [];
+
+      let modelsFromDatabase = await Model.find({ user: userId });
+
+      for (let model of modelsFromDatabase) {
+        modelsFromDatabasePayload.push(await model.getPayload());
+      }
+
+      modelsFromDatabase = _.sortBy(modelsFromDatabase, "_id", "asc");
+
+      //Generting and sorting expected model payload
+      let expectedModelsPayload = [];
+
+      for (let model of modelsOfTestUser) {
+        expectedModelsPayload.push(await model.getPayload());
+      }
+
+      expectedModelsPayload = _.sortBy(expectedModelsPayload, "_id", "asc");
+
+      //Both collection should be equal
+      expect(modelsFromDatabasePayload).toEqual(expectedModelsPayload);
+
+      //#endregion CHECK_DATABASE
+    });
+
+    it("should not edit model and return 403 if jwt of user has been given", async () => {
+      jwt = await testUser.generateJWT();
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(403);
+      expect(response.text).toBeDefined();
+      expect(response.text).toContain("Access forbidden");
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECK_DATABASE
+
+      //Checking all models associated with this user - not only edited one
+
+      //Generting and sorting  model payload from database
+      let modelsFromDatabasePayload = [];
+
+      let modelsFromDatabase = await Model.find({ user: userId });
+
+      for (let model of modelsFromDatabase) {
+        modelsFromDatabasePayload.push(await model.getPayload());
+      }
+
+      modelsFromDatabase = _.sortBy(modelsFromDatabase, "_id", "asc");
+
+      //Generting and sorting expected model payload
+      let expectedModelsPayload = [];
+
+      for (let model of modelsOfTestUser) {
+        expectedModelsPayload.push(await model.getPayload());
+      }
+
+      expectedModelsPayload = _.sortBy(expectedModelsPayload, "_id", "asc");
+
+      //Both collection should be equal
+      expect(modelsFromDatabasePayload).toEqual(expectedModelsPayload);
+
+      //#endregion CHECK_DATABASE
+    });
+
+    it("should not edit model and return 403 if jwt of useless (with permissions set to 0) user has been given", async () => {
+      jwt = await uselessUser.generateJWT();
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(403);
+      expect(response.text).toBeDefined();
+      expect(response.text).toContain("Access forbidden");
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECK_DATABASE
+
+      //Checking all models associated with this user - not only edited one
+
+      //Generting and sorting  model payload from database
+      let modelsFromDatabasePayload = [];
+
+      let modelsFromDatabase = await Model.find({ user: userId });
+
+      for (let model of modelsFromDatabase) {
+        modelsFromDatabasePayload.push(await model.getPayload());
+      }
+
+      modelsFromDatabase = _.sortBy(modelsFromDatabase, "_id", "asc");
+
+      //Generting and sorting expected model payload
+      let expectedModelsPayload = [];
+
+      for (let model of modelsOfTestUser) {
+        expectedModelsPayload.push(await model.getPayload());
+      }
+
+      expectedModelsPayload = _.sortBy(expectedModelsPayload, "_id", "asc");
+
+      //Both collection should be equal
+      expect(modelsFromDatabasePayload).toEqual(expectedModelsPayload);
+
+      //#endregion CHECK_DATABASE
+    });
+
+    it("should edit model and return 200 with user payloadif jwt of adminAndUser user is given", async () => {
+      jwt = await testUserAndAdmin.generateJWT();
+      let response = await exec();
+
+      //#region CHECK_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(200);
+
+      let expectedPayload = {
+        _id: modelsOfTestUser[1]._id.toString(),
+        name: requestPayload.name,
+        user: userId.toString()
+      };
+
+      expect(response.body).toEqual(expectedPayload);
+
+      //#endregion CHECK_RESPONSE
+
+      //#region CHECK_DATABASE
+
+      //Checking all models associated with this user - not only edited one
+
+      //Generting and sorting  model payload from database
+      let modelsFromDatabasePayload = [];
+
+      let modelsFromDatabase = await Model.find({ user: userId });
+
+      for (let model of modelsFromDatabase) {
+        modelsFromDatabasePayload.push(await model.getPayload());
+      }
+
+      modelsFromDatabase = _.sortBy(modelsFromDatabase, "_id", "asc");
+
+      //Generting and sorting expected model payload
+      let expectedModelsPayload = [];
+
+      for (let model of modelsOfTestUser) {
+        //Adding normal model to expected models
+        //if it is a edited model - adding edited parameters
+        if (model === modelsOfTestUser[1]) {
+          expectedModelsPayload.push({
+            _id: modelsOfTestUser[1]._id.toString(),
+            name: requestPayload.name,
+            user: userId.toString()
+          });
+        } else {
+          expectedModelsPayload.push(await model.getPayload());
+        }
+      }
+
+      expectedModelsPayload = _.sortBy(expectedModelsPayload, "_id", "asc");
+
+      //Both collection should be equal
+      expect(modelsFromDatabasePayload).toEqual(expectedModelsPayload);
+
+      //#endregion CHECK_DATABASE
+    });
+
+    it("should not edit model and return 400 if invalid jwt has been given", async () => {
+      jwt = "abcd1234";
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(400);
+      expect(response.text).toBeDefined();
+      expect(response.text).toContain("Invalid token provided");
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECK_DATABASE
+
+      //Checking all models associated with this user - not only edited one
+
+      //Generting and sorting  model payload from database
+      let modelsFromDatabasePayload = [];
+
+      let modelsFromDatabase = await Model.find({ user: userId });
+
+      for (let model of modelsFromDatabase) {
+        modelsFromDatabasePayload.push(await model.getPayload());
+      }
+
+      modelsFromDatabase = _.sortBy(modelsFromDatabase, "_id", "asc");
+
+      //Generting and sorting expected model payload
+      let expectedModelsPayload = [];
+
+      for (let model of modelsOfTestUser) {
+        expectedModelsPayload.push(await model.getPayload());
+      }
+
+      expectedModelsPayload = _.sortBy(expectedModelsPayload, "_id", "asc");
+
+      //Both collection should be equal
+      expect(modelsFromDatabasePayload).toEqual(expectedModelsPayload);
+
+      //#endregion CHECK_DATABASE
+    });
+
+    it("should not edit model and return 400 if jwt from different private key was provided", async () => {
+      let fakeUserPayload = {
+        _id: testAdmin._id,
+        email: testAdmin.email,
+        name: testAdmin.name,
+        permissions: testAdmin.permissions
+      };
+
+      jwt = await jsonWebToken.sign(fakeUserPayload, "differentTestPrivateKey");
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(400);
+      expect(response.text).toBeDefined();
+      expect(response.text).toContain("Invalid token provided");
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECK_DATABASE
+
+      //Checking all models associated with this user - not only edited one
+
+      //Generting and sorting  model payload from database
+      let modelsFromDatabasePayload = [];
+
+      let modelsFromDatabase = await Model.find({ user: userId });
+
+      for (let model of modelsFromDatabase) {
+        modelsFromDatabasePayload.push(await model.getPayload());
+      }
+
+      modelsFromDatabase = _.sortBy(modelsFromDatabase, "_id", "asc");
+
+      //Generting and sorting expected model payload
+      let expectedModelsPayload = [];
+
+      for (let model of modelsOfTestUser) {
+        expectedModelsPayload.push(await model.getPayload());
+      }
+
+      expectedModelsPayload = _.sortBy(expectedModelsPayload, "_id", "asc");
+
+      //Both collection should be equal
+      expect(modelsFromDatabasePayload).toEqual(expectedModelsPayload);
+
+      //#endregion CHECK_DATABASE
+    });
+  });
 });
