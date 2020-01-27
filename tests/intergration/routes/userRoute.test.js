@@ -24,7 +24,7 @@ let sendMailMockFunction = jest.fn(
 );
 EmailService.sendMail = sendMailMockFunction;
 
-describe("/api/user", () => {
+describe("/sidiroar/api/user", () => {
   let uselessUser;
   let testAdmin;
   let testUser;
@@ -88,12 +88,12 @@ describe("/api/user", () => {
     let exec = async () => {
       if (exists(jwt))
         return request(server)
-          .post("/api/user")
+          .post("/sidiroar/api/user")
           .set(config.get("tokenHeader"), jwt)
           .send(requestPayload);
       else
         return request(server)
-          .post("/api/user")
+          .post("/sidiroar/api/user")
           .send(requestPayload);
     };
 
@@ -176,7 +176,7 @@ describe("/api/user", () => {
       };
 
       let response = await request(server)
-        .post("/api/user")
+        .post("/sidiroar/api/user")
         .set(config.get("tokenHeader"), jwt)
         .send(requestPayload);
 
@@ -1472,12 +1472,12 @@ describe("/api/user", () => {
     let exec = async () => {
       if (exists(jwt))
         return request(server)
-          .get("/api/user")
+          .get("/sidiroar/api/user")
           .set(config.get("tokenHeader"), jwt)
           .send();
       else
         return request(server)
-          .get("/api/user")
+          .get("/sidiroar/api/user")
           .send();
     };
 
@@ -1816,12 +1816,12 @@ describe("/api/user", () => {
     let exec = async () => {
       if (exists(jwt))
         return request(server)
-          .get(`/api/user/${id}`)
+          .get(`/sidiroar/api/user/${id}`)
           .set(config.get("tokenHeader"), jwt)
           .send();
       else
         return request(server)
-          .get(`/api/user/${id}`)
+          .get(`/sidiroar/api/user/${id}`)
           .send();
     };
 
@@ -2024,12 +2024,12 @@ describe("/api/user", () => {
     let exec = async () => {
       if (exists(jwt))
         return request(server)
-          .delete(`/api/user/${id}`)
+          .delete(`/sidiroar/api/user/${id}`)
           .set(config.get("tokenHeader"), jwt)
           .send();
       else
         return request(server)
-          .delete(`/api/user/${id}`)
+          .delete(`/sidiroar/api/user/${id}`)
           .send();
     };
 
@@ -2635,12 +2635,12 @@ describe("/api/user", () => {
     let exec = async () => {
       if (exists(jwt))
         return request(server)
-          .put(`/api/user/${id}`)
+          .put(`/sidiroar/api/user/${id}`)
           .set(config.get("tokenHeader"), jwt)
           .send(requestPayload);
       else
         return request(server)
-          .put(`/api/user/${id}`)
+          .put(`/sidiroar/api/user/${id}`)
           .send(requestPayload);
     };
 
@@ -4185,12 +4185,12 @@ describe("/api/user", () => {
     let exec = async () => {
       if (exists(jwt))
         return request(server)
-          .get(`/api/user/me`)
+          .get(`/sidiroar/api/user/me`)
           .set(config.get("tokenHeader"), jwt)
           .send();
       else
         return request(server)
-          .get(`/api/user/me`)
+          .get(`/sidiroar/api/user/me`)
           .send();
     };
 
@@ -4374,12 +4374,12 @@ describe("/api/user", () => {
     let exec = async () => {
       if (exists(jwt))
         return request(server)
-          .put(`/api/user/me`)
+          .put(`/sidiroar/api/user/me`)
           .set(config.get("tokenHeader"), jwt)
           .send(requestPayload);
       else
         return request(server)
-          .put(`/api/user/me`)
+          .put(`/sidiroar/api/user/me`)
           .send(requestPayload);
     };
 

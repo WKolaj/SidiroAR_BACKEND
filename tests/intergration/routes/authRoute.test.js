@@ -21,7 +21,7 @@ let sendMailMockFunction = jest.fn(
 );
 EmailService.sendMail = sendMailMockFunction;
 
-describe("/api/users", () => {
+describe("/sidiroar/api/users", () => {
   let uselessUser;
   let testAdmin;
   let testUser;
@@ -62,7 +62,7 @@ describe("/api/users", () => {
     });
     let exec = async () => {
       return request(server)
-        .post("/api/auth")
+        .post("/sidiroar/api/auth")
         .send(requestPayload);
     };
 

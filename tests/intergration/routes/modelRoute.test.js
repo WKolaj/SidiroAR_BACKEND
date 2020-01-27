@@ -16,7 +16,7 @@ let {
 let { exists } = require("../../../utilities/utilities");
 let server;
 
-describe("/api/models", () => {
+describe("/sidiroar/api/models", () => {
   let uselessUser;
   let testAdmin;
   let testUser;
@@ -72,12 +72,12 @@ describe("/api/models", () => {
     let exec = async () => {
       if (exists(jwt))
         return request(server)
-          .get(`/api/model/${userId}/${modelId}`)
+          .get(`/sidiroar/api/model/${userId}/${modelId}`)
           .set(config.get("tokenHeader"), jwt)
           .send();
       else
         return request(server)
-          .get(`/api/model/${userId}/${modelId}`)
+          .get(`/sidiroar/api/model/${userId}/${modelId}`)
           .send();
     };
 
@@ -273,12 +273,12 @@ describe("/api/models", () => {
     let exec = async () => {
       if (exists(jwt))
         return request(server)
-          .get(`/api/model/${userId}`)
+          .get(`/sidiroar/api/model/${userId}`)
           .set(config.get("tokenHeader"), jwt)
           .send();
       else
         return request(server)
-          .get(`/api/model/${userId}`)
+          .get(`/sidiroar/api/model/${userId}`)
           .send();
     };
 
@@ -483,12 +483,12 @@ describe("/api/models", () => {
     let exec = async () => {
       if (exists(jwt))
         return request(server)
-          .post(`/api/model/${userId}`)
+          .post(`/sidiroar/api/model/${userId}`)
           .set(config.get("tokenHeader"), jwt)
           .send(requestPayload);
       else
         return request(server)
-          .post(`/api/model/${userId}`)
+          .post(`/sidiroar/api/model/${userId}`)
           .send(requestPayload);
     };
 
@@ -1464,12 +1464,12 @@ describe("/api/models", () => {
     let exec = async () => {
       if (exists(jwt))
         return request(server)
-          .delete(`/api/model/${userId}/${modelId}`)
+          .delete(`/sidiroar/api/model/${userId}/${modelId}`)
           .set(config.get("tokenHeader"), jwt)
           .send();
       else
         return request(server)
-          .delete(`/api/model/${userId}/${modelId}`)
+          .delete(`/sidiroar/api/model/${userId}/${modelId}`)
           .send();
     };
 
@@ -2129,12 +2129,12 @@ describe("/api/models", () => {
     let exec = async () => {
       if (exists(jwt))
         return request(server)
-          .put(`/api/model/${userId}/${modelId}`)
+          .put(`/sidiroar/api/model/${userId}/${modelId}`)
           .set(config.get("tokenHeader"), jwt)
           .send(requestPayload);
       else
         return request(server)
-          .put(`/api/model/${userId}/${modelId}`)
+          .put(`/sidiroar/api/model/${userId}/${modelId}`)
           .send(requestPayload);
     };
 

@@ -13,15 +13,15 @@ module.exports = async function(app) {
 
   logger.info("Route error handler initialized");
 
-  app.use("/api/auth", authRouter);
+  app.use("/sidiroar/api/auth", authRouter);
 
   logger.info("Auth route initialized");
 
-  app.use("/api/user", userRouter);
+  app.use("/sidiroar/api/user", userRouter);
 
   logger.info("User route initialized");
 
-  app.use("/api/model", modelRouter);
+  app.use("/sidiroar/api/model", modelRouter);
 
   logger.info("Model route initialized");
 
