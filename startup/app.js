@@ -11,9 +11,6 @@ const helmet = require("helmet");
 module.exports = async function(workingDirName) {
   if (!workingDirName) workingDirName = __dirname;
 
-  //setting name for config dir
-  process.env["NODE_CONFIG_DIR"] = __dirname + "/config/";
-
   //Setting all event emitters limit to 100
   require("events").EventEmitter.defaultMaxListeners = 100;
 
