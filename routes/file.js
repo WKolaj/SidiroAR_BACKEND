@@ -65,7 +65,8 @@ router.post(
     //Setting up formidable
     let form = new formidable.IncomingForm();
     form.keepExtensions = false;
-    form.maxFileSize = 1024 * 1024 * 1024;
+    //file size limit per model - 100 MB
+    form.maxFileSize = 100 * 1024 * 1024;
 
     form.parse(req, async (err, fields, files) => {
       try {
