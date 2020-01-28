@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { User, validateUser } = require("../models/user");
+const Project = require("../classes/project");
 const { sendMail } = require("../services/EmailService");
 const validate = require("../middleware/validate");
 const validateObjectId = require("../middleware/validateObjectId");
@@ -71,7 +72,11 @@ router.post(
     user = new User(
       _.pick(req.body, ["name", "email", "password", "permissions"])
     );
+
     await user.save();
+
+    //Generating user directory
+    await Project.generateUserDirectory(user);
 
     //Sending email - it is not neccessary to wait until it has been finished
     sendMail(
@@ -104,6 +109,9 @@ router.delete(
 
     //Deleting user
     await User.deleteOne({ _id: req.params.id });
+
+    //Remvoing user directory
+    await Project.removeUserDirectory(user);
 
     return res.status(200).send(payloadToReturn);
   }

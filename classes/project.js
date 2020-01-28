@@ -1,6 +1,10 @@
 const config = require("config");
 const path = require("path");
-const { exists, createDirIfNotExists } = require("../utilities/utilities");
+const {
+  exists,
+  createDirIfNotExists,
+  removeDirectoryIfExists
+} = require("../utilities/utilities");
 
 class Project {
   static _getProjectDirName() {
@@ -54,18 +58,37 @@ class Project {
   }
 
   /**
+   * @description Method for generating directory of user
+   * @param {Object} user User of application
+   */
+  static async generateUserDirectory(user) {
+    //Creating user dir
+    let userDirPath = Project._getUserDirPath(user);
+    await createDirIfNotExists(userDirPath);
+
+    //Creating file dir
+    let fileDirPath = Project._getFileDirPath(user);
+    await createDirIfNotExists(fileDirPath);
+  }
+
+  /**
+   * @description Method for removing directory of user
+   * @param {Object} user User of application
+   */
+  static async removeUserDirectory(user) {
+    //Removing user dir
+    let userDirPath = Project._getUserDirPath(user);
+    await removeDirectoryIfExists(userDirPath);
+  }
+
+  /**
    * @description Method for generating directories for users
    * @param {Object} users All users of application
    */
   static async generateUserDirectories(users) {
     for (let user of users) {
-      //Creating user dir
-      let userDirPath = Project._getUserDirPath(user);
-      await createDirIfNotExists(userDirPath);
-
-      //Creating file dir
-      let fileDirPath = Project._getFileDirPath(user);
-      await createDirIfNotExists(fileDirPath);
+      //generating user directory
+      await Project.generateUserDirectory(user);
     }
   }
 }

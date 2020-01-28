@@ -199,6 +199,18 @@ module.exports.removeDirectoryAsync = async function(directory) {
 };
 
 /**
+ * @description Method for removing directory if it exists
+ * @param {string} directoryPath directory to remove
+ */
+module.exports.removeDirectoryIfExists = async function(directoryPath) {
+  const dirExists = await module.exports.checkIfDirectoryExistsAsync(
+    directoryPath
+  );
+
+  if (dirExists) await module.exports.removeDirectoryAsync(directoryPath);
+};
+
+/**
  * @description Method for sleeping thread
  * @param {number} ms number of miliseconds for thread to sleep
  */

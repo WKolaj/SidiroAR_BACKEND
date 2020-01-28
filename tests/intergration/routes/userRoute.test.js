@@ -18,7 +18,8 @@ let {
 let {
   exists,
   hashedStringMatch,
-  clearDirectoryAsync
+  clearDirectoryAsync,
+  checkIfDirectoryExistsAsync
 } = require("../../../utilities/utilities");
 let server;
 let Project = require("../../../classes/project");
@@ -177,6 +178,19 @@ describe("/sidiroar/api/user", () => {
       expect(sendMailMockFunction.mock.calls[0][2]).toEqual(
         expectedMailContent
       );
+    });
+
+    it("should create user directory if user payload is valid", async () => {
+      let response = await exec();
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(200);
+      expect(response.body).toBeDefined();
+
+      let userDirectory = Project._getUserDirPath(response.body);
+      let directoryExists = await checkIfDirectoryExistsAsync(userDirectory);
+
+      expect(directoryExists).toEqual(true);
     });
 
     it("should not create new user and return 400 if user with the same email exists", async () => {
@@ -2167,6 +2181,19 @@ describe("/sidiroar/api/user", () => {
       expect(idOfAllModels).toEqual(expectedModelIds);
 
       //#endregion CHECKING_DATABASE
+    });
+
+    it("should remove user directory - if user exists", async () => {
+      let response = await exec();
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(200);
+      expect(response.body).toBeDefined();
+
+      let userDirectory = Project._getUserDirPath(response.body);
+      let directoryExists = await checkIfDirectoryExistsAsync(userDirectory);
+
+      expect(directoryExists).toEqual(false);
     });
 
     it("should return 404 if id is not valid", async () => {
