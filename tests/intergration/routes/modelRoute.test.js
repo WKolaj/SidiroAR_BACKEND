@@ -13,8 +13,11 @@ let {
   generateUselessUser,
   generateTestModels
 } = require("../../utilities/testUtilities");
-let { exists } = require("../../../utilities/utilities");
+let { exists, clearDirectoryAsync } = require("../../../utilities/utilities");
 let server;
+let Project = require("../../../classes/project");
+let projectDirPath = Project._getProjectDirPath();
+let testDirPath = "__testDir";
 
 describe("/sidiroar/api/models", () => {
   let uselessUser;
@@ -27,6 +30,9 @@ describe("/sidiroar/api/models", () => {
   let modelsOfTestUserAndAdmin;
 
   beforeEach(async () => {
+    //clearing project directory
+    await clearDirectoryAsync(testDirPath);
+
     server = await require("../../../startup/app")();
 
     //Clearing users in database before each test
@@ -55,6 +61,9 @@ describe("/sidiroar/api/models", () => {
     await Model.deleteMany({});
 
     await server.close();
+
+    //clearing project directory
+    await clearDirectoryAsync(testDirPath);
   });
 
   describe("GET/:userId/:id", () => {

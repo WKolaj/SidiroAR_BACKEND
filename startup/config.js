@@ -15,6 +15,9 @@ module.exports = async function() {
   throwIfConfigDoesNotExist("port");
   throwIfConfigDoesNotExist("tokenHeader");
   throwIfConfigDoesNotExist("jwtPrivateKey");
+  throwIfConfigDoesNotExist("projectDir");
+  throwIfConfigDoesNotExist("userDir");
+  throwIfConfigDoesNotExist("fileDir");
   throwIfConfigDoesNotExist("logging");
   throwIfConfigDoesNotExist("logging.info");
   throwIfConfigDoesNotExist("logging.info.path");

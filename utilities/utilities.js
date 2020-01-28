@@ -80,6 +80,14 @@ module.exports.checkIfDirectoryExistsAsync = async function(directoryPath) {
   });
 };
 
+module.exports.createDirIfNotExists = async function(directoryPath) {
+  const dirExists = await module.exports.checkIfDirectoryExistsAsync(
+    directoryPath
+  );
+
+  if (!dirExists) await module.exports.createDirAsync(directoryPath);
+};
+
 module.exports.checkIfFileExistsAsync = async function(filePath) {
   return new Promise(async (resolve, reject) => {
     fs.stat(filePath, function(err) {

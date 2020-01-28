@@ -15,8 +15,15 @@ let {
   generateUselessUser,
   generateTestModels
 } = require("../../utilities/testUtilities");
-let { exists, hashedStringMatch } = require("../../../utilities/utilities");
+let {
+  exists,
+  hashedStringMatch,
+  clearDirectoryAsync
+} = require("../../../utilities/utilities");
 let server;
+let Project = require("../../../classes/project");
+let projectDirPath = Project._getProjectDirPath();
+let testDirPath = "__testDir";
 
 //mocking email service
 let sendMailMockFunction = jest.fn(
@@ -35,6 +42,9 @@ describe("/sidiroar/api/user", () => {
   let modelsOfTestUserAndAdmin;
 
   beforeEach(async () => {
+    //clearing project directory
+    await clearDirectoryAsync(testDirPath);
+
     //Clearing number of mock function calls
     sendMailMockFunction.mockClear();
 
@@ -67,6 +77,9 @@ describe("/sidiroar/api/user", () => {
 
     await server.close();
     sendMailMockFunction.mockClear();
+
+    //clearing project directory
+    await clearDirectoryAsync(testDirPath);
   });
 
   describe("POST/", () => {

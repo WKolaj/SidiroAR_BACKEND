@@ -19,6 +19,7 @@ module.exports = async function(workingDirName) {
   await require("./config")();
   await require("./db")();
   await require("./validation")();
+  await require("./project")();
 
   const port = process.env.PORT || config.get("port");
 

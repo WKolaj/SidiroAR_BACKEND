@@ -3,6 +3,9 @@
   "modelFileExtension": "smdl",
   "tokenHeader": "x-auth-token",
   "port": 5000,
+  "projectDir": "project",
+  "userDir": "users",
+  "fileDir": "files",
   "logging": {
     "info": {
       "path": "logs/info.log",

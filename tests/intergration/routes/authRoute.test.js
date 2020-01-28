@@ -1,5 +1,9 @@
 const EmailService = require("../../../services/EmailService");
-const { snooze } = require("../../../utilities/utilities");
+const {
+  snooze,
+  clearDirectoryAsync,
+  exists
+} = require("../../../utilities/utilities");
 const _ = require("lodash");
 const request = require("supertest");
 const bcrypt = require("bcrypt");
@@ -12,8 +16,10 @@ let {
   generateTestAdminAndUser,
   generateUselessUser
 } = require("../../utilities/testUtilities");
-let { exists } = require("../../../utilities/utilities");
 let server;
+let Project = require("../../../classes/project");
+let projectDirPath = Project._getProjectDirPath();
+let testDirPath = "__testDir";
 
 //mocking email service
 let sendMailMockFunction = jest.fn(
@@ -28,6 +34,9 @@ describe("/sidiroar/api/users", () => {
   let testUserAndAdmin;
 
   beforeEach(async () => {
+    //clearing project directory
+    await clearDirectoryAsync(testDirPath);
+
     //Clearing number of mock function calls
     sendMailMockFunction.mockClear();
 
@@ -49,6 +58,9 @@ describe("/sidiroar/api/users", () => {
 
     await server.close();
     sendMailMockFunction.mockClear();
+
+    //clearing project directory
+    await clearDirectoryAsync(testDirPath);
   });
 
   describe("POST/", () => {
