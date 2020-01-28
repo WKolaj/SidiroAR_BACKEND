@@ -10,6 +10,13 @@ const hasUser = require("../middleware/auth/hasUser");
 const isAdmin = require("../middleware/auth/isAdmin");
 const isUser = require("../middleware/auth/isUser");
 const _ = require("lodash");
+const jsonValidation = require("../middleware/jsonError");
+
+//assigning JSON parsing to router
+router.use(express.json());
+
+//assigning JSON parsing error validation
+router.use(jsonValidation);
 
 router.get("/:userId", [hasUser, isAdmin], async (req, res) => {
   //Returning if userId is not defined or invalid

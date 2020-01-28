@@ -1,19 +1,24 @@
 const express = require("express");
 const router = express.Router();
+const mongoose = require("mongoose");
 const validateObjectId = require("../middleware/validateObjectId");
 const fs = require("fs");
+const logger = require("../logger/logger");
 const Project = require("../classes/project");
 const hasUser = require("../middleware/auth/hasUser");
 const isUser = require("../middleware/auth/isUser");
+const isAdmin = require("../middleware/auth/isAdmin");
 const { Model } = require("../models/model");
+const { User } = require("../models/user");
 const {
   exists,
+  existsAndIsNotEmpty,
   checkIfFileExistsAsync,
-  statAsync
+  statAsync,
+  renameAsync
 } = require("../utilities/utilities");
 const _ = require("lodash");
 const formidable = require("formidable");
-const util = require("util");
 
 router.get("/me/:id", [hasUser, isUser, validateObjectId], async (req, res) => {
   var model = await Model.findOne({ _id: req.params.id, user: req.user._id });
@@ -40,25 +45,52 @@ router.get("/me/:id", [hasUser, isUser, validateObjectId], async (req, res) => {
 });
 
 router.post(
-  "/me/:id",
-  [hasUser, isUser, validateObjectId],
+  "/:userId/:id",
+  [hasUser, isAdmin, validateObjectId],
   async (req, res) => {
-    var model = await Model.findOne({ _id: req.params.id, user: req.user._id });
+    //Returning if userId is not defined or invalid
+    if (!mongoose.Types.ObjectId.isValid(req.params.userId))
+      return res.status("404").send("Invalid user id...");
 
-    //returning 404 if model does not exist
+    //Check if user exists
+    let user = await User.findOne({ _id: req.params.userId });
+    if (!exists(user)) return res.status("404").send("User not found...");
+
+    //Check if model exists
+    var model = await Model.findOne({ _id: req.params.id, user: user._id });
     if (!exists(model)) return res.status(404).send("Model not found...");
 
-    let modelFilePath = Project.getModelFilePath(req.user, model);
+    let modelFilePath = Project.getModelFilePath(user, model);
 
+    //Setting up formidable
     let form = new formidable.IncomingForm();
+    form.keepExtensions = false;
+    form.maxFileSize = 1024 * 1024 * 1024;
 
-    form.parse(req, (err, fields, files) => {
-      res.writeHead(200, { "content-type": "text/plain" });
-      res.write("received upload:\n\n");
-      res.end(util.inspect({ fields: fields, files: files }));
+    form.parse(req, async (err, fields, files) => {
+      try {
+        if (exists(err)) throw err;
+
+        if (!existsAndIsNotEmpty(files) && !existsAndIsNotEmpty(files.file))
+          throw new Error("File content not exists or is empty!");
+
+        //Moving file to model directory
+        let tmpFilePath = files.file.path;
+
+        if (!exists(tmpFilePath))
+          throw new Error("File path is empty after upload!");
+        await renameAsync(tmpFilePath, modelFilePath);
+
+        //returning respone
+        return res
+          .status(200)
+          .set("Content-Type", "text/plain")
+          .send("File successfully uploaded!");
+      } catch (error) {
+        logger.error(error.message, error);
+        return res.status(500).send("Error during uploading file...");
+      }
     });
-
-    return;
   }
 );
 

@@ -1,8 +1,5 @@
-const express = require("express");
-const path = require("path");
 const logger = require("../logger/logger");
 const error = require("../middleware/error");
-const jsonValidation = require("../middleware/jsonError");
 const userRouter = require("../routes/user");
 const authRouter = require("../routes/auth");
 const modelRouter = require("../routes/model");
@@ -15,14 +12,6 @@ module.exports = async function(app) {
   app.use("/sidiroar/api/file", fileRouter);
 
   logger.info("File route initialized");
-
-  app.use(express.json());
-
-  logger.info("JSON middleware initialized");
-
-  app.use(jsonValidation);
-
-  logger.info("JSON error validation middleware initialized");
 
   app.use("/sidiroar/api/auth", authRouter);
 

@@ -10,6 +10,13 @@ const {
   hashedStringMatch
 } = require("../utilities/utilities");
 const headerName = config.get("tokenHeader");
+const jsonValidation = require("../middleware/jsonError");
+
+//assigning JSON parsing to router
+router.use(express.json());
+
+//assigning JSON parsing error validation
+router.use(jsonValidation);
 
 router.post("/", async (req, res) => {
   if (!exists(req.body)) return res.status(400).send("Invalid request");

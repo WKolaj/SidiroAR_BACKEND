@@ -68,6 +68,7 @@ module.exports.readDirAsync = promisify(fs.readdir);
 module.exports.appendFileAsync = promisify(fs.appendFile);
 module.exports.createDirAsync = promisify(fs.mkdir);
 module.exports.unlinkAnsync = promisify(fs.unlink);
+module.exports.renameAsync = promisify(fs.rename);
 
 module.exports.checkIfDirectoryExistsAsync = async function(directoryPath) {
   return new Promise(async (resolve, reject) => {
