@@ -6,7 +6,6 @@
   "projectDir": "project",
   "userDir": "users",
   "fileDir": "files",
-  "tempFileDirName": "tempFiles",
   "logging": {
     "info": {
       "path": "logs/info.log",

@@ -5,6 +5,7 @@ const {
   createDirIfNotExists,
   removeDirectoryIfExists
 } = require("../utilities/utilities");
+const mongoose = require("mongoose");
 
 class Project {
   static _getProjectDirName() {
@@ -17,17 +18,6 @@ class Project {
 
   static _getFileDirName() {
     return config.get("fileDir");
-  }
-
-  static _getTemporaryFileDirName() {
-    return config.get("tempFileDirName");
-  }
-
-  static _getTemporaryFileDirPath() {
-    let projectDirPath = Project._getProjectDirPath();
-    let tempFileDirPath = Project._getTemporaryFileDirName();
-
-    return path.join(projectDirPath, tempFileDirPath);
   }
 
   static _getProjectDirPath() {
@@ -81,10 +71,6 @@ class Project {
     //Generating project path if not exist
     const projectDirPath = Project._getProjectDirPath();
     await createDirIfNotExists(projectDirPath);
-
-    //Generating temporart files directory if not exist
-    const temporaryFileDirPath = Project._getTemporaryFileDirPath();
-    await createDirIfNotExists(temporaryFileDirPath);
 
     //Generating users directory if not exist
     const usersDirPath = path.join(projectDirPath, Project._getUsersDirName());

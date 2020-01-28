@@ -1,7 +1,6 @@
 const express = require("express");
 //Initializing proccess of automatically calling next when error occurs while request handling - in order to go to last middlware of logging error
 require("express-async-errors");
-const jsonValidation = require("../middleware/jsonError");
 const config = require("config");
 const log = require("../logger/logger");
 const app = express();
@@ -24,15 +23,14 @@ module.exports = async function(workingDirName) {
   const port = process.env.PORT || config.get("port");
 
   //Turning on helmet
-
   app.use(helmet());
+
+  log.info("Helmet initialized");
 
   //Static front-end files are stored under client/build dir
   app.use(express.static(path.join(workingDirName, "client/build")));
-  app.use(express.json());
 
-  //Using method to check if there is an error of parsing json - returning if there is one
-  app.use(jsonValidation);
+  log.info("Static files initilized");
 
   //Routes have to be initialized after initializing main middleware
   await require("./route")(app);

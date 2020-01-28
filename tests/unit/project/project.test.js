@@ -2,7 +2,6 @@ const Project = require("../../../classes/project");
 const path = require("path");
 let testDirPath = "__testDir";
 let projectDirPath = Project._getProjectDirPath();
-let temporaryDirPath = Project._getTemporaryFileDirPath();
 let usersDirPath = path.join(projectDirPath, Project._getUsersDirName());
 const {
   clearDirectoryAsync,
@@ -26,16 +25,11 @@ describe("Project", () => {
       await Project.generateProjectDirectories();
     };
 
-    it("should create project, users directories and temporary file directory - if they not exist", async () => {
+    it("should create project and users directories  - if they not exist", async () => {
       await exec();
 
       let projectDirExists = await checkIfDirectoryExistsAsync(projectDirPath);
       expect(projectDirExists).toEqual(true);
-
-      let tempFileDirExists = await checkIfDirectoryExistsAsync(
-        temporaryDirPath
-      );
-      expect(tempFileDirExists).toEqual(true);
 
       let userDirExists = await checkIfDirectoryExistsAsync(usersDirPath);
       expect(userDirExists).toEqual(true);
@@ -65,28 +59,6 @@ describe("Project", () => {
     it("should not throw  - if project and users directory already exists", async () => {
       await createDirAsync(projectDirPath);
       await createDirAsync(usersDirPath);
-
-      await expect(
-        new Promise(async (resolve, reject) => {
-          try {
-            await exec();
-            return resolve(true);
-          } catch (err) {
-            return reject(err);
-          }
-        })
-      ).resolves.toBeDefined();
-
-      let projectDirExists = await checkIfDirectoryExistsAsync(projectDirPath);
-      expect(projectDirExists).toEqual(true);
-
-      let userDirExists = await checkIfDirectoryExistsAsync(usersDirPath);
-      expect(userDirExists).toEqual(true);
-    });
-
-    it("should not throw  - if project and temporarty file directory already exists", async () => {
-      await createDirAsync(projectDirPath);
-      await createDirAsync(temporaryDirPath);
 
       await expect(
         new Promise(async (resolve, reject) => {
