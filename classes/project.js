@@ -55,6 +55,25 @@ class Project {
     return path.join(userDirPath, fileDirName);
   }
 
+  static _getModelFileName(model) {
+    if (!exists(model)) throw new Error("Model cannot be empty");
+    if (!exists(model._id)) throw new Error("Model id cannot be empty");
+
+    return path.join(`${model._id.toString()}.smdl`);
+  }
+
+  /**
+   * @description Method for getting model file based on user and model
+   * @param {Object} user User of model
+   * @param {Object} model Object of model
+   */
+  static getModelFilePath(user, model) {
+    let userFileDirPath = Project._getFileDirPath(user);
+    let modelFileName = Project._getModelFileName(model);
+
+    return path.join(userFileDirPath, modelFileName);
+  }
+
   /**
    * @description Method for generating project directory if they not exist
    */

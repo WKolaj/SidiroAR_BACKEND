@@ -62,3 +62,6 @@ typings/
 
 # test file dir
 __testDir
+
+# project dir
+project
