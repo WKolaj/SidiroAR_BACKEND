@@ -5,7 +5,7 @@ const {
   hashString,
   generateRandomNumberString
 } = require("../../utilities/utilities");
-
+const Project = require("../../classes/project");
 const testUselessUserEmail = "useless@test1234abcd.com.pl";
 const testAdminEmail = "admin@test1234abcd.com.pl";
 const testUserEmail = "user@test1234abcd.com.pl";
@@ -25,6 +25,9 @@ module.exports.generateUselessUser = async () => {
 
   await user.save();
 
+  //Generating user directory
+  await Project.generateUserDirectory(user);
+
   return user;
 };
 
@@ -41,6 +44,9 @@ module.exports.generateTestAdmin = async () => {
   });
 
   await admin.save();
+
+  //Generating user directory
+  await Project.generateUserDirectory(admin);
 
   return admin;
 };
@@ -59,6 +65,9 @@ module.exports.generateTestUser = async () => {
 
   await user.save();
 
+  //Generating user directory
+  await Project.generateUserDirectory(user);
+
   return user;
 };
 
@@ -75,6 +84,9 @@ module.exports.generateTestAdminAndUser = async () => {
   });
 
   await user.save();
+
+  //Generating user directory
+  await Project.generateUserDirectory(user);
 
   return user;
 };

@@ -15,7 +15,8 @@ const {
   existsAndIsNotEmpty,
   checkIfFileExistsAsync,
   statAsync,
-  renameAsync
+  renameAsync,
+  removeFileOrDirectoryAsync
 } = require("../utilities/utilities");
 const _ = require("lodash");
 const formidable = require("formidable");
@@ -92,6 +93,35 @@ router.post(
         return res.status(500).send("Error during uploading file...");
       }
     });
+  }
+);
+
+router.delete(
+  "/:userId/:id",
+  [hasUser, isAdmin, validateObjectId],
+  async (req, res) => {
+    //Returning if userId is not defined or invalid
+    if (!mongoose.Types.ObjectId.isValid(req.params.userId))
+      return res.status("404").send("Invalid user id...");
+
+    //Check if user exists
+    let user = await User.findOne({ _id: req.params.userId });
+    if (!exists(user)) return res.status("404").send("User not found...");
+
+    //Check if model exists
+    var model = await Model.findOne({ _id: req.params.id, user: user._id });
+    if (!exists(model)) return res.status(404).send("Model not found...");
+
+    let modelFilePath = Project.getModelFilePath(user, model);
+
+    //Check if model file exists
+    let fileExists = await checkIfFileExistsAsync(modelFilePath);
+    if (!fileExists)
+      return res.status(404).send("Model file does not exist...");
+
+    await removeFileOrDirectoryAsync(modelFilePath);
+
+    return res.status(200).send("File removed properly...");
   }
 );
 
