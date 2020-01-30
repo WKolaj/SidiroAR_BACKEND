@@ -13,7 +13,12 @@ let {
   generateUselessUser,
   generateTestModels
 } = require("../../utilities/testUtilities");
-let { exists, clearDirectoryAsync } = require("../../../utilities/utilities");
+let {
+  exists,
+  clearDirectoryAsync,
+  createFileAsync,
+  checkIfFileExistsAsync
+} = require("../../../utilities/utilities");
 let server;
 let Project = require("../../../classes/project");
 let projectDirPath = Project._getProjectDirPath();
@@ -1461,16 +1466,27 @@ describe("/sidiroar/api/models", () => {
   describe("DELETE/:userId/:id", () => {
     //jwt used to authenticate when posting
     let jwt;
+    let user;
+    let model;
     let userId;
     let modelId;
+    let createModelFile;
 
     beforeEach(async () => {
       jwt = await testAdmin.generateJWT();
-      userId = testUser._id;
-      modelId = modelsOfTestUser[1]._id;
+      user = testUser;
+      model = modelsOfTestUser[1];
+      userId = user._id;
+      modelId = model._id;
+      createModelFile = true;
     });
 
     let exec = async () => {
+      if (createModelFile) {
+        let modelFilePath = Project.getModelFilePath(user, model);
+        await createFileAsync(modelFilePath, "test model file content");
+      }
+
       if (exists(jwt))
         return request(server)
           .delete(`/sidiroar/api/model/${userId}/${modelId}`)
@@ -1482,7 +1498,7 @@ describe("/sidiroar/api/models", () => {
           .send();
     };
 
-    it("should return 200, delete model and return its payload - if user and model exist", async () => {
+    it("should return 200, delete model and return its payload and delete model file - if user and model exist", async () => {
       let response = await exec();
 
       //#region CHECK_RESPONSE
@@ -1530,6 +1546,74 @@ describe("/sidiroar/api/models", () => {
       expect(modelsFromDatabasePayload).toEqual(expectedModelsPayload);
 
       //#endregion CHECK_DATABASE
+
+      //#region CHECK_FILE
+
+      let modelFilePath = Project.getModelFilePath(user, model);
+      let fileExists = await checkIfFileExistsAsync(modelFilePath);
+      expect(fileExists).toEqual(false);
+
+      //#endregion CHECK_FILE
+    });
+
+    it("should return 200, delete model and return its payload and delete model file - if model file does not exist", async () => {
+      createModelFile = false;
+
+      let response = await exec();
+
+      //#region CHECK_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(200);
+
+      let expectedModel = modelsOfTestUser[1];
+
+      let expectedPayload = {
+        _id: expectedModel._id.toString(),
+        name: expectedModel.name,
+        user: expectedModel.user.toString()
+      };
+
+      expect(response.body).toEqual(expectedPayload);
+
+      //#endregion CHECK_RESPONSE
+
+      //#region CHECK_DATABASE
+
+      //Generting and sorting  model payload from database
+      let modelsFromDatabasePayload = [];
+
+      let modelsFromDatabase = await Model.find({ user: userId });
+
+      for (let model of modelsFromDatabase) {
+        modelsFromDatabasePayload.push(await model.getPayload());
+      }
+
+      modelsFromDatabase = _.sortBy(modelsFromDatabase, "_id", "asc");
+
+      //Generting and sorting expected model payload
+      let expectedModelsPayload = [];
+
+      for (let model of modelsOfTestUser) {
+        //Adding all models except the one to delete
+        if (model._id !== modelId)
+          expectedModelsPayload.push(await model.getPayload());
+      }
+
+      expectedModelsPayload = _.sortBy(expectedModelsPayload, "_id", "asc");
+
+      //Both collection should be equal
+      expect(modelsFromDatabasePayload).toEqual(expectedModelsPayload);
+
+      //#endregion CHECK_DATABASE
+
+      //#region CHECK_FILE
+
+      let modelFilePath = Project.getModelFilePath(user, model);
+      let fileExists = await checkIfFileExistsAsync(modelFilePath);
+      expect(fileExists).toEqual(false);
+
+      //#endregion CHECK_FILE
     });
 
     it("should return 404 and do not delete any model - if model doesnt exist", async () => {
@@ -1579,6 +1663,14 @@ describe("/sidiroar/api/models", () => {
       expect(modelsFromDatabasePayload).toEqual(expectedModelsPayload);
 
       //#endregion CHECK_DATABASE
+
+      //#region CHECK_FILE
+
+      let modelFilePath = Project.getModelFilePath(user, model);
+      let fileExists = await checkIfFileExistsAsync(modelFilePath);
+      expect(fileExists).toEqual(true);
+
+      //#endregion CHECK_FILE
     });
 
     it("should return 404 and do not delete any model - if there is no model in database", async () => {
@@ -1590,6 +1682,14 @@ describe("/sidiroar/api/models", () => {
       expect(response).toBeDefined();
       expect(response.status).toEqual(404);
       expect(response.text).toEqual("Model not found...");
+
+      //#region CHECK_FILE
+
+      let modelFilePath = Project.getModelFilePath(user, model);
+      let fileExists = await checkIfFileExistsAsync(modelFilePath);
+      expect(fileExists).toEqual(true);
+
+      //#endregion CHECK_FILE
     });
 
     it("should return 404 and do not delete any model - if user doesnt exist", async () => {
@@ -1639,6 +1739,14 @@ describe("/sidiroar/api/models", () => {
       expect(modelsFromDatabasePayload).toEqual(expectedModelsPayload);
 
       //#endregion CHECK_DATABASE
+
+      //#region CHECK_FILE
+
+      let modelFilePath = Project.getModelFilePath(user, model);
+      let fileExists = await checkIfFileExistsAsync(modelFilePath);
+      expect(fileExists).toEqual(true);
+
+      //#endregion CHECK_FILE
     });
 
     it("should return 404 and do not delete any model - if user and model dont exist", async () => {
@@ -1689,6 +1797,14 @@ describe("/sidiroar/api/models", () => {
       expect(modelsFromDatabasePayload).toEqual(expectedModelsPayload);
 
       //#endregion CHECK_DATABASE
+
+      //#region CHECK_FILE
+
+      let modelFilePath = Project.getModelFilePath(user, model);
+      let fileExists = await checkIfFileExistsAsync(modelFilePath);
+      expect(fileExists).toEqual(true);
+
+      //#endregion CHECK_FILE
     });
 
     it("should return 404 - if user Id is invalid", async () => {
@@ -1738,6 +1854,14 @@ describe("/sidiroar/api/models", () => {
       expect(modelsFromDatabasePayload).toEqual(expectedModelsPayload);
 
       //#endregion CHECK_DATABASE
+
+      //#region CHECK_FILE
+
+      let modelFilePath = Project.getModelFilePath(user, model);
+      let fileExists = await checkIfFileExistsAsync(modelFilePath);
+      expect(fileExists).toEqual(true);
+
+      //#endregion CHECK_FILE
     });
 
     it("should return 404 - if model Id is invalid", async () => {
@@ -1787,6 +1911,14 @@ describe("/sidiroar/api/models", () => {
       expect(modelsFromDatabasePayload).toEqual(expectedModelsPayload);
 
       //#endregion CHECK_DATABASE
+
+      //#region CHECK_FILE
+
+      let modelFilePath = Project.getModelFilePath(user, model);
+      let fileExists = await checkIfFileExistsAsync(modelFilePath);
+      expect(fileExists).toEqual(true);
+
+      //#endregion CHECK_FILE
     });
 
     it("should not return any model and return 401 if jwt has not been given", async () => {
@@ -1841,6 +1973,14 @@ describe("/sidiroar/api/models", () => {
       expect(modelsFromDatabasePayload).toEqual(expectedModelsPayload);
 
       //#endregion CHECK_DATABASE
+
+      //#region CHECK_FILE
+
+      let modelFilePath = Project.getModelFilePath(user, model);
+      let fileExists = await checkIfFileExistsAsync(modelFilePath);
+      expect(fileExists).toEqual(true);
+
+      //#endregion CHECK_FILE
     });
 
     it("should not return any model and return 403 if jwt of user has been given", async () => {
@@ -1895,6 +2035,14 @@ describe("/sidiroar/api/models", () => {
       expect(modelsFromDatabasePayload).toEqual(expectedModelsPayload);
 
       //#endregion CHECK_DATABASE
+
+      //#region CHECK_FILE
+
+      let modelFilePath = Project.getModelFilePath(user, model);
+      let fileExists = await checkIfFileExistsAsync(modelFilePath);
+      expect(fileExists).toEqual(true);
+
+      //#endregion CHECK_FILE
     });
 
     it("should not return any model and return 403 if jwt of useless (with permissions set to 0) user has been given", async () => {
@@ -1949,6 +2097,14 @@ describe("/sidiroar/api/models", () => {
       expect(modelsFromDatabasePayload).toEqual(expectedModelsPayload);
 
       //#endregion CHECK_DATABASE
+
+      //#region CHECK_FILE
+
+      let modelFilePath = Project.getModelFilePath(user, model);
+      let fileExists = await checkIfFileExistsAsync(modelFilePath);
+      expect(fileExists).toEqual(true);
+
+      //#endregion CHECK_FILE
     });
 
     it("should return users and return 200 with user payloadif jwt of adminAndUser user is given", async () => {
@@ -2001,6 +2157,14 @@ describe("/sidiroar/api/models", () => {
       expect(modelsFromDatabasePayload).toEqual(expectedModelsPayload);
 
       //#endregion CHECK_DATABASE
+
+      //#region CHECK_FILE
+
+      let modelFilePath = Project.getModelFilePath(user, model);
+      let fileExists = await checkIfFileExistsAsync(modelFilePath);
+      expect(fileExists).toEqual(false);
+
+      //#endregion CHECK_FILE
     });
 
     it("should not return any model and return 400 if invalid jwt has been given", async () => {
@@ -2055,6 +2219,14 @@ describe("/sidiroar/api/models", () => {
       expect(modelsFromDatabasePayload).toEqual(expectedModelsPayload);
 
       //#endregion CHECK_DATABASE
+
+      //#region CHECK_FILE
+
+      let modelFilePath = Project.getModelFilePath(user, model);
+      let fileExists = await checkIfFileExistsAsync(modelFilePath);
+      expect(fileExists).toEqual(true);
+
+      //#endregion CHECK_FILE
     });
 
     it("should not return any model and return 400 if jwt from different private key was provided", async () => {
@@ -2116,6 +2288,14 @@ describe("/sidiroar/api/models", () => {
       expect(modelsFromDatabasePayload).toEqual(expectedModelsPayload);
 
       //#endregion CHECK_DATABASE
+
+      //#region CHECK_FILE
+
+      let modelFilePath = Project.getModelFilePath(user, model);
+      let fileExists = await checkIfFileExistsAsync(modelFilePath);
+      expect(fileExists).toEqual(true);
+
+      //#endregion CHECK_FILE
     });
   });
 

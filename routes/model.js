@@ -1,11 +1,16 @@
 const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
+const Project = require("../classes/project");
 const { User } = require("../models/user");
 const { Model, validateModel } = require("../models/model");
 const validate = require("../middleware/validate");
 const validateObjectId = require("../middleware/validateObjectId");
-const { exists } = require("../utilities/utilities");
+const {
+  exists,
+  checkIfFileExistsAsync,
+  removeFileOrDirectoryAsync
+} = require("../utilities/utilities");
 const hasUser = require("../middleware/auth/hasUser");
 const isAdmin = require("../middleware/auth/isAdmin");
 const isUser = require("../middleware/auth/isUser");
@@ -114,6 +119,11 @@ router.delete(
 
     //removing model
     await Model.deleteOne({ _id: req.params.id });
+
+    //removing model file if exists
+    let modelFilePath = Project.getModelFilePath(user, model);
+    let modelFileExists = await checkIfFileExistsAsync(modelFilePath);
+    if (modelFileExists) await removeFileOrDirectoryAsync(modelFilePath);
 
     return res.status(200).send(payloadToReturn);
   }
