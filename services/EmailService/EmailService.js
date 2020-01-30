@@ -1,6 +1,20 @@
 const config = require("config");
 const nodemailer = require("nodemailer");
-const logger = require("../logger/logger");
+const logger = require("../../logger/logger");
+const path = require("path");
+const { readFileAsync } = require("../../utilities/utilities");
+
+module.exports.generateEmailContent = async function(login, password) {
+  const templatePath = path.join(__dirname, "emailTemplate/emailTemplate.html");
+
+  let templateContent = (await readFileAsync(templatePath, "utf8")).toString();
+
+  templateContent = templateContent
+    .replace("@PAR_LOGIN", login)
+    .replace("@PAR_PIN", password);
+
+  return templateContent;
+};
 
 /**
  * @description Method for sending email

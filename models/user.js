@@ -8,6 +8,9 @@ const {
 const jwt = require("jsonwebtoken");
 const jwtPrivateKey = config.get("jwtPrivateKey");
 const { Model } = require("./model");
+const {
+  generateEmailContent
+} = require("../services/EmailService/EmailService");
 
 //hashed password can be longer than 4 signs - use no limition accoridng to max min length
 const userSchema = new mongoose.Schema({
@@ -80,15 +83,8 @@ userSchema.statics.isUser = function(permissions) {
 };
 
 //Method for generating random pin for user
-userSchema.statics.generateEmailText = function(name, login, password) {
-  return `<h1>Dzień dobry</h1>
-            <p>Bardzo dziękuję za rejestrację</p>
-            <p>Poniżej umieszczone są login oraz hasło do systemu:</p>
-            <p>Login: <b>${login}</b></p>
-            <p>Hasło: <b>${password}</b></p>
-            <br/>
-            <p>Z poważaniem</p>
-            <p>SidiroAR</p>`;
+userSchema.statics.generateEmailText = async function(name, login, password) {
+  return await generateEmailContent(login, password);
 };
 
 //Method for generating JWT Token of user

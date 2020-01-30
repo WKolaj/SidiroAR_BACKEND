@@ -1,4 +1,4 @@
-const EmailService = require("../../../services/EmailService");
+const EmailService = require("../../../services/EmailService/EmailService");
 const { snooze } = require("../../../utilities/utilities");
 const _ = require("lodash");
 const request = require("supertest");
@@ -163,7 +163,7 @@ describe("/sidiroar/api/user", () => {
 
       expect(sendMailMockFunction).toHaveBeenCalledTimes(1);
 
-      let expectedMailContent = User.generateEmailText(
+      let expectedMailContent = await User.generateEmailText(
         response.body.name,
         response.body.email,
         response.body.password
@@ -737,7 +737,7 @@ describe("/sidiroar/api/user", () => {
 
       expect(sendMailMockFunction).toHaveBeenCalledTimes(1);
 
-      let expectedMailContent = User.generateEmailText(
+      let expectedMailContent = await User.generateEmailText(
         response.body.name,
         response.body.email,
         response.body.password

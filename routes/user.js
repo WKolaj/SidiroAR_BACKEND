@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const { User, validateUser } = require("../models/user");
 const Project = require("../classes/project");
-const { sendMail } = require("../services/EmailService");
+const { sendMail } = require("../services/EmailService/EmailService");
 const validate = require("../middleware/validate");
 const validateObjectId = require("../middleware/validateObjectId");
 const {
@@ -85,12 +85,15 @@ router.post(
     //Generating user directory
     await Project.generateUserDirectory(user);
 
-    //Sending email - it is not neccessary to wait until it has been finished
-    sendMail(
+    //Generating email text
+    let emailText = await User.generateEmailText(
+      user.name,
       user.email,
-      "Rejestracja SidiroAR",
-      User.generateEmailText(user.name, user.email, passwordBeforeHash)
+      passwordBeforeHash
     );
+
+    //Sending email - it is not neccessary to wait until it has been finished
+    sendMail(user.email, "Rejestracja SidiroAR", emailText);
 
     //Building payload to return
     let payloadToReturn = await user.getPayload();
