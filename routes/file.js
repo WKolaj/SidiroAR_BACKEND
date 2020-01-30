@@ -121,7 +121,7 @@ router.delete(
 
     await removeFileOrDirectoryAsync(modelFilePath);
 
-    return res.status(200).send("File removed properly...");
+    return res.status(200).send("File successfully deleted!");
   }
 );
 
