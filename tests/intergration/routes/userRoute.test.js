@@ -13,6 +13,7 @@ let {
   generateTestUser,
   generateTestAdminAndUser,
   generateUselessUser,
+  generateTestSuperAdmin,
   generateTestModels
 } = require("../../utilities/testUtilities");
 let {
@@ -37,10 +38,12 @@ describe("/sidiroar/api/user", () => {
   let testAdmin;
   let testUser;
   let testUserAndAdmin;
+  let testSuperAdmin;
   let modelsOfUselessUser;
   let modelsOfTestAdmin;
   let modelsOfTestUser;
   let modelsOfTestUserAndAdmin;
+  let modelsOfTestSuperAdmin;
 
   beforeEach(async () => {
     //clearing project directory
@@ -62,11 +65,13 @@ describe("/sidiroar/api/user", () => {
     testAdmin = await generateTestAdmin();
     testUser = await generateTestUser();
     testUserAndAdmin = await generateTestAdminAndUser();
+    testSuperAdmin = await generateTestSuperAdmin();
 
     modelsOfUselessUser = await generateTestModels(uselessUser);
     modelsOfTestAdmin = await generateTestModels(testAdmin);
     modelsOfTestUser = await generateTestModels(testUser);
     modelsOfTestUserAndAdmin = await generateTestModels(testUserAndAdmin);
+    modelsOfTestSuperAdmin = await generateTestModels(testSuperAdmin);
   });
 
   afterEach(async () => {
@@ -225,10 +230,10 @@ describe("/sidiroar/api/user", () => {
 
       //#region CHECKING_DATABASE
 
-      //Only five users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser, created User
+      //Only six users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser, created User, superTestUser
       let userCount = await User.countDocuments({});
 
-      expect(userCount).toEqual(5);
+      expect(userCount).toEqual(6);
 
       //#endregion CHECKING_DATABASE
     });
@@ -257,10 +262,10 @@ describe("/sidiroar/api/user", () => {
 
       //#region CHECKING_DATABASE
 
-      //Only four users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser
+      //Only five users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser, superAdmin
       let userCount = await User.countDocuments({});
 
-      expect(userCount).toEqual(4);
+      expect(userCount).toEqual(5);
 
       //#endregion CHECKING_DATABASE
     });
@@ -287,10 +292,10 @@ describe("/sidiroar/api/user", () => {
 
       //#region CHECKING_DATABASE
 
-      //Only four users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser
+      //Only five users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser, superAdmin
       let userCount = await User.countDocuments({});
 
-      expect(userCount).toEqual(4);
+      expect(userCount).toEqual(5);
 
       //#endregion CHECKING_DATABASE
     });
@@ -317,10 +322,10 @@ describe("/sidiroar/api/user", () => {
 
       //#region CHECKING_DATABASE
 
-      //Only four users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser
+      //Only five users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser, superAdmin
       let userCount = await User.countDocuments({});
 
-      expect(userCount).toEqual(4);
+      expect(userCount).toEqual(5);
 
       //#endregion CHECKING_DATABASE
     });
@@ -347,10 +352,10 @@ describe("/sidiroar/api/user", () => {
 
       //#region CHECKING_DATABASE
 
-      //Only four users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser
+      //Only five users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser, superAdmin
       let userCount = await User.countDocuments({});
 
-      expect(userCount).toEqual(4);
+      expect(userCount).toEqual(5);
 
       //#endregion CHECKING_DATABASE
     });
@@ -377,10 +382,10 @@ describe("/sidiroar/api/user", () => {
 
       //#region CHECKING_DATABASE
 
-      //Only four users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser
+      //Only five users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser, superAdmin
       let userCount = await User.countDocuments({});
 
-      expect(userCount).toEqual(4);
+      expect(userCount).toEqual(5);
 
       //#endregion CHECKING_DATABASE
     });
@@ -411,10 +416,10 @@ describe("/sidiroar/api/user", () => {
 
       //#region CHECKING_DATABASE
 
-      //Only four users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser
+      //Only five users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser, superAdmin
       let userCount = await User.countDocuments({});
 
-      expect(userCount).toEqual(4);
+      expect(userCount).toEqual(5);
 
       //#endregion CHECKING_DATABASE
     });
@@ -441,10 +446,10 @@ describe("/sidiroar/api/user", () => {
 
       //#region CHECKING_DATABASE
 
-      //Only four users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser
+      //Only five users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser, superAdmin
       let userCount = await User.countDocuments({});
 
-      expect(userCount).toEqual(4);
+      expect(userCount).toEqual(5);
 
       //#endregion CHECKING_DATABASE
     });
@@ -471,10 +476,10 @@ describe("/sidiroar/api/user", () => {
 
       //#region CHECKING_DATABASE
 
-      //Only four users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser
+      //Only five users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser, superAdmin
       let userCount = await User.countDocuments({});
 
-      expect(userCount).toEqual(4);
+      expect(userCount).toEqual(5);
 
       //#endregion CHECKING_DATABASE
     });
@@ -501,10 +506,10 @@ describe("/sidiroar/api/user", () => {
 
       //#region CHECKING_DATABASE
 
-      //Only four users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser
+      //Only five users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser, superAdmin
       let userCount = await User.countDocuments({});
 
-      expect(userCount).toEqual(4);
+      expect(userCount).toEqual(5);
 
       //#endregion CHECKING_DATABASE
     });
@@ -533,10 +538,10 @@ describe("/sidiroar/api/user", () => {
 
       //#region CHECKING_DATABASE
 
-      //Only four users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser
+      //Only five users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser, superAdmin
       let userCount = await User.countDocuments({});
 
-      expect(userCount).toEqual(4);
+      expect(userCount).toEqual(5);
 
       //#endregion CHECKING_DATABASE
     });
@@ -616,10 +621,10 @@ describe("/sidiroar/api/user", () => {
 
       //#region CHECKING_DATABASE
 
-      //Only four users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser
+      //Only five users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser, superAdmin
       let userCount = await User.countDocuments({});
 
-      expect(userCount).toEqual(4);
+      expect(userCount).toEqual(5);
 
       //#endregion CHECKING_DATABASE
     });
@@ -776,10 +781,10 @@ describe("/sidiroar/api/user", () => {
 
       //#region CHECKING_DATABASE
 
-      //Only four users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser
+      //Only five users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser, superAdmin
       let userCount = await User.countDocuments({});
 
-      expect(userCount).toEqual(4);
+      expect(userCount).toEqual(5);
 
       //#endregion CHECKING_DATABASE
     });
@@ -806,10 +811,10 @@ describe("/sidiroar/api/user", () => {
 
       //#region CHECKING_DATABASE
 
-      //Only four users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser
+      //Only five users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser, superAdmin
       let userCount = await User.countDocuments({});
 
-      expect(userCount).toEqual(4);
+      expect(userCount).toEqual(5);
 
       //#endregion CHECKING_DATABASE
     });
@@ -836,10 +841,10 @@ describe("/sidiroar/api/user", () => {
 
       //#region CHECKING_DATABASE
 
-      //Only four users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser
+      //Only five users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser, superAdmin
       let userCount = await User.countDocuments({});
 
-      expect(userCount).toEqual(4);
+      expect(userCount).toEqual(5);
 
       //#endregion CHECKING_DATABASE
     });
@@ -868,10 +873,10 @@ describe("/sidiroar/api/user", () => {
 
       //#region CHECKING_DATABASE
 
-      //Only four users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser
+      //Only five users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser, superAdmin
       let userCount = await User.countDocuments({});
 
-      expect(userCount).toEqual(4);
+      expect(userCount).toEqual(5);
 
       //#endregion CHECKING_DATABASE
     });
@@ -951,10 +956,10 @@ describe("/sidiroar/api/user", () => {
 
       //#region CHECKING_DATABASE
 
-      //Only four users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser
+      //Only five users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser, superAdmin
       let userCount = await User.countDocuments({});
 
-      expect(userCount).toEqual(4);
+      expect(userCount).toEqual(5);
 
       //#endregion CHECKING_DATABASE
     });
@@ -984,10 +989,10 @@ describe("/sidiroar/api/user", () => {
 
       //#region CHECKING_DATABASE
 
-      //Only four users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser
+      //Only five users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser, superAdmin
       let userCount = await User.countDocuments({});
 
-      expect(userCount).toEqual(4);
+      expect(userCount).toEqual(5);
 
       //#endregion CHECKING_DATABASE
     });
@@ -1018,10 +1023,10 @@ describe("/sidiroar/api/user", () => {
 
       //#region CHECKING_DATABASE
 
-      //Only four users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser
+      //Only five users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser, superAdmin
       let userCount = await User.countDocuments({});
 
-      expect(userCount).toEqual(4);
+      expect(userCount).toEqual(5);
 
       //#endregion CHECKING_DATABASE
     });
@@ -1048,10 +1053,10 @@ describe("/sidiroar/api/user", () => {
 
       //#region CHECKING_DATABASE
 
-      //Only four users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser
+      //Only five users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser, superAdmin
       let userCount = await User.countDocuments({});
 
-      expect(userCount).toEqual(4);
+      expect(userCount).toEqual(5);
 
       //#endregion CHECKING_DATABASE
     });
@@ -1078,10 +1083,10 @@ describe("/sidiroar/api/user", () => {
 
       //#region CHECKING_DATABASE
 
-      //Only four users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser
+      //Only five users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser, superAdmin
       let userCount = await User.countDocuments({});
 
-      expect(userCount).toEqual(4);
+      expect(userCount).toEqual(5);
 
       //#endregion CHECKING_DATABASE
     });
@@ -1108,10 +1113,10 @@ describe("/sidiroar/api/user", () => {
 
       //#region CHECKING_DATABASE
 
-      //Only four users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser
+      //Only five users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser, superAdmin
       let userCount = await User.countDocuments({});
 
-      expect(userCount).toEqual(4);
+      expect(userCount).toEqual(5);
 
       //#endregion CHECKING_DATABASE
     });
@@ -1140,10 +1145,10 @@ describe("/sidiroar/api/user", () => {
 
       //#region CHECKING_DATABASE
 
-      //Only four users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser
+      //Only five users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser, superAdmin
       let userCount = await User.countDocuments({});
 
-      expect(userCount).toEqual(4);
+      expect(userCount).toEqual(5);
 
       //#endregion CHECKING_DATABASE
     });
@@ -1221,21 +1226,21 @@ describe("/sidiroar/api/user", () => {
 
       //#region CHECKING_DATABASE
 
-      //Only four users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser
+      //Only five users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser, superAdmin
       let userCount = await User.countDocuments({});
 
-      expect(userCount).toEqual(4);
+      expect(userCount).toEqual(5);
 
       //#endregion CHECKING_DATABASE
     });
 
-    it("should create new user and return 200 if permissions is 255", async () => {
+    it("should create new user and return 200 if permissions is 255 - only if user is superAdmin", async () => {
       requestPayload.permissions = 255;
+      jwt = await testSuperAdmin.generateJWT();
 
       let response = await exec();
 
       //#region CHECKING_RESPONSE
-
       expect(response).toBeDefined();
       expect(response.status).toEqual(200);
       expect(response.body).toBeDefined();
@@ -1300,10 +1305,10 @@ describe("/sidiroar/api/user", () => {
 
       //#region CHECKING_DATABASE
 
-      //Only four users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser
+      //Only five users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser, superAdmin
       let userCount = await User.countDocuments({});
 
-      expect(userCount).toEqual(4);
+      expect(userCount).toEqual(5);
 
       //#endregion CHECKING_DATABASE
     });
@@ -1328,10 +1333,10 @@ describe("/sidiroar/api/user", () => {
 
       //#region CHECKING_DATABASE
 
-      //Only four users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser
+      //Only five users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser, superAdmin
       let userCount = await User.countDocuments({});
 
-      expect(userCount).toEqual(4);
+      expect(userCount).toEqual(5);
 
       //#endregion CHECKING_DATABASE
     });
@@ -1352,10 +1357,10 @@ describe("/sidiroar/api/user", () => {
 
       //#region CHECKING_DATABASE
 
-      //Only four users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser
+      //Only five users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser, superAdmin
       let userCount = await User.countDocuments({});
 
-      expect(userCount).toEqual(4);
+      expect(userCount).toEqual(5);
 
       //#endregion CHECKING_DATABASE
     });
@@ -1376,10 +1381,10 @@ describe("/sidiroar/api/user", () => {
 
       //#region CHECKING_DATABASE
 
-      //Only four users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser
+      //Only five users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser, superAdmin
       let userCount = await User.countDocuments({});
 
-      expect(userCount).toEqual(4);
+      expect(userCount).toEqual(5);
 
       //#endregion CHECKING_DATABASE
     });
@@ -1446,10 +1451,10 @@ describe("/sidiroar/api/user", () => {
 
       //#region CHECKING_DATABASE
 
-      //Only four users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser
+      //Only five users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser, superAdmin
       let userCount = await User.countDocuments({});
 
-      expect(userCount).toEqual(4);
+      expect(userCount).toEqual(5);
 
       //#endregion CHECKING_DATABASE
     });
@@ -1477,10 +1482,158 @@ describe("/sidiroar/api/user", () => {
 
       //#region CHECKING_DATABASE
 
-      //Only four users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser
+      //Only five users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser, superAdmin
       let userCount = await User.countDocuments({});
 
-      expect(userCount).toEqual(4);
+      expect(userCount).toEqual(5);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should not create new user and return 401 if created user is an admin, and user is an admin", async () => {
+      jwt = await testAdmin.generateJWT();
+      requestPayload.permissions = 2;
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(401);
+      expect(response.text).toBeDefined();
+      expect(response.text).toContain(
+        "Access denied. Only superAdmin can create admin"
+      );
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //Only five users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser, superAdmin
+      let userCount = await User.countDocuments({});
+
+      expect(userCount).toEqual(5);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should create new user and return 200 if created user is an admin, and user is a superAdmin", async () => {
+      jwt = await testSuperAdmin.generateJWT();
+      requestPayload.permissions = 2;
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(200);
+      expect(response.body).toBeDefined();
+
+      //Body should correspond with payload (except  _id)
+      let expectedBody = {
+        ...requestPayload,
+        _id: response.body._id,
+        modelIds: [],
+        modelNames: []
+      };
+
+      expect(response.body).toEqual(expectedBody);
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //New user should be saved inside database
+      let user = await User.findOne({ _id: response.body._id });
+      expect(user).toBeDefined();
+
+      //user payload should be the same to response (except hashed password)
+      let userPayload = _.pick(user, ["email", "name", "permissions"]);
+      //Id should be converted to string
+      userPayload._id = user._id.toString();
+      userPayload.password = requestPayload.password;
+      //modelIds and modelNames should be empty - it is new user
+      userPayload.modelNames = [];
+      userPayload.modelIds = [];
+
+      expect(response.body).toEqual(userPayload);
+
+      //Password should be encrypted properly
+      expect(bcrypt.compareSync(requestPayload.password, user.password));
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should not create new user and return 401 if created user is an superAdmin, and user is an admin", async () => {
+      jwt = await testAdmin.generateJWT();
+      requestPayload.permissions = 4;
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(401);
+      expect(response.text).toBeDefined();
+      expect(response.text).toContain(
+        "Access denied. Only superAdmin can create admin"
+      );
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //Only five users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser, superAdmin
+      let userCount = await User.countDocuments({});
+
+      expect(userCount).toEqual(5);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should create new user and return 200 if created user is an admin, and user is a superAdmin", async () => {
+      jwt = await testSuperAdmin.generateJWT();
+      requestPayload.permissions = 4;
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(200);
+      expect(response.body).toBeDefined();
+
+      //Body should correspond with payload (except  _id)
+      let expectedBody = {
+        ...requestPayload,
+        _id: response.body._id,
+        modelIds: [],
+        modelNames: []
+      };
+
+      expect(response.body).toEqual(expectedBody);
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //New user should be saved inside database
+      let user = await User.findOne({ _id: response.body._id });
+      expect(user).toBeDefined();
+
+      //user payload should be the same to response (except hashed password)
+      let userPayload = _.pick(user, ["email", "name", "permissions"]);
+      //Id should be converted to string
+      userPayload._id = user._id.toString();
+      userPayload.password = requestPayload.password;
+      //modelIds and modelNames should be empty - it is new user
+      userPayload.modelNames = [];
+      userPayload.modelIds = [];
+
+      expect(response.body).toEqual(userPayload);
+
+      //Password should be encrypted properly
+      expect(bcrypt.compareSync(requestPayload.password, user.password));
 
       //#endregion CHECKING_DATABASE
     });
@@ -1520,8 +1673,8 @@ describe("/sidiroar/api/user", () => {
       //Body should contain all users payload
       expect(response.body).toBeDefined();
 
-      //There should be 4 users - useless, normal, admin, and normal+admin
-      expect(response.body.length).toEqual(4);
+      //There should be 4 users - useless, normal, admin, and normal+admin and superAdmin
+      expect(response.body.length).toEqual(5);
 
       let expectedBody = [
         {
@@ -1555,6 +1708,14 @@ describe("/sidiroar/api/user", () => {
           permissions: testUserAndAdmin.permissions,
           modelIds: modelsOfTestUserAndAdmin.map(model => model._id.toString()),
           modelNames: modelsOfTestUserAndAdmin.map(model => model.name)
+        },
+        {
+          _id: testSuperAdmin._id.toString(),
+          name: testSuperAdmin.name,
+          email: testSuperAdmin.email,
+          permissions: testSuperAdmin.permissions,
+          modelIds: modelsOfTestSuperAdmin.map(model => model._id.toString()),
+          modelNames: modelsOfTestSuperAdmin.map(model => model.name)
         }
       ];
 
@@ -1582,8 +1743,8 @@ describe("/sidiroar/api/user", () => {
       //Body should contain all users payload
       expect(response.body).toBeDefined();
 
-      //There should be 4 users - useless, normal, admin, and normal+admin
-      expect(response.body.length).toEqual(4);
+      //There should be 4 users - useless, normal, admin, and normal+admin and superAdmin
+      expect(response.body.length).toEqual(5);
 
       let expectedBody = [
         {
@@ -1615,6 +1776,14 @@ describe("/sidiroar/api/user", () => {
           name: testUserAndAdmin.name,
           email: testUserAndAdmin.email,
           permissions: testUserAndAdmin.permissions,
+          modelIds: [],
+          modelNames: []
+        },
+        {
+          _id: testSuperAdmin._id.toString(),
+          name: testSuperAdmin.name,
+          email: testSuperAdmin.email,
+          permissions: testSuperAdmin.permissions,
           modelIds: [],
           modelNames: []
         }
@@ -1735,8 +1904,8 @@ describe("/sidiroar/api/user", () => {
       //Body should contain all users payload
       expect(response.body).toBeDefined();
 
-      //There should be 4 users - useless, normal, admin, and normal+admin
-      expect(response.body.length).toEqual(4);
+      //There should be 4 users - useless, normal, admin, and normal+admin, superAdmin
+      expect(response.body.length).toEqual(5);
 
       let expectedBody = [
         {
@@ -1770,6 +1939,14 @@ describe("/sidiroar/api/user", () => {
           permissions: testUserAndAdmin.permissions,
           modelIds: modelsOfTestUserAndAdmin.map(model => model._id.toString()),
           modelNames: modelsOfTestUserAndAdmin.map(model => model.name)
+        },
+        {
+          _id: testSuperAdmin._id.toString(),
+          name: testSuperAdmin.name,
+          email: testSuperAdmin.email,
+          permissions: testSuperAdmin.permissions,
+          modelIds: modelsOfTestSuperAdmin.map(model => model._id.toString()),
+          modelNames: modelsOfTestSuperAdmin.map(model => model.name)
         }
       ];
 
@@ -1799,10 +1976,10 @@ describe("/sidiroar/api/user", () => {
 
       //#region CHECKING_DATABASE
 
-      //Only four users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser
+      //Only five users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser, superAdmin
       let userCount = await User.countDocuments({});
 
-      expect(userCount).toEqual(4);
+      expect(userCount).toEqual(5);
 
       //#endregion CHECKING_DATABASE
     });
@@ -2007,10 +2184,10 @@ describe("/sidiroar/api/user", () => {
 
       //#region CHECKING_DATABASE
 
-      //Only four users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser
+      //Only five users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser, superAdmin
       let userCount = await User.countDocuments({});
 
-      expect(userCount).toEqual(4);
+      expect(userCount).toEqual(5);
 
       //#endregion CHECKING_DATABASE
     });
@@ -2093,7 +2270,8 @@ describe("/sidiroar/api/user", () => {
         [
           uselessUser._id.toString(),
           testAdmin._id.toString(),
-          testUserAndAdmin._id.toString()
+          testUserAndAdmin._id.toString(),
+          testSuperAdmin._id.toString()
         ],
         id => id
       );
@@ -2110,7 +2288,8 @@ describe("/sidiroar/api/user", () => {
         [
           ...modelsOfUselessUser,
           ...modelsOfTestAdmin,
-          ...modelsOfTestUserAndAdmin
+          ...modelsOfTestUserAndAdmin,
+          ...modelsOfTestSuperAdmin
         ].map(user => user._id.toString()),
         id => id
       );
@@ -2156,7 +2335,8 @@ describe("/sidiroar/api/user", () => {
         [
           uselessUser._id.toString(),
           testAdmin._id.toString(),
-          testUserAndAdmin._id.toString()
+          testUserAndAdmin._id.toString(),
+          testSuperAdmin._id.toString()
         ],
         id => id
       );
@@ -2173,7 +2353,8 @@ describe("/sidiroar/api/user", () => {
         [
           ...modelsOfUselessUser,
           ...modelsOfTestAdmin,
-          ...modelsOfTestUserAndAdmin
+          ...modelsOfTestUserAndAdmin,
+          ...modelsOfTestSuperAdmin
         ].map(user => user._id.toString()),
         id => id
       );
@@ -2218,7 +2399,8 @@ describe("/sidiroar/api/user", () => {
           uselessUser._id.toString(),
           testUser._id.toString(),
           testAdmin._id.toString(),
-          testUserAndAdmin._id.toString()
+          testUserAndAdmin._id.toString(),
+          testSuperAdmin._id.toString()
         ],
         id => id
       );
@@ -2236,7 +2418,8 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfUselessUser,
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
-          ...modelsOfTestUser
+          ...modelsOfTestUser,
+          ...modelsOfTestSuperAdmin
         ].map(user => user._id.toString()),
         id => id
       );
@@ -2269,7 +2452,8 @@ describe("/sidiroar/api/user", () => {
           uselessUser._id.toString(),
           testUser._id.toString(),
           testAdmin._id.toString(),
-          testUserAndAdmin._id.toString()
+          testUserAndAdmin._id.toString(),
+          testSuperAdmin._id.toString()
         ],
         id => id
       );
@@ -2287,7 +2471,8 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfUselessUser,
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
-          ...modelsOfTestUser
+          ...modelsOfTestUser,
+          ...modelsOfTestSuperAdmin
         ].map(user => user._id.toString()),
         id => id
       );
@@ -2320,7 +2505,8 @@ describe("/sidiroar/api/user", () => {
           uselessUser._id.toString(),
           testUser._id.toString(),
           testAdmin._id.toString(),
-          testUserAndAdmin._id.toString()
+          testUserAndAdmin._id.toString(),
+          testSuperAdmin._id.toString()
         ],
         id => id
       );
@@ -2338,7 +2524,8 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfUselessUser,
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
-          ...modelsOfTestUser
+          ...modelsOfTestUser,
+          ...modelsOfTestSuperAdmin
         ].map(user => user._id.toString()),
         id => id
       );
@@ -2375,7 +2562,8 @@ describe("/sidiroar/api/user", () => {
           uselessUser._id.toString(),
           testUser._id.toString(),
           testAdmin._id.toString(),
-          testUserAndAdmin._id.toString()
+          testUserAndAdmin._id.toString(),
+          testSuperAdmin._id.toString()
         ],
         id => id
       );
@@ -2393,7 +2581,8 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfUselessUser,
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
-          ...modelsOfTestUser
+          ...modelsOfTestUser,
+          ...modelsOfTestSuperAdmin
         ].map(user => user._id.toString()),
         id => id
       );
@@ -2430,7 +2619,8 @@ describe("/sidiroar/api/user", () => {
           uselessUser._id.toString(),
           testUser._id.toString(),
           testAdmin._id.toString(),
-          testUserAndAdmin._id.toString()
+          testUserAndAdmin._id.toString(),
+          testSuperAdmin._id.toString()
         ],
         id => id
       );
@@ -2448,7 +2638,8 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfUselessUser,
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
-          ...modelsOfTestUser
+          ...modelsOfTestUser,
+          ...modelsOfTestSuperAdmin
         ].map(user => user._id.toString()),
         id => id
       );
@@ -2485,7 +2676,8 @@ describe("/sidiroar/api/user", () => {
           uselessUser._id.toString(),
           testUser._id.toString(),
           testAdmin._id.toString(),
-          testUserAndAdmin._id.toString()
+          testUserAndAdmin._id.toString(),
+          testSuperAdmin._id.toString()
         ],
         id => id
       );
@@ -2503,7 +2695,8 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfUselessUser,
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
-          ...modelsOfTestUser
+          ...modelsOfTestUser,
+          ...modelsOfTestSuperAdmin
         ].map(user => user._id.toString()),
         id => id
       );
@@ -2564,7 +2757,8 @@ describe("/sidiroar/api/user", () => {
           uselessUser._id.toString(),
           testUser._id.toString(),
           testAdmin._id.toString(),
-          testUserAndAdmin._id.toString()
+          testUserAndAdmin._id.toString(),
+          testSuperAdmin._id.toString()
         ],
         id => id
       );
@@ -2582,7 +2776,8 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfUselessUser,
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
-          ...modelsOfTestUser
+          ...modelsOfTestUser,
+          ...modelsOfTestSuperAdmin
         ].map(user => user._id.toString()),
         id => id
       );
@@ -2626,7 +2821,8 @@ describe("/sidiroar/api/user", () => {
           uselessUser._id.toString(),
           testUser._id.toString(),
           testAdmin._id.toString(),
-          testUserAndAdmin._id.toString()
+          testUserAndAdmin._id.toString(),
+          testSuperAdmin._id.toString()
         ],
         id => id
       );
@@ -2634,6 +2830,257 @@ describe("/sidiroar/api/user", () => {
       expect(idOfAllUsers).toEqual(expectedUserIds);
 
       //Database should contain all models - nothing should be deleted
+      let idOfAllModels = _.sortBy(
+        (await Model.find({})).map(model => model._id.toString()),
+        id => id
+      );
+
+      let expectedModelIds = _.sortBy(
+        [
+          ...modelsOfUselessUser,
+          ...modelsOfTestAdmin,
+          ...modelsOfTestUserAndAdmin,
+          ...modelsOfTestUser,
+          ...modelsOfTestSuperAdmin
+        ].map(user => user._id.toString()),
+        id => id
+      );
+
+      expect(idOfAllModels).toEqual(expectedModelIds);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should not return any user and return 401 if deleted user is an admin and user is and admin", async () => {
+      jwt = await testAdmin.generateJWT();
+      id = testUserAndAdmin._id;
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(401);
+      expect(response.text).toBeDefined();
+      expect(response.text).toContain(
+        "Access denied. Only superAdmin can delete admins"
+      );
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //Database should contain all users - nothing should be deleted
+      let idOfAllUsers = _.sortBy(
+        (await User.find({})).map(user => user._id.toString()),
+        id => id
+      );
+
+      let expectedUserIds = _.sortBy(
+        [
+          uselessUser._id.toString(),
+          testUser._id.toString(),
+          testAdmin._id.toString(),
+          testUserAndAdmin._id.toString(),
+          testSuperAdmin._id.toString()
+        ],
+        id => id
+      );
+
+      expect(idOfAllUsers).toEqual(expectedUserIds);
+
+      //Database should contain all models - nothing should be deleted
+      let idOfAllModels = _.sortBy(
+        (await Model.find({})).map(model => model._id.toString()),
+        id => id
+      );
+
+      let expectedModelIds = _.sortBy(
+        [
+          ...modelsOfUselessUser,
+          ...modelsOfTestAdmin,
+          ...modelsOfTestUserAndAdmin,
+          ...modelsOfTestUser,
+          ...modelsOfTestSuperAdmin
+        ].map(user => user._id.toString()),
+        id => id
+      );
+
+      expect(idOfAllModels).toEqual(expectedModelIds);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should return user and return 200 with user payload if deleted user is and admin and jwt of superAdmin user is given", async () => {
+      jwt = await testSuperAdmin.generateJWT();
+      id = testUserAndAdmin._id;
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(200);
+
+      let expectedPayload = {
+        _id: testUserAndAdmin._id.toString(),
+        name: testUserAndAdmin.name,
+        email: testUserAndAdmin.email,
+        permissions: testUserAndAdmin.permissions,
+        modelIds: modelsOfTestUserAndAdmin.map(model => model._id.toString()),
+        modelNames: modelsOfTestUserAndAdmin.map(model => model.name)
+      };
+
+      expect(response.body).toEqual(expectedPayload);
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //Database should contain all user except deleted one (testUser)
+      let idOfAllUsers = _.sortBy(
+        (await User.find({})).map(user => user._id.toString()),
+        id => id
+      );
+
+      let expectedUserIds = _.sortBy(
+        [
+          uselessUser._id.toString(),
+          testUser._id.toString(),
+          testAdmin._id.toString(),
+          testSuperAdmin._id.toString()
+        ],
+        id => id
+      );
+
+      expect(idOfAllUsers).toEqual(expectedUserIds);
+
+      //Database should contain all models except models of deleted user (testUser)
+      let idOfAllModels = _.sortBy(
+        (await Model.find({})).map(model => model._id.toString()),
+        id => id
+      );
+
+      let expectedModelIds = _.sortBy(
+        [
+          ...modelsOfUselessUser,
+          ...modelsOfTestAdmin,
+          ...modelsOfTestUser,
+          ...modelsOfTestSuperAdmin
+        ].map(user => user._id.toString()),
+        id => id
+      );
+
+      expect(idOfAllModels).toEqual(expectedModelIds);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should not return any user and return 401 if deleted user is an superAdmin and user is and admin", async () => {
+      jwt = await testAdmin.generateJWT();
+      id = testSuperAdmin._id;
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(401);
+      expect(response.text).toBeDefined();
+      expect(response.text).toContain(
+        "Access denied. Only superAdmin can delete admins"
+      );
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //Database should contain all users - nothing should be deleted
+      let idOfAllUsers = _.sortBy(
+        (await User.find({})).map(user => user._id.toString()),
+        id => id
+      );
+
+      let expectedUserIds = _.sortBy(
+        [
+          uselessUser._id.toString(),
+          testUser._id.toString(),
+          testAdmin._id.toString(),
+          testUserAndAdmin._id.toString(),
+          testSuperAdmin._id.toString()
+        ],
+        id => id
+      );
+
+      expect(idOfAllUsers).toEqual(expectedUserIds);
+
+      //Database should contain all models - nothing should be deleted
+      let idOfAllModels = _.sortBy(
+        (await Model.find({})).map(model => model._id.toString()),
+        id => id
+      );
+
+      let expectedModelIds = _.sortBy(
+        [
+          ...modelsOfUselessUser,
+          ...modelsOfTestAdmin,
+          ...modelsOfTestUserAndAdmin,
+          ...modelsOfTestUser,
+          ...modelsOfTestSuperAdmin
+        ].map(user => user._id.toString()),
+        id => id
+      );
+
+      expect(idOfAllModels).toEqual(expectedModelIds);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should return user and return 200 with user payload if deleted user is an superAdmin and jwt of superAdmin user is given", async () => {
+      jwt = await testSuperAdmin.generateJWT();
+      id = testSuperAdmin._id;
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(200);
+
+      let expectedPayload = {
+        _id: testSuperAdmin._id.toString(),
+        name: testSuperAdmin.name,
+        email: testSuperAdmin.email,
+        permissions: testSuperAdmin.permissions,
+        modelIds: modelsOfTestSuperAdmin.map(model => model._id.toString()),
+        modelNames: modelsOfTestSuperAdmin.map(model => model.name)
+      };
+
+      expect(response.body).toEqual(expectedPayload);
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //Database should contain all user except deleted one (testUser)
+      let idOfAllUsers = _.sortBy(
+        (await User.find({})).map(user => user._id.toString()),
+        id => id
+      );
+
+      let expectedUserIds = _.sortBy(
+        [
+          uselessUser._id.toString(),
+          testUser._id.toString(),
+          testUserAndAdmin._id.toString(),
+          testAdmin._id.toString()
+        ],
+        id => id
+      );
+
+      expect(idOfAllUsers).toEqual(expectedUserIds);
+
+      //Database should contain all models except models of deleted user (testUser)
       let idOfAllModels = _.sortBy(
         (await Model.find({})).map(model => model._id.toString()),
         id => id
@@ -2667,7 +3114,7 @@ describe("/sidiroar/api/user", () => {
       requestPayload = {
         email: testUser.email,
         name: "editedTestUser",
-        permissions: 2,
+        permissions: 0,
         password: "9876"
       };
     });
@@ -2952,7 +3399,8 @@ describe("/sidiroar/api/user", () => {
           uselessUser._id.toString(),
           testUser._id.toString(),
           testAdmin._id.toString(),
-          testUserAndAdmin._id.toString()
+          testUserAndAdmin._id.toString(),
+          testSuperAdmin._id.toString()
         ],
         id => id
       );
@@ -2970,7 +3418,8 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfUselessUser,
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
-          ...modelsOfTestUser
+          ...modelsOfTestUser,
+          ...modelsOfTestSuperAdmin
         ].map(user => user._id.toString()),
         id => id
       );
@@ -3007,7 +3456,8 @@ describe("/sidiroar/api/user", () => {
           uselessUser._id.toString(),
           testUser._id.toString(),
           testAdmin._id.toString(),
-          testUserAndAdmin._id.toString()
+          testUserAndAdmin._id.toString(),
+          testSuperAdmin._id.toString()
         ],
         id => id
       );
@@ -3025,7 +3475,8 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfUselessUser,
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
-          ...modelsOfTestUser
+          ...modelsOfTestUser,
+          ...modelsOfTestSuperAdmin
         ].map(user => user._id.toString()),
         id => id
       );
@@ -3062,7 +3513,8 @@ describe("/sidiroar/api/user", () => {
           uselessUser._id.toString(),
           testUser._id.toString(),
           testAdmin._id.toString(),
-          testUserAndAdmin._id.toString()
+          testUserAndAdmin._id.toString(),
+          testSuperAdmin._id.toString()
         ],
         id => id
       );
@@ -3080,7 +3532,8 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfUselessUser,
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
-          ...modelsOfTestUser
+          ...modelsOfTestUser,
+          ...modelsOfTestSuperAdmin
         ].map(user => user._id.toString()),
         id => id
       );
@@ -3117,7 +3570,8 @@ describe("/sidiroar/api/user", () => {
           uselessUser._id.toString(),
           testUser._id.toString(),
           testAdmin._id.toString(),
-          testUserAndAdmin._id.toString()
+          testUserAndAdmin._id.toString(),
+          testSuperAdmin._id.toString()
         ],
         id => id
       );
@@ -3135,7 +3589,8 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfUselessUser,
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
-          ...modelsOfTestUser
+          ...modelsOfTestUser,
+          ...modelsOfTestSuperAdmin
         ].map(user => user._id.toString()),
         id => id
       );
@@ -3172,7 +3627,8 @@ describe("/sidiroar/api/user", () => {
           uselessUser._id.toString(),
           testUser._id.toString(),
           testAdmin._id.toString(),
-          testUserAndAdmin._id.toString()
+          testUserAndAdmin._id.toString(),
+          testSuperAdmin._id.toString()
         ],
         id => id
       );
@@ -3190,7 +3646,8 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfUselessUser,
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
-          ...modelsOfTestUser
+          ...modelsOfTestUser,
+          ...modelsOfTestSuperAdmin
         ].map(user => user._id.toString()),
         id => id
       );
@@ -3227,7 +3684,8 @@ describe("/sidiroar/api/user", () => {
           uselessUser._id.toString(),
           testUser._id.toString(),
           testAdmin._id.toString(),
-          testUserAndAdmin._id.toString()
+          testUserAndAdmin._id.toString(),
+          testSuperAdmin._id.toString()
         ],
         id => id
       );
@@ -3245,7 +3703,8 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfUselessUser,
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
-          ...modelsOfTestUser
+          ...modelsOfTestUser,
+          ...modelsOfTestSuperAdmin
         ].map(user => user._id.toString()),
         id => id
       );
@@ -3282,7 +3741,8 @@ describe("/sidiroar/api/user", () => {
           uselessUser._id.toString(),
           testUser._id.toString(),
           testAdmin._id.toString(),
-          testUserAndAdmin._id.toString()
+          testUserAndAdmin._id.toString(),
+          testSuperAdmin._id.toString()
         ],
         id => id
       );
@@ -3300,7 +3760,8 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfUselessUser,
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
-          ...modelsOfTestUser
+          ...modelsOfTestUser,
+          ...modelsOfTestSuperAdmin
         ].map(user => user._id.toString()),
         id => id
       );
@@ -3337,7 +3798,8 @@ describe("/sidiroar/api/user", () => {
           uselessUser._id.toString(),
           testUser._id.toString(),
           testAdmin._id.toString(),
-          testUserAndAdmin._id.toString()
+          testUserAndAdmin._id.toString(),
+          testSuperAdmin._id.toString()
         ],
         id => id
       );
@@ -3355,7 +3817,8 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfUselessUser,
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
-          ...modelsOfTestUser
+          ...modelsOfTestUser,
+          ...modelsOfTestSuperAdmin
         ].map(user => user._id.toString()),
         id => id
       );
@@ -3394,7 +3857,8 @@ describe("/sidiroar/api/user", () => {
           uselessUser._id.toString(),
           testUser._id.toString(),
           testAdmin._id.toString(),
-          testUserAndAdmin._id.toString()
+          testUserAndAdmin._id.toString(),
+          testSuperAdmin._id.toString()
         ],
         id => id
       );
@@ -3412,7 +3876,8 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfUselessUser,
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
-          ...modelsOfTestUser
+          ...modelsOfTestUser,
+          ...modelsOfTestSuperAdmin
         ].map(user => user._id.toString()),
         id => id
       );
@@ -3496,7 +3961,8 @@ describe("/sidiroar/api/user", () => {
           uselessUser._id.toString(),
           testUser._id.toString(),
           testAdmin._id.toString(),
-          testUserAndAdmin._id.toString()
+          testUserAndAdmin._id.toString(),
+          testSuperAdmin._id.toString()
         ],
         id => id
       );
@@ -3514,7 +3980,8 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfUselessUser,
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
-          ...modelsOfTestUser
+          ...modelsOfTestUser,
+          ...modelsOfTestSuperAdmin
         ].map(user => user._id.toString()),
         id => id
       );
@@ -3597,7 +4064,8 @@ describe("/sidiroar/api/user", () => {
           uselessUser._id.toString(),
           testUser._id.toString(),
           testAdmin._id.toString(),
-          testUserAndAdmin._id.toString()
+          testUserAndAdmin._id.toString(),
+          testSuperAdmin._id.toString()
         ],
         id => id
       );
@@ -3615,7 +4083,8 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfUselessUser,
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
-          ...modelsOfTestUser
+          ...modelsOfTestUser,
+          ...modelsOfTestSuperAdmin
         ].map(user => user._id.toString()),
         id => id
       );
@@ -3651,7 +4120,8 @@ describe("/sidiroar/api/user", () => {
           uselessUser._id.toString(),
           testUser._id.toString(),
           testAdmin._id.toString(),
-          testUserAndAdmin._id.toString()
+          testUserAndAdmin._id.toString(),
+          testSuperAdmin._id.toString()
         ],
         id => id
       );
@@ -3669,7 +4139,8 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfUselessUser,
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
-          ...modelsOfTestUser
+          ...modelsOfTestUser,
+          ...modelsOfTestSuperAdmin
         ].map(user => user._id.toString()),
         id => id
       );
@@ -3707,7 +4178,8 @@ describe("/sidiroar/api/user", () => {
           uselessUser._id.toString(),
           testUser._id.toString(),
           testAdmin._id.toString(),
-          testUserAndAdmin._id.toString()
+          testUserAndAdmin._id.toString(),
+          testSuperAdmin._id.toString()
         ],
         id => id
       );
@@ -3725,7 +4197,8 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfUselessUser,
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
-          ...modelsOfTestUser
+          ...modelsOfTestUser,
+          ...modelsOfTestSuperAdmin
         ].map(user => user._id.toString()),
         id => id
       );
@@ -3810,7 +4283,8 @@ describe("/sidiroar/api/user", () => {
           uselessUser._id.toString(),
           testUser._id.toString(),
           testAdmin._id.toString(),
-          testUserAndAdmin._id.toString()
+          testUserAndAdmin._id.toString(),
+          testSuperAdmin._id.toString()
         ],
         id => id
       );
@@ -3828,7 +4302,8 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfUselessUser,
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
-          ...modelsOfTestUser
+          ...modelsOfTestUser,
+          ...modelsOfTestSuperAdmin
         ].map(user => user._id.toString()),
         id => id
       );
@@ -3838,7 +4313,8 @@ describe("/sidiroar/api/user", () => {
       //#endregion CHECKING_DATABASE
     });
 
-    it("should return 200, edit user, and return it - if  users permissions is 255", async () => {
+    it("should return 200, edit user, and return it - if  users permissions is 255 and user is a superAdmin", async () => {
+      jwt = await testSuperAdmin.generateJWT();
       //101 signs
       requestPayload.permissions = 255;
 
@@ -3912,7 +4388,8 @@ describe("/sidiroar/api/user", () => {
           uselessUser._id.toString(),
           testUser._id.toString(),
           testAdmin._id.toString(),
-          testUserAndAdmin._id.toString()
+          testUserAndAdmin._id.toString(),
+          testSuperAdmin._id.toString()
         ],
         id => id
       );
@@ -3930,7 +4407,8 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfUselessUser,
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
-          ...modelsOfTestUser
+          ...modelsOfTestUser,
+          ...modelsOfTestSuperAdmin
         ].map(user => user._id.toString()),
         id => id
       );
@@ -3967,7 +4445,8 @@ describe("/sidiroar/api/user", () => {
           uselessUser._id.toString(),
           testUser._id.toString(),
           testAdmin._id.toString(),
-          testUserAndAdmin._id.toString()
+          testUserAndAdmin._id.toString(),
+          testSuperAdmin._id.toString()
         ],
         id => id
       );
@@ -3985,7 +4464,8 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfUselessUser,
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
-          ...modelsOfTestUser
+          ...modelsOfTestUser,
+          ...modelsOfTestSuperAdmin
         ].map(user => user._id.toString()),
         id => id
       );
@@ -4022,7 +4502,8 @@ describe("/sidiroar/api/user", () => {
           uselessUser._id.toString(),
           testUser._id.toString(),
           testAdmin._id.toString(),
-          testUserAndAdmin._id.toString()
+          testUserAndAdmin._id.toString(),
+          testSuperAdmin._id.toString()
         ],
         id => id
       );
@@ -4040,7 +4521,8 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfUselessUser,
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
-          ...modelsOfTestUser
+          ...modelsOfTestUser,
+          ...modelsOfTestSuperAdmin
         ].map(user => user._id.toString()),
         id => id
       );
@@ -4123,7 +4605,8 @@ describe("/sidiroar/api/user", () => {
           uselessUser._id.toString(),
           testUser._id.toString(),
           testAdmin._id.toString(),
-          testUserAndAdmin._id.toString()
+          testUserAndAdmin._id.toString(),
+          testSuperAdmin._id.toString()
         ],
         id => id
       );
@@ -4141,7 +4624,8 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfUselessUser,
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
-          ...modelsOfTestUser
+          ...modelsOfTestUser,
+          ...modelsOfTestSuperAdmin
         ].map(user => user._id.toString()),
         id => id
       );
@@ -4185,7 +4669,8 @@ describe("/sidiroar/api/user", () => {
           uselessUser._id.toString(),
           testUser._id.toString(),
           testAdmin._id.toString(),
-          testUserAndAdmin._id.toString()
+          testUserAndAdmin._id.toString(),
+          testSuperAdmin._id.toString()
         ],
         id => id
       );
@@ -4203,7 +4688,8 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfUselessUser,
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
-          ...modelsOfTestUser
+          ...modelsOfTestUser,
+          ...modelsOfTestSuperAdmin
         ].map(user => user._id.toString()),
         id => id
       );
@@ -4212,6 +4698,536 @@ describe("/sidiroar/api/user", () => {
 
       //#endregion CHECKING_DATABASE
     });
+
+    it("should not edit any user and return 401 if user is an admin and jwt is of admin user", async () => {
+      jwt = await testAdmin.generateJWT();
+      id = testUserAndAdmin._id;
+      requestPayload = {
+        email: testUserAndAdmin.email,
+        name: "editedTestUser",
+        permissions: 0,
+        password: "9876"
+      };
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(401);
+      expect(response.text).toBeDefined();
+      expect(response.text).toContain(
+        "Access denied. Only superAdmin can edit admins"
+      );
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //Database should contain all users - nothing should be changed
+      let idOfAllUsers = _.sortBy(
+        (await User.find({})).map(user => user._id.toString()),
+        id => id
+      );
+
+      let expectedUserIds = _.sortBy(
+        [
+          uselessUser._id.toString(),
+          testUser._id.toString(),
+          testAdmin._id.toString(),
+          testUserAndAdmin._id.toString(),
+          testSuperAdmin._id.toString()
+        ],
+        id => id
+      );
+
+      expect(idOfAllUsers).toEqual(expectedUserIds);
+
+      //Database should contain all models - nothing should be changed
+      let idOfAllModels = _.sortBy(
+        (await Model.find({})).map(model => model._id.toString()),
+        id => id
+      );
+
+      let expectedModelIds = _.sortBy(
+        [
+          ...modelsOfUselessUser,
+          ...modelsOfTestAdmin,
+          ...modelsOfTestUserAndAdmin,
+          ...modelsOfTestUser,
+          ...modelsOfTestSuperAdmin
+        ].map(user => user._id.toString()),
+        id => id
+      );
+
+      expect(idOfAllModels).toEqual(expectedModelIds);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should edit user and return 200 with user payload if user is an admin and jwt is of superAdmin user", async () => {
+      jwt = await testSuperAdmin.generateJWT();
+      id = testUserAndAdmin._id;
+      requestPayload = {
+        email: testUserAndAdmin.email,
+        name: "editedTestUser",
+        permissions: 0,
+        password: "9876"
+      };
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(200);
+
+      let expectedPayload = {
+        _id: testUserAndAdmin._id.toString(),
+        name: requestPayload.name,
+        email: requestPayload.email,
+        permissions: requestPayload.permissions,
+        modelIds: modelsOfTestUserAndAdmin.map(model => model._id.toString()),
+        modelNames: modelsOfTestUserAndAdmin.map(model => model.name)
+      };
+
+      expect(response.body).toEqual(expectedPayload);
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //User should also be edited in database
+
+      //Getting user from db
+      let userFromDatabase = await User.findOne({ _id: id });
+      expect(userFromDatabase).toBeDefined();
+
+      //Checking payload
+      let userFromDatabasePayload = await userFromDatabase.getPayload();
+      expect(userFromDatabasePayload).toEqual(expectedPayload);
+
+      //Checking password
+      let newPasswordMatches = await hashedStringMatch(
+        requestPayload.password,
+        userFromDatabase.password
+      );
+
+      expect(newPasswordMatches).toEqual(true);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should not edit any user and return 401 if user is an superAdmin and jwt is of admin user", async () => {
+      jwt = await testAdmin.generateJWT();
+      id = testUserAndAdmin._id;
+      requestPayload = {
+        email: testUserAndAdmin.email,
+        name: "editedTestUser",
+        permissions: 0,
+        password: "9876"
+      };
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(401);
+      expect(response.text).toBeDefined();
+      expect(response.text).toContain(
+        "Access denied. Only superAdmin can edit admins"
+      );
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //Database should contain all users - nothing should be changed
+      let idOfAllUsers = _.sortBy(
+        (await User.find({})).map(user => user._id.toString()),
+        id => id
+      );
+
+      let expectedUserIds = _.sortBy(
+        [
+          uselessUser._id.toString(),
+          testUser._id.toString(),
+          testAdmin._id.toString(),
+          testUserAndAdmin._id.toString(),
+          testSuperAdmin._id.toString()
+        ],
+        id => id
+      );
+
+      expect(idOfAllUsers).toEqual(expectedUserIds);
+
+      //Database should contain all models - nothing should be changed
+      let idOfAllModels = _.sortBy(
+        (await Model.find({})).map(model => model._id.toString()),
+        id => id
+      );
+
+      let expectedModelIds = _.sortBy(
+        [
+          ...modelsOfUselessUser,
+          ...modelsOfTestAdmin,
+          ...modelsOfTestUserAndAdmin,
+          ...modelsOfTestUser,
+          ...modelsOfTestSuperAdmin
+        ].map(user => user._id.toString()),
+        id => id
+      );
+
+      expect(idOfAllModels).toEqual(expectedModelIds);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should edit user and return 200 with user payload if user is an superAdmin and jwt is of superAdmin user", async () => {
+      jwt = await testSuperAdmin.generateJWT();
+      id = testSuperAdmin._id;
+      requestPayload = {
+        email: testSuperAdmin.email,
+        name: "editedTestUser",
+        permissions: 0,
+        password: "9876"
+      };
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(200);
+
+      let expectedPayload = {
+        _id: testSuperAdmin._id.toString(),
+        name: requestPayload.name,
+        email: requestPayload.email,
+        permissions: requestPayload.permissions,
+        modelIds: modelsOfTestSuperAdmin.map(model => model._id.toString()),
+        modelNames: modelsOfTestSuperAdmin.map(model => model.name)
+      };
+
+      expect(response.body).toEqual(expectedPayload);
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //User should also be edited in database
+
+      //Getting user from db
+      let userFromDatabase = await User.findOne({ _id: id });
+      expect(userFromDatabase).toBeDefined();
+
+      //Checking payload
+      let userFromDatabasePayload = await userFromDatabase.getPayload();
+      expect(userFromDatabasePayload).toEqual(expectedPayload);
+
+      //Checking password
+      let newPasswordMatches = await hashedStringMatch(
+        requestPayload.password,
+        userFromDatabase.password
+      );
+
+      expect(newPasswordMatches).toEqual(true);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should not edit any user and return 401 if user is an user and jwt is of admin user but new permissions are admin permissions", async () => {
+      jwt = await testAdmin.generateJWT();
+      id = testUser._id;
+      requestPayload = {
+        email: testUser.email,
+        name: "editedTestUser",
+        permissions: 2,
+        password: "9876"
+      };
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(401);
+      expect(response.text).toBeDefined();
+      expect(response.text).toContain(
+        "Access denied. Only superAdmin can promote users to admins"
+      );
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //Database should contain all users - nothing should be changed
+      let idOfAllUsers = _.sortBy(
+        (await User.find({})).map(user => user._id.toString()),
+        id => id
+      );
+
+      let expectedUserIds = _.sortBy(
+        [
+          uselessUser._id.toString(),
+          testUser._id.toString(),
+          testAdmin._id.toString(),
+          testUserAndAdmin._id.toString(),
+          testSuperAdmin._id.toString()
+        ],
+        id => id
+      );
+
+      expect(idOfAllUsers).toEqual(expectedUserIds);
+
+      //Database should contain all models - nothing should be changed
+      let idOfAllModels = _.sortBy(
+        (await Model.find({})).map(model => model._id.toString()),
+        id => id
+      );
+
+      let expectedModelIds = _.sortBy(
+        [
+          ...modelsOfUselessUser,
+          ...modelsOfTestAdmin,
+          ...modelsOfTestUserAndAdmin,
+          ...modelsOfTestUser,
+          ...modelsOfTestSuperAdmin
+        ].map(user => user._id.toString()),
+        id => id
+      );
+
+      expect(idOfAllModels).toEqual(expectedModelIds);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should edit user and return 200 with user promoted to admin if user is a user and jwt is of superAdmin user", async () => {
+      jwt = await testSuperAdmin.generateJWT();
+      id = testUser._id;
+      requestPayload = {
+        email: testUser.email,
+        name: "editedTestUser",
+        permissions: 2,
+        password: "9876"
+      };
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(200);
+
+      let expectedPayload = {
+        _id: testUser._id.toString(),
+        name: requestPayload.name,
+        email: requestPayload.email,
+        permissions: requestPayload.permissions,
+        modelIds: modelsOfTestUser.map(model => model._id.toString()),
+        modelNames: modelsOfTestUser.map(model => model.name)
+      };
+
+      expect(response.body).toEqual(expectedPayload);
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //User should also be edited in database
+
+      //Getting user from db
+      let userFromDatabase = await User.findOne({ _id: id });
+      expect(userFromDatabase).toBeDefined();
+
+      //Checking payload
+      let userFromDatabasePayload = await userFromDatabase.getPayload();
+      expect(userFromDatabasePayload).toEqual(expectedPayload);
+
+      //Checking password
+      let newPasswordMatches = await hashedStringMatch(
+        requestPayload.password,
+        userFromDatabase.password
+      );
+
+      expect(newPasswordMatches).toEqual(true);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should not edit any user and return 401 if user is an user and jwt is of admin user but new permissions are superAdmin permissions", async () => {
+      jwt = await testAdmin.generateJWT();
+      id = testUser._id;
+
+      requestPayload = {
+        email: testUser.email,
+        name: "editedTestUser",
+        permissions: 4,
+        password: "9876"
+      };
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(401);
+      expect(response.text).toBeDefined();
+      expect(response.text).toContain(
+        "Access denied. Only superAdmin can promote users to admins"
+      );
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //Database should contain all users - nothing should be changed
+      let idOfAllUsers = _.sortBy(
+        (await User.find({})).map(user => user._id.toString()),
+        id => id
+      );
+
+      let expectedUserIds = _.sortBy(
+        [
+          uselessUser._id.toString(),
+          testUser._id.toString(),
+          testAdmin._id.toString(),
+          testUserAndAdmin._id.toString(),
+          testSuperAdmin._id.toString()
+        ],
+        id => id
+      );
+
+      expect(idOfAllUsers).toEqual(expectedUserIds);
+
+      //Database should contain all models - nothing should be changed
+      let idOfAllModels = _.sortBy(
+        (await Model.find({})).map(model => model._id.toString()),
+        id => id
+      );
+
+      let expectedModelIds = _.sortBy(
+        [
+          ...modelsOfUselessUser,
+          ...modelsOfTestAdmin,
+          ...modelsOfTestUserAndAdmin,
+          ...modelsOfTestUser,
+          ...modelsOfTestSuperAdmin
+        ].map(user => user._id.toString()),
+        id => id
+      );
+
+      expect(idOfAllModels).toEqual(expectedModelIds);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should edit user and return 200 with user promoted to admin if user is a user and jwt is of superAdmin user", async () => {
+      jwt = await testSuperAdmin.generateJWT();
+      id = testUser._id;
+      requestPayload = {
+        email: testUser.email,
+        name: "editedTestUser",
+        permissions: 4,
+        password: "9876"
+      };
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(200);
+
+      let expectedPayload = {
+        _id: testUser._id.toString(),
+        name: requestPayload.name,
+        email: requestPayload.email,
+        permissions: requestPayload.permissions,
+        modelIds: modelsOfTestUser.map(model => model._id.toString()),
+        modelNames: modelsOfTestUser.map(model => model.name)
+      };
+
+      expect(response.body).toEqual(expectedPayload);
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //User should also be edited in database
+
+      //Getting user from db
+      let userFromDatabase = await User.findOne({ _id: id });
+      expect(userFromDatabase).toBeDefined();
+
+      //Checking payload
+      let userFromDatabasePayload = await userFromDatabase.getPayload();
+      expect(userFromDatabasePayload).toEqual(expectedPayload);
+
+      //Checking password
+      let newPasswordMatches = await hashedStringMatch(
+        requestPayload.password,
+        userFromDatabase.password
+      );
+
+      expect(newPasswordMatches).toEqual(true);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should edit user and return 200 with user promoted to admin if user is an admin and jwt is of superAdmin user", async () => {
+      jwt = await testSuperAdmin.generateJWT();
+      id = testAdmin._id;
+      requestPayload = {
+        email: testAdmin.email,
+        name: "editedTestUser",
+        permissions: 4,
+        password: "9876"
+      };
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(200);
+
+      let expectedPayload = {
+        _id: testAdmin._id.toString(),
+        name: requestPayload.name,
+        email: requestPayload.email,
+        permissions: requestPayload.permissions,
+        modelIds: modelsOfTestAdmin.map(model => model._id.toString()),
+        modelNames: modelsOfTestAdmin.map(model => model.name)
+      };
+
+      expect(response.body).toEqual(expectedPayload);
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //User should also be edited in database
+
+      //Getting user from db
+      let userFromDatabase = await User.findOne({ _id: id });
+      expect(userFromDatabase).toBeDefined();
+
+      //Checking payload
+      let userFromDatabasePayload = await userFromDatabase.getPayload();
+      expect(userFromDatabasePayload).toEqual(expectedPayload);
+
+      //Checking password
+      let newPasswordMatches = await hashedStringMatch(
+        requestPayload.password,
+        userFromDatabase.password
+      );
+
+      expect(newPasswordMatches).toEqual(true);
+
+      //#endregion CHECKING_DATABASE
+    });
+
   });
 
   describe("GET/me", () => {
@@ -4364,10 +5380,10 @@ describe("/sidiroar/api/user", () => {
 
       //#region CHECKING_DATABASE
 
-      //Only four users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser
+      //Only five users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser, superAdmin
       let userCount = await User.countDocuments({});
 
-      expect(userCount).toEqual(4);
+      expect(userCount).toEqual(5);
 
       //#endregion CHECKING_DATABASE
     });
@@ -4803,7 +5819,8 @@ describe("/sidiroar/api/user", () => {
         [
           uselessUser._id.toString(),
           testAdmin._id.toString(),
-          testUserAndAdmin._id.toString()
+          testUserAndAdmin._id.toString(),
+          testSuperAdmin._id.toString()
         ],
         id => id
       );
@@ -4821,7 +5838,8 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfUselessUser,
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
-          ...modelsOfTestUser
+          ...modelsOfTestUser,
+          ...modelsOfTestSuperAdmin
         ].map(user => user._id.toString()),
         id => id
       );
@@ -4858,7 +5876,8 @@ describe("/sidiroar/api/user", () => {
           uselessUser._id.toString(),
           testUser._id.toString(),
           testAdmin._id.toString(),
-          testUserAndAdmin._id.toString()
+          testUserAndAdmin._id.toString(),
+          testSuperAdmin._id.toString()
         ],
         id => id
       );
@@ -4876,7 +5895,8 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfUselessUser,
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
-          ...modelsOfTestUser
+          ...modelsOfTestUser,
+          ...modelsOfTestSuperAdmin
         ].map(user => user._id.toString()),
         id => id
       );
@@ -4913,7 +5933,8 @@ describe("/sidiroar/api/user", () => {
           uselessUser._id.toString(),
           testUser._id.toString(),
           testAdmin._id.toString(),
-          testUserAndAdmin._id.toString()
+          testUserAndAdmin._id.toString(),
+          testSuperAdmin._id.toString()
         ],
         id => id
       );
@@ -4931,7 +5952,8 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfUselessUser,
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
-          ...modelsOfTestUser
+          ...modelsOfTestUser,
+          ...modelsOfTestSuperAdmin
         ].map(user => user._id.toString()),
         id => id
       );
@@ -4968,7 +5990,8 @@ describe("/sidiroar/api/user", () => {
           uselessUser._id.toString(),
           testUser._id.toString(),
           testAdmin._id.toString(),
-          testUserAndAdmin._id.toString()
+          testUserAndAdmin._id.toString(),
+          testSuperAdmin._id.toString()
         ],
         id => id
       );
@@ -4986,7 +6009,8 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfUselessUser,
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
-          ...modelsOfTestUser
+          ...modelsOfTestUser,
+          ...modelsOfTestSuperAdmin
         ].map(user => user._id.toString()),
         id => id
       );
@@ -5023,7 +6047,8 @@ describe("/sidiroar/api/user", () => {
           uselessUser._id.toString(),
           testUser._id.toString(),
           testAdmin._id.toString(),
-          testUserAndAdmin._id.toString()
+          testUserAndAdmin._id.toString(),
+          testSuperAdmin._id.toString()
         ],
         id => id
       );
@@ -5041,7 +6066,8 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfUselessUser,
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
-          ...modelsOfTestUser
+          ...modelsOfTestUser,
+          ...modelsOfTestSuperAdmin
         ].map(user => user._id.toString()),
         id => id
       );
@@ -5078,7 +6104,8 @@ describe("/sidiroar/api/user", () => {
           uselessUser._id.toString(),
           testUser._id.toString(),
           testAdmin._id.toString(),
-          testUserAndAdmin._id.toString()
+          testUserAndAdmin._id.toString(),
+          testSuperAdmin._id.toString()
         ],
         id => id
       );
@@ -5096,7 +6123,8 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfUselessUser,
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
-          ...modelsOfTestUser
+          ...modelsOfTestUser,
+          ...modelsOfTestSuperAdmin
         ].map(user => user._id.toString()),
         id => id
       );
@@ -5133,7 +6161,8 @@ describe("/sidiroar/api/user", () => {
           uselessUser._id.toString(),
           testUser._id.toString(),
           testAdmin._id.toString(),
-          testUserAndAdmin._id.toString()
+          testUserAndAdmin._id.toString(),
+          testSuperAdmin._id.toString()
         ],
         id => id
       );
@@ -5151,7 +6180,8 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfUselessUser,
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
-          ...modelsOfTestUser
+          ...modelsOfTestUser,
+          ...modelsOfTestSuperAdmin
         ].map(user => user._id.toString()),
         id => id
       );
@@ -5190,7 +6220,8 @@ describe("/sidiroar/api/user", () => {
           uselessUser._id.toString(),
           testUser._id.toString(),
           testAdmin._id.toString(),
-          testUserAndAdmin._id.toString()
+          testUserAndAdmin._id.toString(),
+          testSuperAdmin._id.toString()
         ],
         id => id
       );
@@ -5208,7 +6239,8 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfUselessUser,
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
-          ...modelsOfTestUser
+          ...modelsOfTestUser,
+          ...modelsOfTestSuperAdmin
         ].map(user => user._id.toString()),
         id => id
       );
@@ -5292,7 +6324,8 @@ describe("/sidiroar/api/user", () => {
           uselessUser._id.toString(),
           testUser._id.toString(),
           testAdmin._id.toString(),
-          testUserAndAdmin._id.toString()
+          testUserAndAdmin._id.toString(),
+          testSuperAdmin._id.toString()
         ],
         id => id
       );
@@ -5310,7 +6343,8 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfUselessUser,
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
-          ...modelsOfTestUser
+          ...modelsOfTestUser,
+          ...modelsOfTestSuperAdmin
         ].map(user => user._id.toString()),
         id => id
       );
@@ -5393,7 +6427,8 @@ describe("/sidiroar/api/user", () => {
           uselessUser._id.toString(),
           testUser._id.toString(),
           testAdmin._id.toString(),
-          testUserAndAdmin._id.toString()
+          testUserAndAdmin._id.toString(),
+          testSuperAdmin._id.toString()
         ],
         id => id
       );
@@ -5411,7 +6446,8 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfUselessUser,
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
-          ...modelsOfTestUser
+          ...modelsOfTestUser,
+          ...modelsOfTestSuperAdmin
         ].map(user => user._id.toString()),
         id => id
       );
@@ -5447,7 +6483,8 @@ describe("/sidiroar/api/user", () => {
           uselessUser._id.toString(),
           testUser._id.toString(),
           testAdmin._id.toString(),
-          testUserAndAdmin._id.toString()
+          testUserAndAdmin._id.toString(),
+          testSuperAdmin._id.toString()
         ],
         id => id
       );
@@ -5465,7 +6502,8 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfUselessUser,
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
-          ...modelsOfTestUser
+          ...modelsOfTestUser,
+          ...modelsOfTestSuperAdmin
         ].map(user => user._id.toString()),
         id => id
       );
@@ -5503,7 +6541,8 @@ describe("/sidiroar/api/user", () => {
           uselessUser._id.toString(),
           testUser._id.toString(),
           testAdmin._id.toString(),
-          testUserAndAdmin._id.toString()
+          testUserAndAdmin._id.toString(),
+          testSuperAdmin._id.toString()
         ],
         id => id
       );
@@ -5521,7 +6560,8 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfUselessUser,
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
-          ...modelsOfTestUser
+          ...modelsOfTestUser,
+          ...modelsOfTestSuperAdmin
         ].map(user => user._id.toString()),
         id => id
       );
@@ -5559,7 +6599,8 @@ describe("/sidiroar/api/user", () => {
           uselessUser._id.toString(),
           testUser._id.toString(),
           testAdmin._id.toString(),
-          testUserAndAdmin._id.toString()
+          testUserAndAdmin._id.toString(),
+          testSuperAdmin._id.toString()
         ],
         id => id
       );
@@ -5577,7 +6618,8 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfUselessUser,
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
-          ...modelsOfTestUser
+          ...modelsOfTestUser,
+          ...modelsOfTestSuperAdmin
         ].map(user => user._id.toString()),
         id => id
       );
@@ -5613,7 +6655,8 @@ describe("/sidiroar/api/user", () => {
           uselessUser._id.toString(),
           testUser._id.toString(),
           testAdmin._id.toString(),
-          testUserAndAdmin._id.toString()
+          testUserAndAdmin._id.toString(),
+          testSuperAdmin._id.toString()
         ],
         id => id
       );
@@ -5631,7 +6674,8 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfUselessUser,
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
-          ...modelsOfTestUser
+          ...modelsOfTestUser,
+          ...modelsOfTestSuperAdmin
         ].map(user => user._id.toString()),
         id => id
       );
@@ -5668,7 +6712,8 @@ describe("/sidiroar/api/user", () => {
           uselessUser._id.toString(),
           testUser._id.toString(),
           testAdmin._id.toString(),
-          testUserAndAdmin._id.toString()
+          testUserAndAdmin._id.toString(),
+          testSuperAdmin._id.toString()
         ],
         id => id
       );
@@ -5686,7 +6731,8 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfUselessUser,
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
-          ...modelsOfTestUser
+          ...modelsOfTestUser,
+          ...modelsOfTestSuperAdmin
         ].map(user => user._id.toString()),
         id => id
       );
@@ -5723,7 +6769,8 @@ describe("/sidiroar/api/user", () => {
           uselessUser._id.toString(),
           testUser._id.toString(),
           testAdmin._id.toString(),
-          testUserAndAdmin._id.toString()
+          testUserAndAdmin._id.toString(),
+          testSuperAdmin._id.toString()
         ],
         id => id
       );
@@ -5741,7 +6788,8 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfUselessUser,
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
-          ...modelsOfTestUser
+          ...modelsOfTestUser,
+          ...modelsOfTestSuperAdmin
         ].map(user => user._id.toString()),
         id => id
       );
@@ -5778,7 +6826,8 @@ describe("/sidiroar/api/user", () => {
           uselessUser._id.toString(),
           testUser._id.toString(),
           testAdmin._id.toString(),
-          testUserAndAdmin._id.toString()
+          testUserAndAdmin._id.toString(),
+          testSuperAdmin._id.toString()
         ],
         id => id
       );
@@ -5796,7 +6845,8 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfUselessUser,
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
-          ...modelsOfTestUser
+          ...modelsOfTestUser,
+          ...modelsOfTestSuperAdmin
         ].map(user => user._id.toString()),
         id => id
       );
@@ -5887,7 +6937,8 @@ describe("/sidiroar/api/user", () => {
           uselessUser._id.toString(),
           testUser._id.toString(),
           testAdmin._id.toString(),
-          testUserAndAdmin._id.toString()
+          testUserAndAdmin._id.toString(),
+          testSuperAdmin._id.toString()
         ],
         id => id
       );
@@ -5905,7 +6956,8 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfUselessUser,
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
-          ...modelsOfTestUser
+          ...modelsOfTestUser,
+          ...modelsOfTestSuperAdmin
         ].map(user => user._id.toString()),
         id => id
       );
@@ -5949,7 +7001,8 @@ describe("/sidiroar/api/user", () => {
           uselessUser._id.toString(),
           testUser._id.toString(),
           testAdmin._id.toString(),
-          testUserAndAdmin._id.toString()
+          testUserAndAdmin._id.toString(),
+          testSuperAdmin._id.toString()
         ],
         id => id
       );
@@ -5967,7 +7020,8 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfUselessUser,
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
-          ...modelsOfTestUser
+          ...modelsOfTestUser,
+          ...modelsOfTestSuperAdmin
         ].map(user => user._id.toString()),
         id => id
       );

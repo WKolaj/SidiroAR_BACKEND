@@ -66,6 +66,16 @@ router.post(
     let user = await User.findOne({ email: req.body.email });
     if (exists(user)) return res.status(400).send("User already registered.");
 
+    //Checking if user permissions are admin - making it possible only for superAdmin to create admins or superAdmins and superAdmin users
+    if (
+      (User.isAdmin(req.body.permissions) ||
+        User.isSuperAdmin(req.body.permissions)) &&
+      !User.isSuperAdmin(req.user.permissions)
+    )
+      return res
+        .status(401)
+        .send("Access denied. Only superAdmin can create admins");
+
     //Setting password as random one if user's password do not exist
     if (!exists(req.body.password))
       req.body.password = User.generateRandomPin();
@@ -111,6 +121,15 @@ router.delete(
   async (req, res) => {
     let user = await User.findById(req.params.id);
     if (!exists(user)) return res.status(404).send("User not found");
+
+    //Checking if user permissions are admin - making it possible only for superAdmin to delete admins or superAdmins and superAdmin users
+    if (
+      (User.isAdmin(user.permissions) || User.isSuperAdmin(user.permissions)) &&
+      !User.isSuperAdmin(req.user.permissions)
+    )
+      return res
+        .status(401)
+        .send("Access denied. Only superAdmin can delete admins");
 
     let payloadToReturn = await user.getPayload();
 
@@ -182,8 +201,29 @@ router.put(
     if (req.body.email !== user.email)
       return res.status(400).send("Invalid email for given user");
 
+    //Checking if user permissions are admin - making it possible only for superAdmin to change admins or superAdmins users
+    if (
+      (User.isAdmin(user.permissions) || User.isSuperAdmin(user.permissions)) &&
+      !User.isSuperAdmin(req.user.permissions)
+    )
+      return res
+        .status(401)
+        .send("Access denied. Only superAdmin can edit admins");
+
     if (exists(req.body.name)) user.name = req.body.name;
-    if (exists(req.body.permissions)) user.permissions = req.body.permissions;
+    if (exists(req.body.permissions)) {
+      //Checking if new permissions are admin or userAdmin - making it possible only for superAdmin to change update users to admin or superAdmins
+      if (
+        (User.isAdmin(req.body.permissions) ||
+          User.isSuperAdmin(req.body.permissions)) &&
+        !User.isSuperAdmin(req.user.permissions)
+      )
+        return res
+          .status(401)
+          .send("Access denied. Only superAdmin can promote users to admins");
+
+      user.permissions = req.body.permissions;
+    }
 
     //Changing password if given
     let passwordToChange = null;

@@ -72,6 +72,11 @@ userSchema.statics.generateRandomPin = function() {
   return generateRandomNumberString(4);
 };
 
+//Method for checking if user is super admin
+userSchema.statics.isSuperAdmin = function(permissions) {
+  return getBit(permissions, 2);
+};
+
 //Method for checking if user is admin
 userSchema.statics.isAdmin = function(permissions) {
   return getBit(permissions, 1);

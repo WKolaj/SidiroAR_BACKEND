@@ -10,6 +10,7 @@ const testUselessUserEmail = "useless@test1234abcd.com.pl";
 const testAdminEmail = "admin@test1234abcd.com.pl";
 const testUserEmail = "user@test1234abcd.com.pl";
 const testUserAndAdminEmail = "userAndAdmin@test1234abcd.com.pl";
+const testSuperAdminEmail = "superAdmin@test1234abcd.com.pl";
 
 //Method for generating useless (without permissions) user directly into database
 module.exports.generateUselessUser = async () => {
@@ -89,6 +90,26 @@ module.exports.generateTestAdminAndUser = async () => {
   await Project.generateUserDirectory(user);
 
   return user;
+};
+
+//Method for generating test su[er admin user directly into database
+module.exports.generateTestSuperAdmin = async () => {
+  let admin = await User.findOne({ email: testSuperAdminEmail });
+  if (exists(admin)) return admin;
+
+  admin = new User({
+    name: "testSuperAdmin",
+    email: testSuperAdminEmail,
+    password: await hashString("9812"),
+    permissions: 7
+  });
+
+  await admin.save();
+
+  //Generating user directory
+  await Project.generateUserDirectory(admin);
+
+  return admin;
 };
 
 //Method for generating test models for given user
