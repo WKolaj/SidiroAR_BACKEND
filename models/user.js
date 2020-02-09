@@ -122,21 +122,24 @@ userSchema.methods.getModelLists = async function() {
 
   let modelIds = [];
   let modelNames = [];
+  let fileExists = [];
 
   for (let model of modelList) {
     modelIds.push(model._id.toString());
     modelNames.push(model.name.toString());
+    fileExists.push(await model.fileExists());
   }
 
   return {
     ids: modelIds,
-    names: modelNames
+    names: modelNames,
+    filesExist: fileExists
   };
 };
 
 //Method for generating payload of user
 userSchema.methods.getPayload = async function() {
-  let { ids, names } = await this.getModelLists();
+  let { ids, names, filesExist } = await this.getModelLists();
 
   let userPayload = {
     _id: this._id.toString(),
@@ -144,7 +147,8 @@ userSchema.methods.getPayload = async function() {
     name: this.name,
     permissions: this.permissions,
     modelNames: names,
-    modelIds: ids
+    modelIds: ids,
+    filesExist: filesExist
   };
 
   return userPayload;

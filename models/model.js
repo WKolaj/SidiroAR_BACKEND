@@ -1,7 +1,7 @@
 const Joi = require("joi");
-const { User } = require("./user");
+const Project = require("../classes/project");
 const mongoose = require("mongoose");
-const path = require("path");
+const { checkIfFileExistsAsync } = require("../utilities/utilities");
 
 const modelSchema = new mongoose.Schema({
   name: {
@@ -30,15 +30,23 @@ function validateModel(model) {
   return Joi.validate(model, schema);
 }
 
+//Method for checking if model file exists
+modelSchema.methods.fileExists = async function() {
+  return await checkIfFileExistsAsync(
+    Project.getModelFilePath({ _id: this.user.toString() }, this)
+  );
+};
+
 //Method for generating payload of model
 modelSchema.methods.getPayload = async function() {
-  let userPayload = {
+  let modelPayload = {
     _id: this._id.toString(),
     name: this.name,
-    user: this.user.toString()
+    user: this.user.toString(),
+    fileExists: await this.fileExists()
   };
 
-  return userPayload;
+  return modelPayload;
 };
 
 module.exports.Model = mongoose.model("Model", modelSchema);

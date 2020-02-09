@@ -2,7 +2,8 @@ const EmailService = require("../../../services/EmailService/EmailService");
 const {
   snooze,
   clearDirectoryAsync,
-  exists
+  exists,
+  createFileAsync
 } = require("../../../utilities/utilities");
 const _ = require("lodash");
 const request = require("supertest");
@@ -14,7 +15,8 @@ let {
   generateTestAdmin,
   generateTestUser,
   generateTestAdminAndUser,
-  generateUselessUser
+  generateUselessUser,
+  generateTestModels
 } = require("../../utilities/testUtilities");
 let server;
 let Project = require("../../../classes/project");
@@ -100,7 +102,8 @@ describe("/sidiroar/api/users", () => {
         name: uselessUser.name,
         permissions: uselessUser.permissions,
         modelIds: [],
-        modelNames: []
+        modelNames: [],
+        filesExist: []
       };
 
       //JWT should also be returned in body
@@ -137,7 +140,8 @@ describe("/sidiroar/api/users", () => {
         name: testUser.name,
         permissions: testUser.permissions,
         modelIds: [],
-        modelNames: []
+        modelNames: [],
+        filesExist: []
       };
 
       //JWT should also be returned in body
@@ -178,7 +182,8 @@ describe("/sidiroar/api/users", () => {
         name: testAdmin.name,
         permissions: testAdmin.permissions,
         modelIds: [],
-        modelNames: []
+        modelNames: [],
+        filesExist: []
       };
 
       //JWT should also be returned in body
@@ -219,7 +224,8 @@ describe("/sidiroar/api/users", () => {
         name: testUserAndAdmin.name,
         permissions: testUserAndAdmin.permissions,
         modelIds: [],
-        modelNames: []
+        modelNames: [],
+        filesExist: []
       };
 
       //JWT should also be returned in body
@@ -233,6 +239,50 @@ describe("/sidiroar/api/users", () => {
       //Header should have x-auth-token as jwt
       expect(response.header["x-auth-token"]).toEqual(
         await testUserAndAdmin.generateJWT()
+      );
+
+      //#endregion CHECKING_HEADER
+    });
+
+    it("should return 200 and logged users payload inside body (together with jwt) if user has model files", async () => {
+      //Creating models and files
+      let modelsOfTestUser = await generateTestModels(testUser);
+      let filePath = await Project.getModelFilePath(
+        testUser,
+        modelsOfTestUser[1]
+      );
+      await createFileAsync(filePath, "content of test file");
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(200);
+      expect(response.body).toBeDefined();
+
+      //Body should correspond with users payload
+      let expectedBody = {
+        _id: testUser._id.toString(),
+        email: testUser.email,
+        name: testUser.name,
+        permissions: testUser.permissions,
+        modelIds: modelsOfTestUser.map(model => model._id.toString()),
+        modelNames: modelsOfTestUser.map(model => model.name.toString()),
+        filesExist: [false, true, false]
+      };
+
+      //JWT should also be returned in body
+      (expectedBody.jwt = await testUser.generateJWT()),
+        expect(response.body).toEqual(expectedBody);
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_HEADER
+
+      //Header should have x-auth-token as jwt
+      expect(response.header["x-auth-token"]).toEqual(
+        await testUser.generateJWT()
       );
 
       //#endregion CHECKING_HEADER

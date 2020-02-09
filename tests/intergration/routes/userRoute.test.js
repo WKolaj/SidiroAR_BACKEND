@@ -20,6 +20,7 @@ let {
   exists,
   hashedStringMatch,
   clearDirectoryAsync,
+  createFileAsync,
   checkIfDirectoryExistsAsync
 } = require("../../../utilities/utilities");
 let server;
@@ -130,7 +131,8 @@ describe("/sidiroar/api/user", () => {
         ...requestPayload,
         _id: response.body._id,
         modelIds: [],
-        modelNames: []
+        modelNames: [],
+        filesExist: []
       };
 
       expect(response.body).toEqual(expectedBody);
@@ -151,6 +153,7 @@ describe("/sidiroar/api/user", () => {
       //modelIds and modelNames should be empty - it is new user
       userPayload.modelNames = [];
       userPayload.modelIds = [];
+      userPayload.filesExist = [];
 
       expect(response.body).toEqual(userPayload);
 
@@ -564,7 +567,8 @@ describe("/sidiroar/api/user", () => {
         password: response.body.password,
         _id: response.body._id,
         modelIds: [],
-        modelNames: []
+        modelNames: [],
+        filesExist: []
       };
 
       expect(response.body).toEqual(expectedBody);
@@ -587,6 +591,7 @@ describe("/sidiroar/api/user", () => {
       //List of ids and names is empty - new user without any models
       userPayload.modelIds = [];
       userPayload.modelNames = [];
+      userPayload.filesExist = [];
 
       expect(response.body).toEqual(userPayload);
 
@@ -647,7 +652,8 @@ describe("/sidiroar/api/user", () => {
         password: response.body.password,
         _id: response.body._id,
         modelIds: [],
-        modelNames: []
+        modelNames: [],
+        filesExist: []
       };
 
       expect(response.body).toEqual(expectedBody);
@@ -670,6 +676,7 @@ describe("/sidiroar/api/user", () => {
       //List of ids and names is empty - new user without any models
       userPayload.modelIds = [];
       userPayload.modelNames = [];
+      userPayload.filesExist = [];
 
       expect(response.body).toEqual(userPayload);
 
@@ -700,7 +707,8 @@ describe("/sidiroar/api/user", () => {
         password: response.body.password,
         _id: response.body._id,
         modelIds: [],
-        modelNames: []
+        modelNames: [],
+        filesExist: []
       };
 
       expect(response.body).toEqual(expectedBody);
@@ -723,6 +731,7 @@ describe("/sidiroar/api/user", () => {
       //List of ids and names is empty - new user without any models
       userPayload.modelIds = [];
       userPayload.modelNames = [];
+      userPayload.filesExist = [];
 
       expect(response.body).toEqual(userPayload);
 
@@ -899,7 +908,8 @@ describe("/sidiroar/api/user", () => {
         password: response.body.password,
         _id: response.body._id,
         modelIds: [],
-        modelNames: []
+        modelNames: [],
+        filesExist: []
       };
 
       expect(response.body).toEqual(expectedBody);
@@ -922,6 +932,7 @@ describe("/sidiroar/api/user", () => {
       //List of ids and names is empty - new user without any models
       userPayload.modelIds = [];
       userPayload.modelNames = [];
+      userPayload.filesExist = [];
 
       expect(response.body).toEqual(userPayload);
 
@@ -1170,7 +1181,8 @@ describe("/sidiroar/api/user", () => {
         password: response.body.password,
         _id: response.body._id,
         modelIds: [],
-        modelNames: []
+        modelNames: [],
+        filesExist: []
       };
 
       expect(response.body).toEqual(expectedBody);
@@ -1193,6 +1205,7 @@ describe("/sidiroar/api/user", () => {
       //List of ids and names is empty - new user without any models
       userPayload.modelIds = [];
       userPayload.modelNames = [];
+      userPayload.filesExist = [];
 
       expect(response.body).toEqual(userPayload);
 
@@ -1251,7 +1264,8 @@ describe("/sidiroar/api/user", () => {
         password: response.body.password,
         _id: response.body._id,
         modelIds: [],
-        modelNames: []
+        modelNames: [],
+        filesExist: []
       };
 
       expect(response.body).toEqual(expectedBody);
@@ -1274,6 +1288,7 @@ describe("/sidiroar/api/user", () => {
       //List of ids and names is empty - new user without any models
       userPayload.modelIds = [];
       userPayload.modelNames = [];
+      userPayload.filesExist = [];
 
       expect(response.body).toEqual(userPayload);
 
@@ -1405,7 +1420,8 @@ describe("/sidiroar/api/user", () => {
         ...requestPayload,
         _id: response.body._id,
         modelIds: [],
-        modelNames: []
+        modelNames: [],
+        filesExist: []
       };
 
       expect(response.body).toEqual(expectedBody);
@@ -1426,6 +1442,7 @@ describe("/sidiroar/api/user", () => {
       //modelIds and modelNames should be empty - it is new user
       userPayload.modelNames = [];
       userPayload.modelIds = [];
+      userPayload.filesExist = [];
 
       expect(response.body).toEqual(userPayload);
 
@@ -1534,7 +1551,8 @@ describe("/sidiroar/api/user", () => {
         ...requestPayload,
         _id: response.body._id,
         modelIds: [],
-        modelNames: []
+        modelNames: [],
+        filesExist: []
       };
 
       expect(response.body).toEqual(expectedBody);
@@ -1555,6 +1573,7 @@ describe("/sidiroar/api/user", () => {
       //modelIds and modelNames should be empty - it is new user
       userPayload.modelNames = [];
       userPayload.modelIds = [];
+      userPayload.filesExist = [];
 
       expect(response.body).toEqual(userPayload);
 
@@ -1608,7 +1627,8 @@ describe("/sidiroar/api/user", () => {
         ...requestPayload,
         _id: response.body._id,
         modelIds: [],
-        modelNames: []
+        modelNames: [],
+        filesExist: []
       };
 
       expect(response.body).toEqual(expectedBody);
@@ -1629,6 +1649,7 @@ describe("/sidiroar/api/user", () => {
       //modelIds and modelNames should be empty - it is new user
       userPayload.modelNames = [];
       userPayload.modelIds = [];
+      userPayload.filesExist = [];
 
       expect(response.body).toEqual(userPayload);
 
@@ -1683,7 +1704,10 @@ describe("/sidiroar/api/user", () => {
           email: uselessUser.email,
           permissions: uselessUser.permissions,
           modelIds: modelsOfUselessUser.map(model => model._id.toString()),
-          modelNames: modelsOfUselessUser.map(model => model.name)
+          modelNames: modelsOfUselessUser.map(model => model.name),
+          filesExist: await Promise.all(
+            modelsOfUselessUser.map(async model => await model.fileExists())
+          )
         },
         {
           _id: testUser._id.toString(),
@@ -1691,7 +1715,10 @@ describe("/sidiroar/api/user", () => {
           email: testUser.email,
           permissions: testUser.permissions,
           modelIds: modelsOfTestUser.map(model => model._id.toString()),
-          modelNames: modelsOfTestUser.map(model => model.name)
+          modelNames: modelsOfTestUser.map(model => model.name),
+          filesExist: await Promise.all(
+            modelsOfTestUser.map(async model => await model.fileExists())
+          )
         },
         {
           _id: testAdmin._id.toString(),
@@ -1699,7 +1726,10 @@ describe("/sidiroar/api/user", () => {
           email: testAdmin.email,
           permissions: testAdmin.permissions,
           modelIds: modelsOfTestAdmin.map(model => model._id.toString()),
-          modelNames: modelsOfTestAdmin.map(model => model.name)
+          modelNames: modelsOfTestAdmin.map(model => model.name),
+          filesExist: await Promise.all(
+            modelsOfTestAdmin.map(async model => await model.fileExists())
+          )
         },
         {
           _id: testUserAndAdmin._id.toString(),
@@ -1707,7 +1737,12 @@ describe("/sidiroar/api/user", () => {
           email: testUserAndAdmin.email,
           permissions: testUserAndAdmin.permissions,
           modelIds: modelsOfTestUserAndAdmin.map(model => model._id.toString()),
-          modelNames: modelsOfTestUserAndAdmin.map(model => model.name)
+          modelNames: modelsOfTestUserAndAdmin.map(model => model.name),
+          filesExist: await Promise.all(
+            modelsOfTestUserAndAdmin.map(
+              async model => await model.fileExists()
+            )
+          )
         },
         {
           _id: testSuperAdmin._id.toString(),
@@ -1715,7 +1750,100 @@ describe("/sidiroar/api/user", () => {
           email: testSuperAdmin.email,
           permissions: testSuperAdmin.permissions,
           modelIds: modelsOfTestSuperAdmin.map(model => model._id.toString()),
-          modelNames: modelsOfTestSuperAdmin.map(model => model.name)
+          modelNames: modelsOfTestSuperAdmin.map(model => model.name),
+          filesExist: await Promise.all(
+            modelsOfTestSuperAdmin.map(async model => await model.fileExists())
+          )
+        }
+      ];
+
+      //ordering both expected and real body by id
+      let orderedExpectedBody = _.orderBy(expectedBody, "_id", "asc");
+      let orderedResponseBody = _.orderBy(response.body, "_id", "asc");
+
+      //after sorting - both array should be the same
+      expect(orderedResponseBody).toEqual(orderedExpectedBody);
+
+      //#endregion CHECKING_RESPONSE
+    });
+
+    it("should return 200 and a list of all users - if users model has files", async () => {
+      //creating model file
+      let filePath = await Project.getModelFilePath(
+        testUser,
+        modelsOfTestUser[1]
+      );
+      await createFileAsync(filePath, "test File content");
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(200);
+      expect(response.body).toBeDefined();
+
+      //Body should contain all users payload
+      expect(response.body).toBeDefined();
+
+      //There should be 4 users - useless, normal, admin, and normal+admin and superAdmin
+      expect(response.body.length).toEqual(5);
+
+      let expectedBody = [
+        {
+          _id: uselessUser._id.toString(),
+          name: uselessUser.name,
+          email: uselessUser.email,
+          permissions: uselessUser.permissions,
+          modelIds: modelsOfUselessUser.map(model => model._id.toString()),
+          modelNames: modelsOfUselessUser.map(model => model.name),
+          filesExist: await Promise.all(
+            modelsOfUselessUser.map(async model => await model.fileExists())
+          )
+        },
+        {
+          _id: testUser._id.toString(),
+          name: testUser.name,
+          email: testUser.email,
+          permissions: testUser.permissions,
+          modelIds: modelsOfTestUser.map(model => model._id.toString()),
+          modelNames: modelsOfTestUser.map(model => model.name),
+          filesExist: [false, true, false]
+        },
+        {
+          _id: testAdmin._id.toString(),
+          name: testAdmin.name,
+          email: testAdmin.email,
+          permissions: testAdmin.permissions,
+          modelIds: modelsOfTestAdmin.map(model => model._id.toString()),
+          modelNames: modelsOfTestAdmin.map(model => model.name),
+          filesExist: await Promise.all(
+            modelsOfTestAdmin.map(async model => await model.fileExists())
+          )
+        },
+        {
+          _id: testUserAndAdmin._id.toString(),
+          name: testUserAndAdmin.name,
+          email: testUserAndAdmin.email,
+          permissions: testUserAndAdmin.permissions,
+          modelIds: modelsOfTestUserAndAdmin.map(model => model._id.toString()),
+          modelNames: modelsOfTestUserAndAdmin.map(model => model.name),
+          filesExist: await Promise.all(
+            modelsOfTestUserAndAdmin.map(
+              async model => await model.fileExists()
+            )
+          )
+        },
+        {
+          _id: testSuperAdmin._id.toString(),
+          name: testSuperAdmin.name,
+          email: testSuperAdmin.email,
+          permissions: testSuperAdmin.permissions,
+          modelIds: modelsOfTestSuperAdmin.map(model => model._id.toString()),
+          modelNames: modelsOfTestSuperAdmin.map(model => model.name),
+          filesExist: await Promise.all(
+            modelsOfTestSuperAdmin.map(async model => await model.fileExists())
+          )
         }
       ];
 
@@ -1753,7 +1881,8 @@ describe("/sidiroar/api/user", () => {
           email: uselessUser.email,
           permissions: uselessUser.permissions,
           modelIds: [],
-          modelNames: []
+          modelNames: [],
+          filesExist: []
         },
         {
           _id: testUser._id.toString(),
@@ -1761,7 +1890,8 @@ describe("/sidiroar/api/user", () => {
           email: testUser.email,
           permissions: testUser.permissions,
           modelIds: [],
-          modelNames: []
+          modelNames: [],
+          filesExist: []
         },
         {
           _id: testAdmin._id.toString(),
@@ -1769,7 +1899,8 @@ describe("/sidiroar/api/user", () => {
           email: testAdmin.email,
           permissions: testAdmin.permissions,
           modelIds: [],
-          modelNames: []
+          modelNames: [],
+          filesExist: []
         },
         {
           _id: testUserAndAdmin._id.toString(),
@@ -1777,7 +1908,8 @@ describe("/sidiroar/api/user", () => {
           email: testUserAndAdmin.email,
           permissions: testUserAndAdmin.permissions,
           modelIds: [],
-          modelNames: []
+          modelNames: [],
+          filesExist: []
         },
         {
           _id: testSuperAdmin._id.toString(),
@@ -1785,7 +1917,8 @@ describe("/sidiroar/api/user", () => {
           email: testSuperAdmin.email,
           permissions: testSuperAdmin.permissions,
           modelIds: [],
-          modelNames: []
+          modelNames: [],
+          filesExist: []
         }
       ];
 
@@ -1838,7 +1971,10 @@ describe("/sidiroar/api/user", () => {
           email: testUser.email,
           permissions: testUser.permissions,
           modelIds: modelsOfTestUser.map(model => model._id.toString()),
-          modelNames: modelsOfTestUser.map(model => model.name)
+          modelNames: modelsOfTestUser.map(model => model.name),
+          filesExist: await Promise.all(
+            modelsOfTestUser.map(async model => await model.fileExists())
+          )
         }
       ]);
 
@@ -1914,7 +2050,10 @@ describe("/sidiroar/api/user", () => {
           email: uselessUser.email,
           permissions: uselessUser.permissions,
           modelIds: modelsOfUselessUser.map(model => model._id.toString()),
-          modelNames: modelsOfUselessUser.map(model => model.name)
+          modelNames: modelsOfUselessUser.map(model => model.name),
+          filesExist: await Promise.all(
+            modelsOfUselessUser.map(async model => await model.fileExists())
+          )
         },
         {
           _id: testUser._id.toString(),
@@ -1922,7 +2061,10 @@ describe("/sidiroar/api/user", () => {
           email: testUser.email,
           permissions: testUser.permissions,
           modelIds: modelsOfTestUser.map(model => model._id.toString()),
-          modelNames: modelsOfTestUser.map(model => model.name)
+          modelNames: modelsOfTestUser.map(model => model.name),
+          filesExist: await Promise.all(
+            modelsOfTestUser.map(async model => await model.fileExists())
+          )
         },
         {
           _id: testAdmin._id.toString(),
@@ -1930,7 +2072,10 @@ describe("/sidiroar/api/user", () => {
           email: testAdmin.email,
           permissions: testAdmin.permissions,
           modelIds: modelsOfTestAdmin.map(model => model._id.toString()),
-          modelNames: modelsOfTestAdmin.map(model => model.name)
+          modelNames: modelsOfTestAdmin.map(model => model.name),
+          filesExist: await Promise.all(
+            modelsOfTestAdmin.map(async model => await model.fileExists())
+          )
         },
         {
           _id: testUserAndAdmin._id.toString(),
@@ -1938,7 +2083,12 @@ describe("/sidiroar/api/user", () => {
           email: testUserAndAdmin.email,
           permissions: testUserAndAdmin.permissions,
           modelIds: modelsOfTestUserAndAdmin.map(model => model._id.toString()),
-          modelNames: modelsOfTestUserAndAdmin.map(model => model.name)
+          modelNames: modelsOfTestUserAndAdmin.map(model => model.name),
+          filesExist: await Promise.all(
+            modelsOfTestUserAndAdmin.map(
+              async model => await model.fileExists()
+            )
+          )
         },
         {
           _id: testSuperAdmin._id.toString(),
@@ -1946,7 +2096,10 @@ describe("/sidiroar/api/user", () => {
           email: testSuperAdmin.email,
           permissions: testSuperAdmin.permissions,
           modelIds: modelsOfTestSuperAdmin.map(model => model._id.toString()),
-          modelNames: modelsOfTestSuperAdmin.map(model => model.name)
+          modelNames: modelsOfTestSuperAdmin.map(model => model.name),
+          filesExist: await Promise.all(
+            modelsOfTestSuperAdmin.map(async model => await model.fileExists())
+          )
         }
       ];
 
@@ -2041,7 +2194,36 @@ describe("/sidiroar/api/user", () => {
         email: testUser.email,
         permissions: testUser.permissions,
         modelIds: modelsOfTestUser.map(model => model._id.toString()),
-        modelNames: modelsOfTestUser.map(model => model.name)
+        modelNames: modelsOfTestUser.map(model => model.name),
+        filesExist: await Promise.all(
+          modelsOfTestUser.map(async model => await model.fileExists())
+        )
+      };
+
+      expect(response.body).toEqual(expectedPayload);
+    });
+
+    it("should return 200 and user of given id - if user exists and model file exists", async () => {
+      //Creating file
+      let filePath = await Project.getModelFilePath(
+        testUser,
+        modelsOfTestUser[1]
+      );
+      await createFileAsync(filePath, "test file content");
+
+      let response = await exec();
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(200);
+
+      let expectedPayload = {
+        _id: testUser._id.toString(),
+        name: testUser.name,
+        email: testUser.email,
+        permissions: testUser.permissions,
+        modelIds: modelsOfTestUser.map(model => model._id.toString()),
+        modelNames: modelsOfTestUser.map(model => model.name),
+        filesExist: [false, true, false]
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -2061,7 +2243,8 @@ describe("/sidiroar/api/user", () => {
         email: testUser.email,
         permissions: testUser.permissions,
         modelIds: [],
-        modelNames: []
+        modelNames: [],
+        filesExist: []
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -2160,7 +2343,10 @@ describe("/sidiroar/api/user", () => {
         email: testUser.email,
         permissions: testUser.permissions,
         modelIds: modelsOfTestUser.map(model => model._id.toString()),
-        modelNames: modelsOfTestUser.map(model => model.name)
+        modelNames: modelsOfTestUser.map(model => model.name),
+        filesExist: await Promise.all(
+          modelsOfTestUser.map(async model => await model.fileExists())
+        )
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -2251,7 +2437,10 @@ describe("/sidiroar/api/user", () => {
         email: testUser.email,
         permissions: testUser.permissions,
         modelIds: modelsOfTestUser.map(model => model._id.toString()),
-        modelNames: modelsOfTestUser.map(model => model.name)
+        modelNames: modelsOfTestUser.map(model => model.name),
+        filesExist: await Promise.all(
+          modelsOfTestUser.map(async model => await model.fileExists())
+        )
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -2316,7 +2505,8 @@ describe("/sidiroar/api/user", () => {
         email: testUser.email,
         permissions: testUser.permissions,
         modelIds: [],
-        modelNames: []
+        modelNames: [],
+        filesExist: []
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -2722,7 +2912,10 @@ describe("/sidiroar/api/user", () => {
         email: testUser.email,
         permissions: testUser.permissions,
         modelIds: modelsOfTestUser.map(model => model._id.toString()),
-        modelNames: modelsOfTestUser.map(model => model.name)
+        modelNames: modelsOfTestUser.map(model => model.name),
+        filesExist: await Promise.all(
+          modelsOfTestUser.map(async model => await model.fileExists())
+        )
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -2928,7 +3121,10 @@ describe("/sidiroar/api/user", () => {
         email: testUserAndAdmin.email,
         permissions: testUserAndAdmin.permissions,
         modelIds: modelsOfTestUserAndAdmin.map(model => model._id.toString()),
-        modelNames: modelsOfTestUserAndAdmin.map(model => model.name)
+        modelNames: modelsOfTestUserAndAdmin.map(model => model.name),
+        filesExist: await Promise.all(
+          modelsOfTestUserAndAdmin.map(async model => await model.fileExists())
+        )
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -3053,7 +3249,10 @@ describe("/sidiroar/api/user", () => {
         email: testSuperAdmin.email,
         permissions: testSuperAdmin.permissions,
         modelIds: modelsOfTestSuperAdmin.map(model => model._id.toString()),
-        modelNames: modelsOfTestSuperAdmin.map(model => model.name)
+        modelNames: modelsOfTestSuperAdmin.map(model => model.name),
+        filesExist: await Promise.all(
+          modelsOfTestSuperAdmin.map(async model => await model.fileExists())
+        )
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -3145,7 +3344,10 @@ describe("/sidiroar/api/user", () => {
         email: requestPayload.email,
         permissions: requestPayload.permissions,
         modelIds: modelsOfTestUser.map(model => model._id.toString()),
-        modelNames: modelsOfTestUser.map(model => model.name)
+        modelNames: modelsOfTestUser.map(model => model.name),
+        filesExist: await Promise.all(
+          modelsOfTestUser.map(async model => await model.fileExists())
+        )
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -3190,7 +3392,10 @@ describe("/sidiroar/api/user", () => {
         email: requestPayload.email,
         permissions: requestPayload.permissions,
         modelIds: modelsOfTestUser.map(model => model._id.toString()),
-        modelNames: modelsOfTestUser.map(model => model.name)
+        modelNames: modelsOfTestUser.map(model => model.name),
+        filesExist: await Promise.all(
+          modelsOfTestUser.map(async model => await model.fileExists())
+        )
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -3902,7 +4107,10 @@ describe("/sidiroar/api/user", () => {
         email: requestPayload.email,
         permissions: requestPayload.permissions,
         modelIds: modelsOfTestUser.map(model => model._id.toString()),
-        modelNames: modelsOfTestUser.map(model => model.name)
+        modelNames: modelsOfTestUser.map(model => model.name),
+        filesExist: await Promise.all(
+          modelsOfTestUser.map(async model => await model.fileExists())
+        )
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -4008,7 +4216,10 @@ describe("/sidiroar/api/user", () => {
         email: requestPayload.email,
         permissions: requestPayload.permissions,
         modelIds: modelsOfTestUser.map(model => model._id.toString()),
-        modelNames: modelsOfTestUser.map(model => model.name)
+        modelNames: modelsOfTestUser.map(model => model.name),
+        filesExist: await Promise.all(
+          modelsOfTestUser.map(async model => await model.fileExists())
+        )
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -4225,7 +4436,10 @@ describe("/sidiroar/api/user", () => {
         email: requestPayload.email,
         permissions: requestPayload.permissions,
         modelIds: modelsOfTestUser.map(model => model._id.toString()),
-        modelNames: modelsOfTestUser.map(model => model.name)
+        modelNames: modelsOfTestUser.map(model => model.name),
+        filesExist: await Promise.all(
+          modelsOfTestUser.map(async model => await model.fileExists())
+        )
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -4331,7 +4545,10 @@ describe("/sidiroar/api/user", () => {
         email: requestPayload.email,
         permissions: requestPayload.permissions,
         modelIds: modelsOfTestUser.map(model => model._id.toString()),
-        modelNames: modelsOfTestUser.map(model => model.name)
+        modelNames: modelsOfTestUser.map(model => model.name),
+        filesExist: await Promise.all(
+          modelsOfTestUser.map(async model => await model.fileExists())
+        )
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -4548,7 +4765,10 @@ describe("/sidiroar/api/user", () => {
         email: requestPayload.email,
         permissions: requestPayload.permissions,
         modelIds: modelsOfTestUser.map(model => model._id.toString()),
-        modelNames: modelsOfTestUser.map(model => model.name)
+        modelNames: modelsOfTestUser.map(model => model.name),
+        filesExist: await Promise.all(
+          modelsOfTestUser.map(async model => await model.fileExists())
+        )
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -4787,7 +5007,10 @@ describe("/sidiroar/api/user", () => {
         email: requestPayload.email,
         permissions: requestPayload.permissions,
         modelIds: modelsOfTestUserAndAdmin.map(model => model._id.toString()),
-        modelNames: modelsOfTestUserAndAdmin.map(model => model.name)
+        modelNames: modelsOfTestUserAndAdmin.map(model => model.name),
+        filesExist: await Promise.all(
+          modelsOfTestUserAndAdmin.map(async model => await model.fileExists())
+        )
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -4906,7 +5129,10 @@ describe("/sidiroar/api/user", () => {
         email: requestPayload.email,
         permissions: requestPayload.permissions,
         modelIds: modelsOfTestSuperAdmin.map(model => model._id.toString()),
-        modelNames: modelsOfTestSuperAdmin.map(model => model.name)
+        modelNames: modelsOfTestSuperAdmin.map(model => model.name),
+        filesExist: await Promise.all(
+          modelsOfTestSuperAdmin.map(async model => await model.fileExists())
+        )
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -5025,7 +5251,10 @@ describe("/sidiroar/api/user", () => {
         email: requestPayload.email,
         permissions: requestPayload.permissions,
         modelIds: modelsOfTestUser.map(model => model._id.toString()),
-        modelNames: modelsOfTestUser.map(model => model.name)
+        modelNames: modelsOfTestUser.map(model => model.name),
+        filesExist: await Promise.all(
+          modelsOfTestUser.map(async model => await model.fileExists())
+        )
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -5145,7 +5374,10 @@ describe("/sidiroar/api/user", () => {
         email: requestPayload.email,
         permissions: requestPayload.permissions,
         modelIds: modelsOfTestUser.map(model => model._id.toString()),
-        modelNames: modelsOfTestUser.map(model => model.name)
+        modelNames: modelsOfTestUser.map(model => model.name),
+        filesExist: await Promise.all(
+          modelsOfTestUser.map(async model => await model.fileExists())
+        )
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -5198,7 +5430,10 @@ describe("/sidiroar/api/user", () => {
         email: requestPayload.email,
         permissions: requestPayload.permissions,
         modelIds: modelsOfTestAdmin.map(model => model._id.toString()),
-        modelNames: modelsOfTestAdmin.map(model => model.name)
+        modelNames: modelsOfTestAdmin.map(model => model.name),
+        filesExist: await Promise.all(
+          modelsOfTestAdmin.map(async model => await model.fileExists())
+        )
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -5227,7 +5462,6 @@ describe("/sidiroar/api/user", () => {
 
       //#endregion CHECKING_DATABASE
     });
-
   });
 
   describe("GET/me", () => {
@@ -5262,7 +5496,10 @@ describe("/sidiroar/api/user", () => {
         email: testUser.email,
         permissions: testUser.permissions,
         modelIds: modelsOfTestUser.map(model => model._id.toString()),
-        modelNames: modelsOfTestUser.map(model => model.name)
+        modelNames: modelsOfTestUser.map(model => model.name),
+        filesExist: await Promise.all(
+          modelsOfTestUser.map(async model => await model.fileExists())
+        )
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -5293,7 +5530,8 @@ describe("/sidiroar/api/user", () => {
         email: testUser.email,
         permissions: testUser.permissions,
         modelIds: [],
-        modelNames: []
+        modelNames: [],
+        filesExist: []
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -5358,7 +5596,10 @@ describe("/sidiroar/api/user", () => {
         email: testUserAndAdmin.email,
         permissions: testUserAndAdmin.permissions,
         modelIds: modelsOfTestUserAndAdmin.map(model => model._id.toString()),
-        modelNames: modelsOfTestUserAndAdmin.map(model => model.name)
+        modelNames: modelsOfTestUserAndAdmin.map(model => model.name),
+        filesExist: await Promise.all(
+          modelsOfTestUserAndAdmin.map(async model => await model.fileExists())
+        )
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -5453,7 +5694,10 @@ describe("/sidiroar/api/user", () => {
         email: requestPayload.email,
         permissions: requestPayload.permissions,
         modelIds: modelsOfTestUser.map(model => model._id.toString()),
-        modelNames: modelsOfTestUser.map(model => model.name)
+        modelNames: modelsOfTestUser.map(model => model.name),
+        filesExist: await Promise.all(
+          modelsOfTestUser.map(async model => await model.fileExists())
+        )
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -5499,7 +5743,10 @@ describe("/sidiroar/api/user", () => {
         email: requestPayload.email,
         permissions: requestPayload.permissions,
         modelIds: modelsOfTestUser.map(model => model._id.toString()),
-        modelNames: modelsOfTestUser.map(model => model.name)
+        modelNames: modelsOfTestUser.map(model => model.name),
+        filesExist: await Promise.all(
+          modelsOfTestUser.map(async model => await model.fileExists())
+        )
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -6265,7 +6512,10 @@ describe("/sidiroar/api/user", () => {
         email: requestPayload.email,
         permissions: requestPayload.permissions,
         modelIds: modelsOfTestUser.map(model => model._id.toString()),
-        modelNames: modelsOfTestUser.map(model => model.name)
+        modelNames: modelsOfTestUser.map(model => model.name),
+        filesExist: await Promise.all(
+          modelsOfTestUser.map(async model => await model.fileExists())
+        )
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -6371,7 +6621,10 @@ describe("/sidiroar/api/user", () => {
         email: requestPayload.email,
         permissions: requestPayload.permissions,
         modelIds: modelsOfTestUser.map(model => model._id.toString()),
-        modelNames: modelsOfTestUser.map(model => model.name)
+        modelNames: modelsOfTestUser.map(model => model.name),
+        filesExist: await Promise.all(
+          modelsOfTestUser.map(async model => await model.fileExists())
+        )
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -6880,7 +7133,10 @@ describe("/sidiroar/api/user", () => {
         email: requestPayload.email,
         permissions: requestPayload.permissions,
         modelIds: modelsOfTestUserAndAdmin.map(model => model._id.toString()),
-        modelNames: modelsOfTestUserAndAdmin.map(model => model.name)
+        modelNames: modelsOfTestUserAndAdmin.map(model => model.name),
+        filesExist: await Promise.all(
+          modelsOfTestUserAndAdmin.map(async model => await model.fileExists())
+        )
       };
 
       expect(response.body).toEqual(expectedPayload);

@@ -76,14 +76,25 @@ describe("/sidiroar/api/models", () => {
     let jwt;
     let userId;
     let modelId;
+    let createModelFile;
 
     beforeEach(async () => {
       jwt = await testAdmin.generateJWT();
       userId = testUser._id;
       modelId = modelsOfTestUser[1]._id;
+      createModelFile = true;
     });
 
     let exec = async () => {
+      //creating file
+      if (createModelFile) {
+        let modelFilePath = Project.getModelFilePath(
+          testUser,
+          modelsOfTestUser[1]
+        );
+        await createFileAsync(modelFilePath, "test file content");
+      }
+
       if (exists(jwt))
         return request(server)
           .get(`/sidiroar/api/model/${userId}/${modelId}`)
@@ -106,7 +117,28 @@ describe("/sidiroar/api/models", () => {
       let expectedPayload = {
         _id: expectedModel._id.toString(),
         name: expectedModel.name,
-        user: expectedModel.user.toString()
+        user: expectedModel.user.toString(),
+        fileExists: true
+      };
+
+      expect(response.body).toEqual(expectedPayload);
+    });
+
+    it("should return 200 and model of given id - if user exists, but model file does not exist", async () => {
+      createModelFile = false;
+
+      let response = await exec();
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(200);
+
+      let expectedModel = modelsOfTestUser[1];
+
+      let expectedPayload = {
+        _id: expectedModel._id.toString(),
+        name: expectedModel.name,
+        user: expectedModel.user.toString(),
+        fileExists: false
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -221,7 +253,8 @@ describe("/sidiroar/api/models", () => {
       let expectedPayload = {
         _id: expectedModel._id.toString(),
         name: expectedModel.name,
-        user: expectedModel.user.toString()
+        user: expectedModel.user.toString(),
+        fileExists: await expectedModel.fileExists()
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -306,17 +339,20 @@ describe("/sidiroar/api/models", () => {
         {
           _id: modelsOfTestUser[0]._id.toString(),
           name: modelsOfTestUser[0].name,
-          user: modelsOfTestUser[0].user.toString()
+          user: modelsOfTestUser[0].user.toString(),
+          fileExists: await modelsOfTestUser[0].fileExists()
         },
         {
           _id: modelsOfTestUser[1]._id.toString(),
           name: modelsOfTestUser[1].name,
-          user: modelsOfTestUser[1].user.toString()
+          user: modelsOfTestUser[1].user.toString(),
+          fileExists: await modelsOfTestUser[1].fileExists()
         },
         {
           _id: modelsOfTestUser[2]._id.toString(),
           name: modelsOfTestUser[2].name,
-          user: modelsOfTestUser[2].user.toString()
+          user: modelsOfTestUser[2].user.toString(),
+          fileExists: await modelsOfTestUser[2].fileExists()
         }
       ];
 
@@ -425,17 +461,20 @@ describe("/sidiroar/api/models", () => {
         {
           _id: modelsOfTestUser[0]._id.toString(),
           name: modelsOfTestUser[0].name,
-          user: modelsOfTestUser[0].user.toString()
+          user: modelsOfTestUser[0].user.toString(),
+          fileExists: await modelsOfTestUser[0].fileExists()
         },
         {
           _id: modelsOfTestUser[1]._id.toString(),
           name: modelsOfTestUser[1].name,
-          user: modelsOfTestUser[1].user.toString()
+          user: modelsOfTestUser[1].user.toString(),
+          fileExists: await modelsOfTestUser[1].fileExists()
         },
         {
           _id: modelsOfTestUser[2]._id.toString(),
           name: modelsOfTestUser[2].name,
-          user: modelsOfTestUser[2].user.toString()
+          user: modelsOfTestUser[2].user.toString(),
+          fileExists: await modelsOfTestUser[2].fileExists()
         }
       ];
 
@@ -520,7 +559,8 @@ describe("/sidiroar/api/models", () => {
       let expectedPayload = {
         _id: response.body._id.toString(),
         name: requestPayload.name,
-        user: userId.toString()
+        user: userId.toString(),
+        fileExists: false
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -550,7 +590,8 @@ describe("/sidiroar/api/models", () => {
       expectedModelsPayload.push({
         _id: response.body._id.toString(),
         name: requestPayload.name,
-        user: userId.toString()
+        user: userId.toString(),
+        fileExists: false
       });
 
       expectedModelsPayload = _.sortBy(expectedModelsPayload, "_id", "asc");
@@ -966,7 +1007,8 @@ describe("/sidiroar/api/models", () => {
       let expectedPayload = {
         _id: response.body._id.toString(),
         name: requestPayload.name,
-        user: userId.toString()
+        user: userId.toString(),
+        fileExists: false
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -996,7 +1038,8 @@ describe("/sidiroar/api/models", () => {
       expectedModelsPayload.push({
         _id: response.body._id.toString(),
         name: requestPayload.name,
-        user: userId.toString()
+        user: userId.toString(),
+        fileExists: false
       });
 
       expectedModelsPayload = _.sortBy(expectedModelsPayload, "_id", "asc");
@@ -1082,7 +1125,8 @@ describe("/sidiroar/api/models", () => {
       let expectedPayload = {
         _id: response.body._id.toString(),
         name: requestPayload.name,
-        user: userId.toString()
+        user: userId.toString(),
+        fileExists: false
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -1112,7 +1156,8 @@ describe("/sidiroar/api/models", () => {
       expectedModelsPayload.push({
         _id: response.body._id.toString(),
         name: requestPayload.name,
-        user: userId.toString()
+        user: userId.toString(),
+        fileExists: false
       });
 
       expectedModelsPayload = _.sortBy(expectedModelsPayload, "_id", "asc");
@@ -1304,7 +1349,8 @@ describe("/sidiroar/api/models", () => {
       let expectedPayload = {
         _id: response.body._id.toString(),
         name: requestPayload.name,
-        user: userId.toString()
+        user: userId.toString(),
+        fileExists: false
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -1334,7 +1380,8 @@ describe("/sidiroar/api/models", () => {
       expectedModelsPayload.push({
         _id: response.body._id.toString(),
         name: requestPayload.name,
-        user: userId.toString()
+        user: userId.toString(),
+        fileExists: false
       });
 
       expectedModelsPayload = _.sortBy(expectedModelsPayload, "_id", "asc");
@@ -1511,7 +1558,8 @@ describe("/sidiroar/api/models", () => {
       let expectedPayload = {
         _id: expectedModel._id.toString(),
         name: expectedModel.name,
-        user: expectedModel.user.toString()
+        user: expectedModel.user.toString(),
+        fileExists: createModelFile
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -1571,7 +1619,8 @@ describe("/sidiroar/api/models", () => {
       let expectedPayload = {
         _id: expectedModel._id.toString(),
         name: expectedModel.name,
-        user: expectedModel.user.toString()
+        user: expectedModel.user.toString(),
+        fileExists: createModelFile
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -2122,7 +2171,8 @@ describe("/sidiroar/api/models", () => {
       let expectedPayload = {
         _id: expectedModel._id.toString(),
         name: expectedModel.name,
-        user: expectedModel.user.toString()
+        user: expectedModel.user.toString(),
+        fileExists: createModelFile
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -2338,7 +2388,8 @@ describe("/sidiroar/api/models", () => {
       let expectedPayload = {
         _id: modelsOfTestUser[1]._id.toString(),
         name: requestPayload.name,
-        user: userId.toString()
+        user: userId.toString(),
+        fileExists: false
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -2370,7 +2421,8 @@ describe("/sidiroar/api/models", () => {
           expectedModelsPayload.push({
             _id: modelsOfTestUser[1]._id.toString(),
             name: requestPayload.name,
-            user: userId.toString()
+            user: userId.toString(),
+            fileExists: false
           });
         } else {
           expectedModelsPayload.push(await model.getPayload());
@@ -2611,7 +2663,8 @@ describe("/sidiroar/api/models", () => {
       let expectedPayload = {
         _id: modelsOfTestUser[1]._id.toString(),
         name: requestPayload.name,
-        user: userId.toString()
+        user: userId.toString(),
+        fileExists: false
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -2643,7 +2696,8 @@ describe("/sidiroar/api/models", () => {
           expectedModelsPayload.push({
             _id: modelsOfTestUser[1]._id.toString(),
             name: requestPayload.name,
-            user: userId.toString()
+            user: userId.toString(),
+            fileExists: false
           });
         } else {
           expectedModelsPayload.push(await model.getPayload());
@@ -2670,7 +2724,8 @@ describe("/sidiroar/api/models", () => {
       let expectedPayload = {
         _id: modelsOfTestUser[1]._id.toString(),
         name: requestPayload.name,
-        user: userId.toString()
+        user: userId.toString(),
+        fileExists: false
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -2702,7 +2757,8 @@ describe("/sidiroar/api/models", () => {
           expectedModelsPayload.push({
             _id: modelsOfTestUser[1]._id.toString(),
             name: requestPayload.name,
-            user: userId.toString()
+            user: userId.toString(),
+            fileExists: false
           });
         } else {
           expectedModelsPayload.push(await model.getPayload());
@@ -2729,7 +2785,8 @@ describe("/sidiroar/api/models", () => {
       let expectedPayload = {
         _id: modelsOfTestUser[1]._id.toString(),
         name: requestPayload.name,
-        user: userId.toString()
+        user: userId.toString(),
+        fileExists: false
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -2761,7 +2818,8 @@ describe("/sidiroar/api/models", () => {
           expectedModelsPayload.push({
             _id: modelsOfTestUser[1]._id.toString(),
             name: requestPayload.name,
-            user: userId.toString()
+            user: userId.toString(),
+            fileExists: false
           });
         } else {
           expectedModelsPayload.push(await model.getPayload());
@@ -3158,7 +3216,8 @@ describe("/sidiroar/api/models", () => {
       let expectedPayload = {
         _id: modelsOfTestUser[1]._id.toString(),
         name: requestPayload.name,
-        user: userId.toString()
+        user: userId.toString(),
+        fileExists: false
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -3190,7 +3249,8 @@ describe("/sidiroar/api/models", () => {
           expectedModelsPayload.push({
             _id: modelsOfTestUser[1]._id.toString(),
             name: requestPayload.name,
-            user: userId.toString()
+            user: userId.toString(),
+            fileExists: false
           });
         } else {
           expectedModelsPayload.push(await model.getPayload());
