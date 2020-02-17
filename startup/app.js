@@ -38,7 +38,10 @@ module.exports = async function(workingDirName) {
   log.info("Cors initialized");
 
   //Static front-end files are stored under client/build dir
-  app.use(express.static(path.join(workingDirName, "client/build")));
+  app.use(
+    "/sidiroar",
+    express.static(path.join(workingDirName, "client/build"))
+  );
 
   log.info("Static files initilized");
 
