@@ -1,0 +1,22 @@
+{
+  "files": {
+    "main.css": "/sidiroar/static/css/main.d1b05096.chunk.css",
+    "main.js": "/sidiroar/static/js/main.ea879a37.chunk.js",
+    "main.js.map": "/sidiroar/static/js/main.ea879a37.chunk.js.map",
+    "runtime-main.js": "/sidiroar/static/js/runtime-main.b11e8f30.js",
+    "runtime-main.js.map": "/sidiroar/static/js/runtime-main.b11e8f30.js.map",
+    "static/js/2.02ef7f10.chunk.js": "/sidiroar/static/js/2.02ef7f10.chunk.js",
+    "static/js/2.02ef7f10.chunk.js.map": "/sidiroar/static/js/2.02ef7f10.chunk.js.map",
+    "index.html": "/sidiroar/index.html",
+    "precache-manifest.450b1be1cf5598def1bd5a86ca251983.js": "/sidiroar/precache-manifest.450b1be1cf5598def1bd5a86ca251983.js",
+    "service-worker.js": "/sidiroar/service-worker.js",
+    "static/css/main.d1b05096.chunk.css.map": "/sidiroar/static/css/main.d1b05096.chunk.css.map",
+    "static/js/2.02ef7f10.chunk.js.LICENSE.txt": "/sidiroar/static/js/2.02ef7f10.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.b11e8f30.js",
+    "static/js/2.02ef7f10.chunk.js",
+    "static/css/main.d1b05096.chunk.css",
+    "static/js/main.ea879a37.chunk.js"
+  ]
+}
