@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors");
 //Initializing proccess of automatically calling next when error occurs while request handling - in order to go to last middlware of logging error
 require("express-async-errors");
 const config = require("config");
@@ -26,6 +27,15 @@ module.exports = async function(workingDirName) {
   app.use(helmet());
 
   log.info("Helmet initialized");
+
+  //Turning on cors
+  let corsOptions = {
+    exposedHeaders: [config.get("tokenHeader")]
+  };
+
+  app.use(cors(corsOptions));
+
+  log.info("Cors initialized");
 
   //Static front-end files are stored under client/build dir
   app.use(express.static(path.join(workingDirName, "client/build")));
