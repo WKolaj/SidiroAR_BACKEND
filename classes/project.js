@@ -20,6 +20,10 @@ class Project {
     return config.get("fileDir");
   }
 
+  static _getIOSFileDirName() {
+    return config.get("iosFileDir");
+  }
+
   static _getProjectDirPath() {
     let dirPath = "./";
     let projectDirName = Project._getProjectDirName();
@@ -45,6 +49,13 @@ class Project {
     return path.join(userDirPath, fileDirName);
   }
 
+  static _getIOSFileDirPath(user) {
+    let userDirPath = Project._getUserDirPath(user);
+    let fileDirName = Project._getIOSFileDirName();
+
+    return path.join(userDirPath, fileDirName);
+  }
+
   static _getModelFileName(model) {
     if (!exists(model)) throw new Error("Model cannot be empty");
     if (!exists(model._id)) throw new Error("Model id cannot be empty");
@@ -59,6 +70,18 @@ class Project {
    */
   static getModelFilePath(user, model) {
     let userFileDirPath = Project._getFileDirPath(user);
+    let modelFileName = Project._getModelFileName(model);
+
+    return path.join(userFileDirPath, modelFileName);
+  }
+
+  /**
+   * @description Method for getting model file based on user and model
+   * @param {Object} user User of model
+   * @param {Object} model Object of model
+   */
+  static getModelIOSFilePath(user, model) {
+    let userFileDirPath = Project._getIOSFileDirPath(user);
     let modelFileName = Project._getModelFileName(model);
 
     return path.join(userFileDirPath, modelFileName);
@@ -89,6 +112,10 @@ class Project {
     //Creating file dir
     let fileDirPath = Project._getFileDirPath(user);
     await createDirIfNotExists(fileDirPath);
+
+    //Creating file dir
+    let iosFileDirPath = Project._getIOSFileDirPath(user);
+    await createDirIfNotExists(iosFileDirPath);
   }
 
   /**

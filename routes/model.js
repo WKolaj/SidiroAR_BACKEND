@@ -125,6 +125,11 @@ router.delete(
     let modelFileExists = await checkIfFileExistsAsync(modelFilePath);
     if (modelFileExists) await removeFileOrDirectoryAsync(modelFilePath);
 
+    //removing model file if exists
+    let modelIOSFilePath = Project.getModelIOSFilePath(user, model);
+    let modelIOSFileExists = await checkIfFileExistsAsync(modelIOSFilePath);
+    if (modelIOSFileExists) await removeFileOrDirectoryAsync(modelIOSFilePath);
+
     return res.status(200).send(payloadToReturn);
   }
 );

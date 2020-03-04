@@ -6,6 +6,7 @@ const bcrypt = require("bcrypt");
 const config = require("config");
 const jsonWebToken = require("jsonwebtoken");
 const mongoose = require("mongoose");
+const path = require("path");
 let { User } = require("../../../models/user");
 let { Model } = require("../../../models/model");
 let {
@@ -132,7 +133,8 @@ describe("/sidiroar/api/user", () => {
         _id: response.body._id,
         modelIds: [],
         modelNames: [],
-        filesExist: []
+        filesExist: [],
+        iosFilesExist: []
       };
 
       expect(response.body).toEqual(expectedBody);
@@ -154,6 +156,7 @@ describe("/sidiroar/api/user", () => {
       userPayload.modelNames = [];
       userPayload.modelIds = [];
       userPayload.filesExist = [];
+      userPayload.iosFilesExist = [];
 
       expect(response.body).toEqual(userPayload);
 
@@ -195,10 +198,25 @@ describe("/sidiroar/api/user", () => {
       expect(response.status).toEqual(200);
       expect(response.body).toBeDefined();
 
+      //Checking if user directory exists
       let userDirectory = Project._getUserDirPath(response.body);
       let directoryExists = await checkIfDirectoryExistsAsync(userDirectory);
 
       expect(directoryExists).toEqual(true);
+
+      //checking if file dir exists
+      let modelFileDir = Project._getFileDirPath(response.body);
+      let modelFileDirExists = await checkIfDirectoryExistsAsync(modelFileDir);
+
+      expect(modelFileDirExists).toEqual(true);
+
+      //checking if file dir for ios exists
+      let modelIOSFileDir = Project._getIOSFileDirPath(response.body);
+      let modelIOSFileDirExists = await checkIfDirectoryExistsAsync(
+        modelIOSFileDir
+      );
+
+      expect(modelIOSFileDirExists).toEqual(true);
     });
 
     it("should not create new user and return 400 if user with the same email exists", async () => {
@@ -568,7 +586,8 @@ describe("/sidiroar/api/user", () => {
         _id: response.body._id,
         modelIds: [],
         modelNames: [],
-        filesExist: []
+        filesExist: [],
+        iosFilesExist: []
       };
 
       expect(response.body).toEqual(expectedBody);
@@ -592,6 +611,7 @@ describe("/sidiroar/api/user", () => {
       userPayload.modelIds = [];
       userPayload.modelNames = [];
       userPayload.filesExist = [];
+      userPayload.iosFilesExist = [];
 
       expect(response.body).toEqual(userPayload);
 
@@ -653,7 +673,8 @@ describe("/sidiroar/api/user", () => {
         _id: response.body._id,
         modelIds: [],
         modelNames: [],
-        filesExist: []
+        filesExist: [],
+        iosFilesExist: []
       };
 
       expect(response.body).toEqual(expectedBody);
@@ -677,6 +698,7 @@ describe("/sidiroar/api/user", () => {
       userPayload.modelIds = [];
       userPayload.modelNames = [];
       userPayload.filesExist = [];
+      userPayload.iosFilesExist = [];
 
       expect(response.body).toEqual(userPayload);
 
@@ -708,7 +730,8 @@ describe("/sidiroar/api/user", () => {
         _id: response.body._id,
         modelIds: [],
         modelNames: [],
-        filesExist: []
+        filesExist: [],
+        iosFilesExist: []
       };
 
       expect(response.body).toEqual(expectedBody);
@@ -732,6 +755,7 @@ describe("/sidiroar/api/user", () => {
       userPayload.modelIds = [];
       userPayload.modelNames = [];
       userPayload.filesExist = [];
+      userPayload.iosFilesExist = [];
 
       expect(response.body).toEqual(userPayload);
 
@@ -909,7 +933,8 @@ describe("/sidiroar/api/user", () => {
         _id: response.body._id,
         modelIds: [],
         modelNames: [],
-        filesExist: []
+        filesExist: [],
+        iosFilesExist: []
       };
 
       expect(response.body).toEqual(expectedBody);
@@ -933,6 +958,7 @@ describe("/sidiroar/api/user", () => {
       userPayload.modelIds = [];
       userPayload.modelNames = [];
       userPayload.filesExist = [];
+      userPayload.iosFilesExist = [];
 
       expect(response.body).toEqual(userPayload);
 
@@ -1182,7 +1208,8 @@ describe("/sidiroar/api/user", () => {
         _id: response.body._id,
         modelIds: [],
         modelNames: [],
-        filesExist: []
+        filesExist: [],
+        iosFilesExist: []
       };
 
       expect(response.body).toEqual(expectedBody);
@@ -1206,6 +1233,7 @@ describe("/sidiroar/api/user", () => {
       userPayload.modelIds = [];
       userPayload.modelNames = [];
       userPayload.filesExist = [];
+      userPayload.iosFilesExist = [];
 
       expect(response.body).toEqual(userPayload);
 
@@ -1265,7 +1293,8 @@ describe("/sidiroar/api/user", () => {
         _id: response.body._id,
         modelIds: [],
         modelNames: [],
-        filesExist: []
+        filesExist: [],
+        iosFilesExist: []
       };
 
       expect(response.body).toEqual(expectedBody);
@@ -1289,6 +1318,7 @@ describe("/sidiroar/api/user", () => {
       userPayload.modelIds = [];
       userPayload.modelNames = [];
       userPayload.filesExist = [];
+      userPayload.iosFilesExist = [];
 
       expect(response.body).toEqual(userPayload);
 
@@ -1421,7 +1451,8 @@ describe("/sidiroar/api/user", () => {
         _id: response.body._id,
         modelIds: [],
         modelNames: [],
-        filesExist: []
+        filesExist: [],
+        iosFilesExist: []
       };
 
       expect(response.body).toEqual(expectedBody);
@@ -1443,6 +1474,7 @@ describe("/sidiroar/api/user", () => {
       userPayload.modelNames = [];
       userPayload.modelIds = [];
       userPayload.filesExist = [];
+      userPayload.iosFilesExist = [];
 
       expect(response.body).toEqual(userPayload);
 
@@ -1552,7 +1584,8 @@ describe("/sidiroar/api/user", () => {
         _id: response.body._id,
         modelIds: [],
         modelNames: [],
-        filesExist: []
+        filesExist: [],
+        iosFilesExist: []
       };
 
       expect(response.body).toEqual(expectedBody);
@@ -1574,6 +1607,7 @@ describe("/sidiroar/api/user", () => {
       userPayload.modelNames = [];
       userPayload.modelIds = [];
       userPayload.filesExist = [];
+      userPayload.iosFilesExist = [];
 
       expect(response.body).toEqual(userPayload);
 
@@ -1628,7 +1662,8 @@ describe("/sidiroar/api/user", () => {
         _id: response.body._id,
         modelIds: [],
         modelNames: [],
-        filesExist: []
+        filesExist: [],
+        iosFilesExist: []
       };
 
       expect(response.body).toEqual(expectedBody);
@@ -1650,6 +1685,7 @@ describe("/sidiroar/api/user", () => {
       userPayload.modelNames = [];
       userPayload.modelIds = [];
       userPayload.filesExist = [];
+      userPayload.iosFilesExist = [];
 
       expect(response.body).toEqual(userPayload);
 
@@ -1707,6 +1743,9 @@ describe("/sidiroar/api/user", () => {
           modelNames: modelsOfUselessUser.map(model => model.name),
           filesExist: await Promise.all(
             modelsOfUselessUser.map(async model => await model.fileExists())
+          ),
+          iosFilesExist: await Promise.all(
+            modelsOfUselessUser.map(async model => await model.iosFileExists())
           )
         },
         {
@@ -1718,6 +1757,9 @@ describe("/sidiroar/api/user", () => {
           modelNames: modelsOfTestUser.map(model => model.name),
           filesExist: await Promise.all(
             modelsOfTestUser.map(async model => await model.fileExists())
+          ),
+          iosFilesExist: await Promise.all(
+            modelsOfTestUser.map(async model => await model.iosFileExists())
           )
         },
         {
@@ -1729,6 +1771,9 @@ describe("/sidiroar/api/user", () => {
           modelNames: modelsOfTestAdmin.map(model => model.name),
           filesExist: await Promise.all(
             modelsOfTestAdmin.map(async model => await model.fileExists())
+          ),
+          iosFilesExist: await Promise.all(
+            modelsOfTestAdmin.map(async model => await model.iosFileExists())
           )
         },
         {
@@ -1742,6 +1787,11 @@ describe("/sidiroar/api/user", () => {
             modelsOfTestUserAndAdmin.map(
               async model => await model.fileExists()
             )
+          ),
+          iosFilesExist: await Promise.all(
+            modelsOfTestUserAndAdmin.map(
+              async model => await model.iosFileExists()
+            )
           )
         },
         {
@@ -1753,6 +1803,11 @@ describe("/sidiroar/api/user", () => {
           modelNames: modelsOfTestSuperAdmin.map(model => model.name),
           filesExist: await Promise.all(
             modelsOfTestSuperAdmin.map(async model => await model.fileExists())
+          ),
+          iosFilesExist: await Promise.all(
+            modelsOfTestSuperAdmin.map(
+              async model => await model.iosFileExists()
+            )
           )
         }
       ];
@@ -1799,6 +1854,9 @@ describe("/sidiroar/api/user", () => {
           modelNames: modelsOfUselessUser.map(model => model.name),
           filesExist: await Promise.all(
             modelsOfUselessUser.map(async model => await model.fileExists())
+          ),
+          iosFilesExist: await Promise.all(
+            modelsOfUselessUser.map(async model => await model.iosFileExists())
           )
         },
         {
@@ -1808,7 +1866,10 @@ describe("/sidiroar/api/user", () => {
           permissions: testUser.permissions,
           modelIds: modelsOfTestUser.map(model => model._id.toString()),
           modelNames: modelsOfTestUser.map(model => model.name),
-          filesExist: [false, true, false]
+          filesExist: [false, true, false],
+          iosFilesExist: await Promise.all(
+            modelsOfTestUser.map(async model => await model.iosFileExists())
+          )
         },
         {
           _id: testAdmin._id.toString(),
@@ -1819,6 +1880,9 @@ describe("/sidiroar/api/user", () => {
           modelNames: modelsOfTestAdmin.map(model => model.name),
           filesExist: await Promise.all(
             modelsOfTestAdmin.map(async model => await model.fileExists())
+          ),
+          iosFilesExist: await Promise.all(
+            modelsOfTestAdmin.map(async model => await model.iosFileExists())
           )
         },
         {
@@ -1832,6 +1896,11 @@ describe("/sidiroar/api/user", () => {
             modelsOfTestUserAndAdmin.map(
               async model => await model.fileExists()
             )
+          ),
+          iosFilesExist: await Promise.all(
+            modelsOfTestUserAndAdmin.map(
+              async model => await model.iosFileExists()
+            )
           )
         },
         {
@@ -1843,6 +1912,120 @@ describe("/sidiroar/api/user", () => {
           modelNames: modelsOfTestSuperAdmin.map(model => model.name),
           filesExist: await Promise.all(
             modelsOfTestSuperAdmin.map(async model => await model.fileExists())
+          ),
+          iosFilesExist: await Promise.all(
+            modelsOfTestSuperAdmin.map(
+              async model => await model.iosFileExists()
+            )
+          )
+        }
+      ];
+
+      //ordering both expected and real body by id
+      let orderedExpectedBody = _.orderBy(expectedBody, "_id", "asc");
+      let orderedResponseBody = _.orderBy(response.body, "_id", "asc");
+
+      //after sorting - both array should be the same
+      expect(orderedResponseBody).toEqual(orderedExpectedBody);
+
+      //#endregion CHECKING_RESPONSE
+    });
+
+    it("should return 200 and a list of all users - if users model has ios files", async () => {
+      //creating model file
+      let filePath = await Project.getModelIOSFilePath(
+        testUser,
+        modelsOfTestUser[1]
+      );
+      await createFileAsync(filePath, "test File content");
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(200);
+      expect(response.body).toBeDefined();
+
+      //Body should contain all users payload
+      expect(response.body).toBeDefined();
+
+      //There should be 4 users - useless, normal, admin, and normal+admin and superAdmin
+      expect(response.body.length).toEqual(5);
+
+      let expectedBody = [
+        {
+          _id: uselessUser._id.toString(),
+          name: uselessUser.name,
+          email: uselessUser.email,
+          permissions: uselessUser.permissions,
+          modelIds: modelsOfUselessUser.map(model => model._id.toString()),
+          modelNames: modelsOfUselessUser.map(model => model.name),
+          filesExist: await Promise.all(
+            modelsOfUselessUser.map(async model => await model.fileExists())
+          ),
+          iosFilesExist: await Promise.all(
+            modelsOfUselessUser.map(async model => await model.iosFileExists())
+          )
+        },
+        {
+          _id: testUser._id.toString(),
+          name: testUser.name,
+          email: testUser.email,
+          permissions: testUser.permissions,
+          modelIds: modelsOfTestUser.map(model => model._id.toString()),
+          modelNames: modelsOfTestUser.map(model => model.name),
+          filesExist: await Promise.all(
+            modelsOfTestUser.map(async model => await model.fileExists())
+          ),
+          iosFilesExist: [false, true, false]
+        },
+        {
+          _id: testAdmin._id.toString(),
+          name: testAdmin.name,
+          email: testAdmin.email,
+          permissions: testAdmin.permissions,
+          modelIds: modelsOfTestAdmin.map(model => model._id.toString()),
+          modelNames: modelsOfTestAdmin.map(model => model.name),
+          filesExist: await Promise.all(
+            modelsOfTestAdmin.map(async model => await model.fileExists())
+          ),
+          iosFilesExist: await Promise.all(
+            modelsOfTestAdmin.map(async model => await model.iosFileExists())
+          )
+        },
+        {
+          _id: testUserAndAdmin._id.toString(),
+          name: testUserAndAdmin.name,
+          email: testUserAndAdmin.email,
+          permissions: testUserAndAdmin.permissions,
+          modelIds: modelsOfTestUserAndAdmin.map(model => model._id.toString()),
+          modelNames: modelsOfTestUserAndAdmin.map(model => model.name),
+          filesExist: await Promise.all(
+            modelsOfTestUserAndAdmin.map(
+              async model => await model.fileExists()
+            )
+          ),
+          iosFilesExist: await Promise.all(
+            modelsOfTestUserAndAdmin.map(
+              async model => await model.iosFileExists()
+            )
+          )
+        },
+        {
+          _id: testSuperAdmin._id.toString(),
+          name: testSuperAdmin.name,
+          email: testSuperAdmin.email,
+          permissions: testSuperAdmin.permissions,
+          modelIds: modelsOfTestSuperAdmin.map(model => model._id.toString()),
+          modelNames: modelsOfTestSuperAdmin.map(model => model.name),
+          filesExist: await Promise.all(
+            modelsOfTestSuperAdmin.map(async model => await model.fileExists())
+          ),
+          iosFilesExist: await Promise.all(
+            modelsOfTestSuperAdmin.map(
+              async model => await model.iosFileExists()
+            )
           )
         }
       ];
@@ -1882,7 +2065,8 @@ describe("/sidiroar/api/user", () => {
           permissions: uselessUser.permissions,
           modelIds: [],
           modelNames: [],
-          filesExist: []
+          filesExist: [],
+          iosFilesExist: []
         },
         {
           _id: testUser._id.toString(),
@@ -1891,7 +2075,8 @@ describe("/sidiroar/api/user", () => {
           permissions: testUser.permissions,
           modelIds: [],
           modelNames: [],
-          filesExist: []
+          filesExist: [],
+          iosFilesExist: []
         },
         {
           _id: testAdmin._id.toString(),
@@ -1900,7 +2085,8 @@ describe("/sidiroar/api/user", () => {
           permissions: testAdmin.permissions,
           modelIds: [],
           modelNames: [],
-          filesExist: []
+          filesExist: [],
+          iosFilesExist: []
         },
         {
           _id: testUserAndAdmin._id.toString(),
@@ -1909,7 +2095,8 @@ describe("/sidiroar/api/user", () => {
           permissions: testUserAndAdmin.permissions,
           modelIds: [],
           modelNames: [],
-          filesExist: []
+          filesExist: [],
+          iosFilesExist: []
         },
         {
           _id: testSuperAdmin._id.toString(),
@@ -1918,7 +2105,8 @@ describe("/sidiroar/api/user", () => {
           permissions: testSuperAdmin.permissions,
           modelIds: [],
           modelNames: [],
-          filesExist: []
+          filesExist: [],
+          iosFilesExist: []
         }
       ];
 
@@ -1932,7 +2120,7 @@ describe("/sidiroar/api/user", () => {
       //#endregion CHECKING_RESPONSE
     });
 
-    it("should return 200 and a empty list - if there are no users", async () => {
+    it("should return 200 and an empty list - if there are no users", async () => {
       await User.deleteMany({});
 
       //JWT should still be valid - regarding its content
@@ -1974,6 +2162,9 @@ describe("/sidiroar/api/user", () => {
           modelNames: modelsOfTestUser.map(model => model.name),
           filesExist: await Promise.all(
             modelsOfTestUser.map(async model => await model.fileExists())
+          ),
+          iosFilesExist: await Promise.all(
+            modelsOfTestUser.map(async model => await model.iosFileExists())
           )
         }
       ]);
@@ -2053,6 +2244,9 @@ describe("/sidiroar/api/user", () => {
           modelNames: modelsOfUselessUser.map(model => model.name),
           filesExist: await Promise.all(
             modelsOfUselessUser.map(async model => await model.fileExists())
+          ),
+          iosFilesExist: await Promise.all(
+            modelsOfUselessUser.map(async model => await model.iosFileExists())
           )
         },
         {
@@ -2064,6 +2258,9 @@ describe("/sidiroar/api/user", () => {
           modelNames: modelsOfTestUser.map(model => model.name),
           filesExist: await Promise.all(
             modelsOfTestUser.map(async model => await model.fileExists())
+          ),
+          iosFilesExist: await Promise.all(
+            modelsOfTestUser.map(async model => await model.iosFileExists())
           )
         },
         {
@@ -2075,6 +2272,9 @@ describe("/sidiroar/api/user", () => {
           modelNames: modelsOfTestAdmin.map(model => model.name),
           filesExist: await Promise.all(
             modelsOfTestAdmin.map(async model => await model.fileExists())
+          ),
+          iosFilesExist: await Promise.all(
+            modelsOfTestAdmin.map(async model => await model.iosFileExists())
           )
         },
         {
@@ -2088,6 +2288,11 @@ describe("/sidiroar/api/user", () => {
             modelsOfTestUserAndAdmin.map(
               async model => await model.fileExists()
             )
+          ),
+          iosFilesExist: await Promise.all(
+            modelsOfTestUserAndAdmin.map(
+              async model => await model.iosFileExists()
+            )
           )
         },
         {
@@ -2099,6 +2304,11 @@ describe("/sidiroar/api/user", () => {
           modelNames: modelsOfTestSuperAdmin.map(model => model.name),
           filesExist: await Promise.all(
             modelsOfTestSuperAdmin.map(async model => await model.fileExists())
+          ),
+          iosFilesExist: await Promise.all(
+            modelsOfTestSuperAdmin.map(
+              async model => await model.iosFileExists()
+            )
           )
         }
       ];
@@ -2197,6 +2407,9 @@ describe("/sidiroar/api/user", () => {
         modelNames: modelsOfTestUser.map(model => model.name),
         filesExist: await Promise.all(
           modelsOfTestUser.map(async model => await model.fileExists())
+        ),
+        iosFilesExist: await Promise.all(
+          modelsOfTestUser.map(async model => await model.iosFileExists())
         )
       };
 
@@ -2223,7 +2436,41 @@ describe("/sidiroar/api/user", () => {
         permissions: testUser.permissions,
         modelIds: modelsOfTestUser.map(model => model._id.toString()),
         modelNames: modelsOfTestUser.map(model => model.name),
-        filesExist: [false, true, false]
+        filesExist: [false, true, false],
+        iosFilesExist: await Promise.all(
+          modelsOfTestUser.map(async model => await model.iosFileExists())
+        )
+      };
+
+      expect(response.body).toEqual(expectedPayload);
+    });
+
+    it("should return 200 and user of given id - if user exists and model ios file exists", async () => {
+      //Creating file
+      let filePath = await Project.getModelIOSFilePath(
+        testUser,
+        modelsOfTestUser[1]
+      );
+      await createFileAsync(filePath, "test file content");
+
+      let response = await exec();
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(200);
+
+      let expectedPayload = {
+        _id: testUser._id.toString(),
+        name: testUser.name,
+        email: testUser.email,
+        permissions: testUser.permissions,
+        modelIds: modelsOfTestUser.map(model => model._id.toString()),
+        modelNames: modelsOfTestUser.map(model => model.name),
+        filesExist: await Promise.all(
+          modelsOfTestUser.map(async model => await model.fileExists())
+        ),
+        iosFilesExist: await Promise.all(
+          modelsOfTestUser.map(async model => await model.iosFileExists())
+        )
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -2244,7 +2491,8 @@ describe("/sidiroar/api/user", () => {
         permissions: testUser.permissions,
         modelIds: [],
         modelNames: [],
-        filesExist: []
+        filesExist: [],
+        iosFilesExist: []
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -2346,6 +2594,9 @@ describe("/sidiroar/api/user", () => {
         modelNames: modelsOfTestUser.map(model => model.name),
         filesExist: await Promise.all(
           modelsOfTestUser.map(async model => await model.fileExists())
+        ),
+        iosFilesExist: await Promise.all(
+          modelsOfTestUser.map(async model => await model.iosFileExists())
         )
       };
 
@@ -2440,6 +2691,9 @@ describe("/sidiroar/api/user", () => {
         modelNames: modelsOfTestUser.map(model => model.name),
         filesExist: await Promise.all(
           modelsOfTestUser.map(async model => await model.fileExists())
+        ),
+        iosFilesExist: await Promise.all(
+          modelsOfTestUser.map(async model => await model.iosFileExists())
         )
       };
 
@@ -2506,7 +2760,8 @@ describe("/sidiroar/api/user", () => {
         permissions: testUser.permissions,
         modelIds: [],
         modelNames: [],
-        filesExist: []
+        filesExist: [],
+        iosFilesExist: []
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -2915,6 +3170,9 @@ describe("/sidiroar/api/user", () => {
         modelNames: modelsOfTestUser.map(model => model.name),
         filesExist: await Promise.all(
           modelsOfTestUser.map(async model => await model.fileExists())
+        ),
+        iosFilesExist: await Promise.all(
+          modelsOfTestUser.map(async model => await model.iosFileExists())
         )
       };
 
@@ -3124,6 +3382,9 @@ describe("/sidiroar/api/user", () => {
         modelNames: modelsOfTestUserAndAdmin.map(model => model.name),
         filesExist: await Promise.all(
           modelsOfTestUserAndAdmin.map(async model => await model.fileExists())
+        ),
+        iosFilesExist: await Promise.all(
+          modelsOfTestUser.map(async model => await model.iosFileExists())
         )
       };
 
@@ -3252,6 +3513,9 @@ describe("/sidiroar/api/user", () => {
         modelNames: modelsOfTestSuperAdmin.map(model => model.name),
         filesExist: await Promise.all(
           modelsOfTestSuperAdmin.map(async model => await model.fileExists())
+        ),
+        iosFilesExist: await Promise.all(
+          modelsOfTestUser.map(async model => await model.iosFileExists())
         )
       };
 
@@ -3347,6 +3611,9 @@ describe("/sidiroar/api/user", () => {
         modelNames: modelsOfTestUser.map(model => model.name),
         filesExist: await Promise.all(
           modelsOfTestUser.map(async model => await model.fileExists())
+        ),
+        iosFilesExist: await Promise.all(
+          modelsOfTestUser.map(async model => await model.iosFileExists())
         )
       };
 
@@ -3395,6 +3662,9 @@ describe("/sidiroar/api/user", () => {
         modelNames: modelsOfTestUser.map(model => model.name),
         filesExist: await Promise.all(
           modelsOfTestUser.map(async model => await model.fileExists())
+        ),
+        iosFilesExist: await Promise.all(
+          modelsOfTestUser.map(async model => await model.iosFileExists())
         )
       };
 
@@ -4110,6 +4380,9 @@ describe("/sidiroar/api/user", () => {
         modelNames: modelsOfTestUser.map(model => model.name),
         filesExist: await Promise.all(
           modelsOfTestUser.map(async model => await model.fileExists())
+        ),
+        iosFilesExist: await Promise.all(
+          modelsOfTestUser.map(async model => await model.iosFileExists())
         )
       };
 
@@ -4219,6 +4492,9 @@ describe("/sidiroar/api/user", () => {
         modelNames: modelsOfTestUser.map(model => model.name),
         filesExist: await Promise.all(
           modelsOfTestUser.map(async model => await model.fileExists())
+        ),
+        iosFilesExist: await Promise.all(
+          modelsOfTestUser.map(async model => await model.iosFileExists())
         )
       };
 
@@ -4439,6 +4715,9 @@ describe("/sidiroar/api/user", () => {
         modelNames: modelsOfTestUser.map(model => model.name),
         filesExist: await Promise.all(
           modelsOfTestUser.map(async model => await model.fileExists())
+        ),
+        iosFilesExist: await Promise.all(
+          modelsOfTestUser.map(async model => await model.iosFileExists())
         )
       };
 
@@ -4548,6 +4827,9 @@ describe("/sidiroar/api/user", () => {
         modelNames: modelsOfTestUser.map(model => model.name),
         filesExist: await Promise.all(
           modelsOfTestUser.map(async model => await model.fileExists())
+        ),
+        iosFilesExist: await Promise.all(
+          modelsOfTestUser.map(async model => await model.iosFileExists())
         )
       };
 
@@ -4768,6 +5050,9 @@ describe("/sidiroar/api/user", () => {
         modelNames: modelsOfTestUser.map(model => model.name),
         filesExist: await Promise.all(
           modelsOfTestUser.map(async model => await model.fileExists())
+        ),
+        iosFilesExist: await Promise.all(
+          modelsOfTestUser.map(async model => await model.iosFileExists())
         )
       };
 
@@ -5010,6 +5295,11 @@ describe("/sidiroar/api/user", () => {
         modelNames: modelsOfTestUserAndAdmin.map(model => model.name),
         filesExist: await Promise.all(
           modelsOfTestUserAndAdmin.map(async model => await model.fileExists())
+        ),
+        iosFilesExist: await Promise.all(
+          modelsOfTestUserAndAdmin.map(
+            async model => await model.iosFileExists()
+          )
         )
       };
 
@@ -5132,6 +5422,9 @@ describe("/sidiroar/api/user", () => {
         modelNames: modelsOfTestSuperAdmin.map(model => model.name),
         filesExist: await Promise.all(
           modelsOfTestSuperAdmin.map(async model => await model.fileExists())
+        ),
+        iosFilesExist: await Promise.all(
+          modelsOfTestSuperAdmin.map(async model => await model.iosFileExists())
         )
       };
 
@@ -5254,6 +5547,9 @@ describe("/sidiroar/api/user", () => {
         modelNames: modelsOfTestUser.map(model => model.name),
         filesExist: await Promise.all(
           modelsOfTestUser.map(async model => await model.fileExists())
+        ),
+        iosFilesExist: await Promise.all(
+          modelsOfTestUser.map(async model => await model.iosFileExists())
         )
       };
 
@@ -5377,6 +5673,9 @@ describe("/sidiroar/api/user", () => {
         modelNames: modelsOfTestUser.map(model => model.name),
         filesExist: await Promise.all(
           modelsOfTestUser.map(async model => await model.fileExists())
+        ),
+        iosFilesExist: await Promise.all(
+          modelsOfTestUser.map(async model => await model.iosFileExists())
         )
       };
 
@@ -5433,6 +5732,9 @@ describe("/sidiroar/api/user", () => {
         modelNames: modelsOfTestAdmin.map(model => model.name),
         filesExist: await Promise.all(
           modelsOfTestAdmin.map(async model => await model.fileExists())
+        ),
+        iosFilesExist: await Promise.all(
+          modelsOfTestAdmin.map(async model => await model.iosFileExists())
         )
       };
 
@@ -5499,6 +5801,9 @@ describe("/sidiroar/api/user", () => {
         modelNames: modelsOfTestUser.map(model => model.name),
         filesExist: await Promise.all(
           modelsOfTestUser.map(async model => await model.fileExists())
+        ),
+        iosFilesExist: await Promise.all(
+          modelsOfTestUser.map(async model => await model.iosFileExists())
         )
       };
 
@@ -5531,7 +5836,8 @@ describe("/sidiroar/api/user", () => {
         permissions: testUser.permissions,
         modelIds: [],
         modelNames: [],
-        filesExist: []
+        filesExist: [],
+        iosFilesExist: []
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -5599,6 +5905,11 @@ describe("/sidiroar/api/user", () => {
         modelNames: modelsOfTestUserAndAdmin.map(model => model.name),
         filesExist: await Promise.all(
           modelsOfTestUserAndAdmin.map(async model => await model.fileExists())
+        ),
+        iosFilesExist: await Promise.all(
+          modelsOfTestUserAndAdmin.map(
+            async model => await model.iosFileExists()
+          )
         )
       };
 
@@ -5697,6 +6008,9 @@ describe("/sidiroar/api/user", () => {
         modelNames: modelsOfTestUser.map(model => model.name),
         filesExist: await Promise.all(
           modelsOfTestUser.map(async model => await model.fileExists())
+        ),
+        iosFilesExist: await Promise.all(
+          modelsOfTestUser.map(async model => await model.iosFileExists())
         )
       };
 
@@ -5746,6 +6060,9 @@ describe("/sidiroar/api/user", () => {
         modelNames: modelsOfTestUser.map(model => model.name),
         filesExist: await Promise.all(
           modelsOfTestUser.map(async model => await model.fileExists())
+        ),
+        iosFilesExist: await Promise.all(
+          modelsOfTestUser.map(async model => await model.iosFileExists())
         )
       };
 
@@ -6515,6 +6832,9 @@ describe("/sidiroar/api/user", () => {
         modelNames: modelsOfTestUser.map(model => model.name),
         filesExist: await Promise.all(
           modelsOfTestUser.map(async model => await model.fileExists())
+        ),
+        iosFilesExist: await Promise.all(
+          modelsOfTestUser.map(async model => await model.iosFileExists())
         )
       };
 
@@ -6624,6 +6944,9 @@ describe("/sidiroar/api/user", () => {
         modelNames: modelsOfTestUser.map(model => model.name),
         filesExist: await Promise.all(
           modelsOfTestUser.map(async model => await model.fileExists())
+        ),
+        iosFilesExist: await Promise.all(
+          modelsOfTestUser.map(async model => await model.iosFileExists())
         )
       };
 
@@ -7136,6 +7459,11 @@ describe("/sidiroar/api/user", () => {
         modelNames: modelsOfTestUserAndAdmin.map(model => model.name),
         filesExist: await Promise.all(
           modelsOfTestUserAndAdmin.map(async model => await model.fileExists())
+        ),
+        iosFilesExist: await Promise.all(
+          modelsOfTestUserAndAdmin.map(
+            async model => await model.iosFileExists()
+          )
         )
       };
 

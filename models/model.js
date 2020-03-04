@@ -37,13 +37,21 @@ modelSchema.methods.fileExists = async function() {
   );
 };
 
+//Method for checking if model file exists
+modelSchema.methods.iosFileExists = async function() {
+  return await checkIfFileExistsAsync(
+    Project.getModelIOSFilePath({ _id: this.user.toString() }, this)
+  );
+};
+
 //Method for generating payload of model
 modelSchema.methods.getPayload = async function() {
   let modelPayload = {
     _id: this._id.toString(),
     name: this.name,
     user: this.user.toString(),
-    fileExists: await this.fileExists()
+    fileExists: await this.fileExists(),
+    iosFileExists: await this.iosFileExists()
   };
 
   return modelPayload;

@@ -6,6 +6,7 @@
   "projectDir": "__testDir/project",
   "userDir": "users",
   "fileDir": "files",
+  "iosFileDir": "iosFiles",
   "jwtPrivateKey": "testPrivateKey",
   "emailPassword": "testSidiroEmailPasssword",
   "logging": {

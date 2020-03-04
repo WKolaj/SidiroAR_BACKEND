@@ -77,18 +77,29 @@ describe("/sidiroar/api/models", () => {
     let userId;
     let modelId;
     let createModelFile;
+    let createModelIOSFile;
 
     beforeEach(async () => {
       jwt = await testAdmin.generateJWT();
       userId = testUser._id;
       modelId = modelsOfTestUser[1]._id;
       createModelFile = true;
+      createModelIOSFile = true;
     });
 
     let exec = async () => {
       //creating file
       if (createModelFile) {
         let modelFilePath = Project.getModelFilePath(
+          testUser,
+          modelsOfTestUser[1]
+        );
+        await createFileAsync(modelFilePath, "test file content");
+      }
+
+      //creating ios file
+      if (createModelIOSFile) {
+        let modelFilePath = Project.getModelIOSFilePath(
           testUser,
           modelsOfTestUser[1]
         );
@@ -118,7 +129,8 @@ describe("/sidiroar/api/models", () => {
         _id: expectedModel._id.toString(),
         name: expectedModel.name,
         user: expectedModel.user.toString(),
-        fileExists: true
+        fileExists: true,
+        iosFileExists: true
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -138,7 +150,29 @@ describe("/sidiroar/api/models", () => {
         _id: expectedModel._id.toString(),
         name: expectedModel.name,
         user: expectedModel.user.toString(),
-        fileExists: false
+        fileExists: false,
+        iosFileExists: true
+      };
+
+      expect(response.body).toEqual(expectedPayload);
+    });
+
+    it("should return 200 and model of given id - if user exists, but model ios file does not exist", async () => {
+      createModelIOSFile = false;
+
+      let response = await exec();
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(200);
+
+      let expectedModel = modelsOfTestUser[1];
+
+      let expectedPayload = {
+        _id: expectedModel._id.toString(),
+        name: expectedModel.name,
+        user: expectedModel.user.toString(),
+        fileExists: true,
+        iosFileExists: false
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -254,7 +288,8 @@ describe("/sidiroar/api/models", () => {
         _id: expectedModel._id.toString(),
         name: expectedModel.name,
         user: expectedModel.user.toString(),
-        fileExists: await expectedModel.fileExists()
+        fileExists: await expectedModel.fileExists(),
+        iosFileExists: await expectedModel.iosFileExists()
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -340,19 +375,22 @@ describe("/sidiroar/api/models", () => {
           _id: modelsOfTestUser[0]._id.toString(),
           name: modelsOfTestUser[0].name,
           user: modelsOfTestUser[0].user.toString(),
-          fileExists: await modelsOfTestUser[0].fileExists()
+          fileExists: await modelsOfTestUser[0].fileExists(),
+          iosFileExists: await modelsOfTestUser[0].iosFileExists()
         },
         {
           _id: modelsOfTestUser[1]._id.toString(),
           name: modelsOfTestUser[1].name,
           user: modelsOfTestUser[1].user.toString(),
-          fileExists: await modelsOfTestUser[1].fileExists()
+          fileExists: await modelsOfTestUser[1].fileExists(),
+          iosFileExists: await modelsOfTestUser[1].iosFileExists()
         },
         {
           _id: modelsOfTestUser[2]._id.toString(),
           name: modelsOfTestUser[2].name,
           user: modelsOfTestUser[2].user.toString(),
-          fileExists: await modelsOfTestUser[2].fileExists()
+          fileExists: await modelsOfTestUser[2].fileExists(),
+          iosFileExists: await modelsOfTestUser[2].iosFileExists()
         }
       ];
 
@@ -462,19 +500,22 @@ describe("/sidiroar/api/models", () => {
           _id: modelsOfTestUser[0]._id.toString(),
           name: modelsOfTestUser[0].name,
           user: modelsOfTestUser[0].user.toString(),
-          fileExists: await modelsOfTestUser[0].fileExists()
+          fileExists: await modelsOfTestUser[0].fileExists(),
+          iosFileExists: await modelsOfTestUser[0].iosFileExists()
         },
         {
           _id: modelsOfTestUser[1]._id.toString(),
           name: modelsOfTestUser[1].name,
           user: modelsOfTestUser[1].user.toString(),
-          fileExists: await modelsOfTestUser[1].fileExists()
+          fileExists: await modelsOfTestUser[1].fileExists(),
+          iosFileExists: await modelsOfTestUser[1].iosFileExists()
         },
         {
           _id: modelsOfTestUser[2]._id.toString(),
           name: modelsOfTestUser[2].name,
           user: modelsOfTestUser[2].user.toString(),
-          fileExists: await modelsOfTestUser[2].fileExists()
+          fileExists: await modelsOfTestUser[2].fileExists(),
+          iosFileExists: await modelsOfTestUser[2].iosFileExists()
         }
       ];
 
@@ -560,7 +601,8 @@ describe("/sidiroar/api/models", () => {
         _id: response.body._id.toString(),
         name: requestPayload.name,
         user: userId.toString(),
-        fileExists: false
+        fileExists: false,
+        iosFileExists: false
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -591,7 +633,8 @@ describe("/sidiroar/api/models", () => {
         _id: response.body._id.toString(),
         name: requestPayload.name,
         user: userId.toString(),
-        fileExists: false
+        fileExists: false,
+        iosFileExists: false
       });
 
       expectedModelsPayload = _.sortBy(expectedModelsPayload, "_id", "asc");
@@ -1008,7 +1051,8 @@ describe("/sidiroar/api/models", () => {
         _id: response.body._id.toString(),
         name: requestPayload.name,
         user: userId.toString(),
-        fileExists: false
+        fileExists: false,
+        iosFileExists: false
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -1039,7 +1083,8 @@ describe("/sidiroar/api/models", () => {
         _id: response.body._id.toString(),
         name: requestPayload.name,
         user: userId.toString(),
-        fileExists: false
+        fileExists: false,
+        iosFileExists: false
       });
 
       expectedModelsPayload = _.sortBy(expectedModelsPayload, "_id", "asc");
@@ -1126,7 +1171,8 @@ describe("/sidiroar/api/models", () => {
         _id: response.body._id.toString(),
         name: requestPayload.name,
         user: userId.toString(),
-        fileExists: false
+        fileExists: false,
+        iosFileExists: false
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -1157,7 +1203,8 @@ describe("/sidiroar/api/models", () => {
         _id: response.body._id.toString(),
         name: requestPayload.name,
         user: userId.toString(),
-        fileExists: false
+        fileExists: false,
+        iosFileExists: false
       });
 
       expectedModelsPayload = _.sortBy(expectedModelsPayload, "_id", "asc");
@@ -1350,7 +1397,8 @@ describe("/sidiroar/api/models", () => {
         _id: response.body._id.toString(),
         name: requestPayload.name,
         user: userId.toString(),
-        fileExists: false
+        fileExists: false,
+        iosFileExists: false
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -1381,7 +1429,8 @@ describe("/sidiroar/api/models", () => {
         _id: response.body._id.toString(),
         name: requestPayload.name,
         user: userId.toString(),
-        fileExists: false
+        fileExists: false,
+        iosFileExists: false
       });
 
       expectedModelsPayload = _.sortBy(expectedModelsPayload, "_id", "asc");
@@ -1518,6 +1567,7 @@ describe("/sidiroar/api/models", () => {
     let userId;
     let modelId;
     let createModelFile;
+    let createIOSModelFile;
 
     beforeEach(async () => {
       jwt = await testAdmin.generateJWT();
@@ -1526,11 +1576,17 @@ describe("/sidiroar/api/models", () => {
       userId = user._id;
       modelId = model._id;
       createModelFile = true;
+      createIOSModelFile = true;
     });
 
     let exec = async () => {
       if (createModelFile) {
         let modelFilePath = Project.getModelFilePath(user, model);
+        await createFileAsync(modelFilePath, "test model file content");
+      }
+
+      if (createIOSModelFile) {
+        let modelFilePath = Project.getModelIOSFilePath(user, model);
         await createFileAsync(modelFilePath, "test model file content");
       }
 
@@ -1559,7 +1615,8 @@ describe("/sidiroar/api/models", () => {
         _id: expectedModel._id.toString(),
         name: expectedModel.name,
         user: expectedModel.user.toString(),
-        fileExists: createModelFile
+        fileExists: createModelFile,
+        iosFileExists: createIOSModelFile
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -1600,6 +1657,10 @@ describe("/sidiroar/api/models", () => {
       let modelFilePath = Project.getModelFilePath(user, model);
       let fileExists = await checkIfFileExistsAsync(modelFilePath);
       expect(fileExists).toEqual(false);
+
+      let modelIOSFilePath = Project.getModelIOSFilePath(user, model);
+      let iosFileExists = await checkIfFileExistsAsync(modelIOSFilePath);
+      expect(iosFileExists).toEqual(false);
 
       //#endregion CHECK_FILE
     });
@@ -1620,7 +1681,8 @@ describe("/sidiroar/api/models", () => {
         _id: expectedModel._id.toString(),
         name: expectedModel.name,
         user: expectedModel.user.toString(),
-        fileExists: createModelFile
+        fileExists: createModelFile,
+        iosFileExists: createIOSModelFile
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -1661,6 +1723,76 @@ describe("/sidiroar/api/models", () => {
       let modelFilePath = Project.getModelFilePath(user, model);
       let fileExists = await checkIfFileExistsAsync(modelFilePath);
       expect(fileExists).toEqual(false);
+
+      let modelIOSFilePath = Project.getModelIOSFilePath(user, model);
+      let iosFileExists = await checkIfFileExistsAsync(modelIOSFilePath);
+      expect(iosFileExists).toEqual(false);
+
+      //#endregion CHECK_FILE
+    });
+
+    it("should return 200, delete model and return its payload and delete model file - if ios model file does not exist", async () => {
+      createIOSModelFile = false;
+
+      let response = await exec();
+
+      //#region CHECK_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(200);
+
+      let expectedModel = modelsOfTestUser[1];
+
+      let expectedPayload = {
+        _id: expectedModel._id.toString(),
+        name: expectedModel.name,
+        user: expectedModel.user.toString(),
+        fileExists: createModelFile,
+        iosFileExists: createIOSModelFile
+      };
+
+      expect(response.body).toEqual(expectedPayload);
+
+      //#endregion CHECK_RESPONSE
+
+      //#region CHECK_DATABASE
+
+      //Generting and sorting  model payload from database
+      let modelsFromDatabasePayload = [];
+
+      let modelsFromDatabase = await Model.find({ user: userId });
+
+      for (let model of modelsFromDatabase) {
+        modelsFromDatabasePayload.push(await model.getPayload());
+      }
+
+      modelsFromDatabase = _.sortBy(modelsFromDatabase, "_id", "asc");
+
+      //Generting and sorting expected model payload
+      let expectedModelsPayload = [];
+
+      for (let model of modelsOfTestUser) {
+        //Adding all models except the one to delete
+        if (model._id !== modelId)
+          expectedModelsPayload.push(await model.getPayload());
+      }
+
+      expectedModelsPayload = _.sortBy(expectedModelsPayload, "_id", "asc");
+
+      //Both collection should be equal
+      expect(modelsFromDatabasePayload).toEqual(expectedModelsPayload);
+
+      //#endregion CHECK_DATABASE
+
+      //#region CHECK_FILE
+
+      let modelFilePath = Project.getModelFilePath(user, model);
+      let fileExists = await checkIfFileExistsAsync(modelFilePath);
+      expect(fileExists).toEqual(false);
+
+      let modelIOSFilePath = Project.getModelIOSFilePath(user, model);
+      let iosFileExists = await checkIfFileExistsAsync(modelIOSFilePath);
+      expect(iosFileExists).toEqual(false);
 
       //#endregion CHECK_FILE
     });
@@ -1719,6 +1851,9 @@ describe("/sidiroar/api/models", () => {
       let fileExists = await checkIfFileExistsAsync(modelFilePath);
       expect(fileExists).toEqual(true);
 
+      let modelIOSFilePath = Project.getModelIOSFilePath(user, model);
+      let iosFileExists = await checkIfFileExistsAsync(modelIOSFilePath);
+      expect(iosFileExists).toEqual(true);
       //#endregion CHECK_FILE
     });
 
@@ -1737,6 +1872,10 @@ describe("/sidiroar/api/models", () => {
       let modelFilePath = Project.getModelFilePath(user, model);
       let fileExists = await checkIfFileExistsAsync(modelFilePath);
       expect(fileExists).toEqual(true);
+
+      let modelIOSFilePath = Project.getModelIOSFilePath(user, model);
+      let iosFileExists = await checkIfFileExistsAsync(modelIOSFilePath);
+      expect(iosFileExists).toEqual(true);
 
       //#endregion CHECK_FILE
     });
@@ -1794,6 +1933,10 @@ describe("/sidiroar/api/models", () => {
       let modelFilePath = Project.getModelFilePath(user, model);
       let fileExists = await checkIfFileExistsAsync(modelFilePath);
       expect(fileExists).toEqual(true);
+
+      let modelIOSFilePath = Project.getModelIOSFilePath(user, model);
+      let iosFileExists = await checkIfFileExistsAsync(modelIOSFilePath);
+      expect(iosFileExists).toEqual(true);
 
       //#endregion CHECK_FILE
     });
@@ -1853,6 +1996,10 @@ describe("/sidiroar/api/models", () => {
       let fileExists = await checkIfFileExistsAsync(modelFilePath);
       expect(fileExists).toEqual(true);
 
+      let modelIOSFilePath = Project.getModelIOSFilePath(user, model);
+      let iosFileExists = await checkIfFileExistsAsync(modelIOSFilePath);
+      expect(iosFileExists).toEqual(true);
+
       //#endregion CHECK_FILE
     });
 
@@ -1910,6 +2057,10 @@ describe("/sidiroar/api/models", () => {
       let fileExists = await checkIfFileExistsAsync(modelFilePath);
       expect(fileExists).toEqual(true);
 
+      let modelIOSFilePath = Project.getModelIOSFilePath(user, model);
+      let iosFileExists = await checkIfFileExistsAsync(modelIOSFilePath);
+      expect(iosFileExists).toEqual(true);
+
       //#endregion CHECK_FILE
     });
 
@@ -1966,6 +2117,10 @@ describe("/sidiroar/api/models", () => {
       let modelFilePath = Project.getModelFilePath(user, model);
       let fileExists = await checkIfFileExistsAsync(modelFilePath);
       expect(fileExists).toEqual(true);
+
+      let modelIOSFilePath = Project.getModelIOSFilePath(user, model);
+      let iosFileExists = await checkIfFileExistsAsync(modelIOSFilePath);
+      expect(iosFileExists).toEqual(true);
 
       //#endregion CHECK_FILE
     });
@@ -2029,6 +2184,10 @@ describe("/sidiroar/api/models", () => {
       let fileExists = await checkIfFileExistsAsync(modelFilePath);
       expect(fileExists).toEqual(true);
 
+      let modelIOSFilePath = Project.getModelIOSFilePath(user, model);
+      let iosFileExists = await checkIfFileExistsAsync(modelIOSFilePath);
+      expect(iosFileExists).toEqual(true);
+
       //#endregion CHECK_FILE
     });
 
@@ -2090,6 +2249,10 @@ describe("/sidiroar/api/models", () => {
       let modelFilePath = Project.getModelFilePath(user, model);
       let fileExists = await checkIfFileExistsAsync(modelFilePath);
       expect(fileExists).toEqual(true);
+
+      let modelIOSFilePath = Project.getModelIOSFilePath(user, model);
+      let iosFileExists = await checkIfFileExistsAsync(modelIOSFilePath);
+      expect(iosFileExists).toEqual(true);
 
       //#endregion CHECK_FILE
     });
@@ -2153,6 +2316,10 @@ describe("/sidiroar/api/models", () => {
       let fileExists = await checkIfFileExistsAsync(modelFilePath);
       expect(fileExists).toEqual(true);
 
+      let modelIOSFilePath = Project.getModelIOSFilePath(user, model);
+      let iosFileExists = await checkIfFileExistsAsync(modelIOSFilePath);
+      expect(iosFileExists).toEqual(true);
+
       //#endregion CHECK_FILE
     });
 
@@ -2172,7 +2339,8 @@ describe("/sidiroar/api/models", () => {
         _id: expectedModel._id.toString(),
         name: expectedModel.name,
         user: expectedModel.user.toString(),
-        fileExists: createModelFile
+        fileExists: createModelFile,
+        iosFileExists: createIOSModelFile
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -2213,6 +2381,10 @@ describe("/sidiroar/api/models", () => {
       let modelFilePath = Project.getModelFilePath(user, model);
       let fileExists = await checkIfFileExistsAsync(modelFilePath);
       expect(fileExists).toEqual(false);
+
+      let modelIOSFilePath = Project.getModelIOSFilePath(user, model);
+      let iosFileExists = await checkIfFileExistsAsync(modelIOSFilePath);
+      expect(iosFileExists).toEqual(false);
 
       //#endregion CHECK_FILE
     });
@@ -2275,6 +2447,10 @@ describe("/sidiroar/api/models", () => {
       let modelFilePath = Project.getModelFilePath(user, model);
       let fileExists = await checkIfFileExistsAsync(modelFilePath);
       expect(fileExists).toEqual(true);
+
+      let modelIOSFilePath = Project.getModelIOSFilePath(user, model);
+      let iosFileExists = await checkIfFileExistsAsync(modelIOSFilePath);
+      expect(iosFileExists).toEqual(true);
 
       //#endregion CHECK_FILE
     });
@@ -2345,6 +2521,10 @@ describe("/sidiroar/api/models", () => {
       let fileExists = await checkIfFileExistsAsync(modelFilePath);
       expect(fileExists).toEqual(true);
 
+      let modelIOSFilePath = Project.getModelIOSFilePath(user, model);
+      let iosFileExists = await checkIfFileExistsAsync(modelIOSFilePath);
+      expect(iosFileExists).toEqual(true);
+
       //#endregion CHECK_FILE
     });
   });
@@ -2389,7 +2569,8 @@ describe("/sidiroar/api/models", () => {
         _id: modelsOfTestUser[1]._id.toString(),
         name: requestPayload.name,
         user: userId.toString(),
-        fileExists: false
+        fileExists: false,
+        iosFileExists: false
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -2422,7 +2603,8 @@ describe("/sidiroar/api/models", () => {
             _id: modelsOfTestUser[1]._id.toString(),
             name: requestPayload.name,
             user: userId.toString(),
-            fileExists: false
+            fileExists: false,
+            iosFileExists: false
           });
         } else {
           expectedModelsPayload.push(await model.getPayload());
@@ -2664,7 +2846,8 @@ describe("/sidiroar/api/models", () => {
         _id: modelsOfTestUser[1]._id.toString(),
         name: requestPayload.name,
         user: userId.toString(),
-        fileExists: false
+        fileExists: false,
+        iosFileExists: false
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -2697,7 +2880,8 @@ describe("/sidiroar/api/models", () => {
             _id: modelsOfTestUser[1]._id.toString(),
             name: requestPayload.name,
             user: userId.toString(),
-            fileExists: false
+            fileExists: false,
+            iosFileExists: false
           });
         } else {
           expectedModelsPayload.push(await model.getPayload());
@@ -2725,7 +2909,8 @@ describe("/sidiroar/api/models", () => {
         _id: modelsOfTestUser[1]._id.toString(),
         name: requestPayload.name,
         user: userId.toString(),
-        fileExists: false
+        fileExists: false,
+        iosFileExists: false
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -2758,7 +2943,8 @@ describe("/sidiroar/api/models", () => {
             _id: modelsOfTestUser[1]._id.toString(),
             name: requestPayload.name,
             user: userId.toString(),
-            fileExists: false
+            fileExists: false,
+            iosFileExists: false
           });
         } else {
           expectedModelsPayload.push(await model.getPayload());
@@ -2786,7 +2972,8 @@ describe("/sidiroar/api/models", () => {
         _id: modelsOfTestUser[1]._id.toString(),
         name: requestPayload.name,
         user: userId.toString(),
-        fileExists: false
+        fileExists: false,
+        iosFileExists: false
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -2819,7 +3006,8 @@ describe("/sidiroar/api/models", () => {
             _id: modelsOfTestUser[1]._id.toString(),
             name: requestPayload.name,
             user: userId.toString(),
-            fileExists: false
+            fileExists: false,
+            iosFileExists: false
           });
         } else {
           expectedModelsPayload.push(await model.getPayload());
@@ -3217,7 +3405,8 @@ describe("/sidiroar/api/models", () => {
         _id: modelsOfTestUser[1]._id.toString(),
         name: requestPayload.name,
         user: userId.toString(),
-        fileExists: false
+        fileExists: false,
+        iosFileExists: false
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -3250,7 +3439,8 @@ describe("/sidiroar/api/models", () => {
             _id: modelsOfTestUser[1]._id.toString(),
             name: requestPayload.name,
             user: userId.toString(),
-            fileExists: false
+            fileExists: false,
+            iosFileExists: false
           });
         } else {
           expectedModelsPayload.push(await model.getPayload());

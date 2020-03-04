@@ -6,6 +6,7 @@
   "projectDir": "project",
   "userDir": "users",
   "fileDir": "files",
+  "iosFileDir": "iosFiles",
   "logging": {
     "info": {
       "path": "logs/info.log",
