@@ -1,22 +1,22 @@
 {
   "files": {
     "main.css": "/sidiroar/static/css/main.d1b05096.chunk.css",
-    "main.js": "/sidiroar/static/js/main.6deb8e83.chunk.js",
-    "main.js.map": "/sidiroar/static/js/main.6deb8e83.chunk.js.map",
+    "main.js": "/sidiroar/static/js/main.e8891e44.chunk.js",
+    "main.js.map": "/sidiroar/static/js/main.e8891e44.chunk.js.map",
     "runtime-main.js": "/sidiroar/static/js/runtime-main.b11e8f30.js",
     "runtime-main.js.map": "/sidiroar/static/js/runtime-main.b11e8f30.js.map",
-    "static/js/2.f653160b.chunk.js": "/sidiroar/static/js/2.f653160b.chunk.js",
-    "static/js/2.f653160b.chunk.js.map": "/sidiroar/static/js/2.f653160b.chunk.js.map",
+    "static/js/2.3ad9665d.chunk.js": "/sidiroar/static/js/2.3ad9665d.chunk.js",
+    "static/js/2.3ad9665d.chunk.js.map": "/sidiroar/static/js/2.3ad9665d.chunk.js.map",
     "index.html": "/sidiroar/index.html",
-    "precache-manifest.e8b295718ed96feea3a5b145f5fb57f0.js": "/sidiroar/precache-manifest.e8b295718ed96feea3a5b145f5fb57f0.js",
+    "precache-manifest.16b77f985a19fedff59f349e68ca66b7.js": "/sidiroar/precache-manifest.16b77f985a19fedff59f349e68ca66b7.js",
     "service-worker.js": "/sidiroar/service-worker.js",
     "static/css/main.d1b05096.chunk.css.map": "/sidiroar/static/css/main.d1b05096.chunk.css.map",
-    "static/js/2.f653160b.chunk.js.LICENSE.txt": "/sidiroar/static/js/2.f653160b.chunk.js.LICENSE.txt"
+    "static/js/2.3ad9665d.chunk.js.LICENSE.txt": "/sidiroar/static/js/2.3ad9665d.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.b11e8f30.js",
-    "static/js/2.f653160b.chunk.js",
+    "static/js/2.3ad9665d.chunk.js",
     "static/css/main.d1b05096.chunk.css",
-    "static/js/main.6deb8e83.chunk.js"
+    "static/js/main.e8891e44.chunk.js"
   ]
 }
