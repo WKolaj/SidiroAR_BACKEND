@@ -28,6 +28,7 @@ let server;
 let Project = require("../../../classes/project");
 let projectDirPath = Project._getProjectDirPath();
 let testDirPath = "__testDir";
+let logger = require("../../../logger/logger");
 
 //mocking email service
 let sendMailMockFunction = jest.fn(
@@ -46,6 +47,7 @@ describe("/sidiroar/api/user", () => {
   let modelsOfTestUser;
   let modelsOfTestUserAndAdmin;
   let modelsOfTestSuperAdmin;
+  let logActionMock;
 
   beforeEach(async () => {
     //clearing project directory
@@ -74,6 +76,10 @@ describe("/sidiroar/api/user", () => {
     modelsOfTestUser = await generateTestModels(testUser);
     modelsOfTestUserAndAdmin = await generateTestModels(testUserAndAdmin);
     modelsOfTestSuperAdmin = await generateTestModels(testSuperAdmin);
+
+    //Overwriting logget action method
+    logActionMock = jest.fn();
+    logger.action = logActionMock;
   });
 
   afterEach(async () => {
@@ -217,6 +223,15 @@ describe("/sidiroar/api/user", () => {
       );
 
       expect(modelIOSFileDirExists).toEqual(true);
+    });
+
+    it("should call logger action method", async () => {
+      let response = await exec();
+
+      expect(logActionMock).toHaveBeenCalledTimes(1);
+      expect(logActionMock.mock.calls[0][0]).toEqual(
+        `User ${testAdmin.email} created user ${requestPayload.email}`
+      );
     });
 
     it("should not create new user and return 400 if user with the same email exists", async () => {
@@ -2172,6 +2187,12 @@ describe("/sidiroar/api/user", () => {
       //#endregion CHECKING_RESPONSE
     });
 
+    it("should not call logger action method", async () => {
+      await exec();
+
+      expect(logActionMock).not.toHaveBeenCalled();
+    });
+
     it("should not return any user and return 401 if jwt has not been given", async () => {
       jwt = undefined;
 
@@ -2498,6 +2519,12 @@ describe("/sidiroar/api/user", () => {
       expect(response.body).toEqual(expectedPayload);
     });
 
+    it("should not call logger action method", async () => {
+      await exec();
+
+      expect(logActionMock).not.toHaveBeenCalled();
+    });
+
     it("should return 404 if id is not valid", async () => {
       id = "testUserId";
 
@@ -2807,6 +2834,15 @@ describe("/sidiroar/api/user", () => {
       expect(idOfAllModels).toEqual(expectedModelIds);
 
       //#endregion CHECKING_DATABASE
+    });
+
+    it("should call logger action method", async () => {
+      let response = await exec();
+
+      expect(logActionMock).toHaveBeenCalledTimes(1);
+      expect(logActionMock.mock.calls[0][0]).toEqual(
+        `User ${testAdmin.email} deleted user ${response.body.email}`
+      );
     });
 
     it("should remove user directory - if user exists", async () => {
@@ -3693,6 +3729,15 @@ describe("/sidiroar/api/user", () => {
       expect(newPasswordMatches).toEqual(true);
 
       //#endregion CHECKING_DATABASE
+    });
+
+    it("should call logger action method", async () => {
+      let response = await exec();
+
+      expect(logActionMock).toHaveBeenCalledTimes(1);
+      expect(logActionMock.mock.calls[0][0]).toEqual(
+        `User ${testAdmin.email} updated profile data of user ${response.body.email}`
+      );
     });
 
     it("should return 400, and not edit user - if user exists but password is shorter than 4 signs", async () => {
@@ -5810,6 +5855,12 @@ describe("/sidiroar/api/user", () => {
       expect(response.body).toEqual(expectedPayload);
     });
 
+    it("should not call logger action method", async () => {
+      await exec();
+
+      expect(logActionMock).not.toHaveBeenCalled();
+    });
+
     it("should return 404  - if user of given jwt does not exist", async () => {
       //removing user from jwt
       await User.deleteMany({ _id: testUser._id });
@@ -6091,6 +6142,15 @@ describe("/sidiroar/api/user", () => {
       expect(newPasswordMatches).toEqual(true);
 
       //#endregion CHECKING_DATABASE
+    });
+
+    it("should call logger action method", async () => {
+      let response = await exec();
+
+      expect(logActionMock).toHaveBeenCalledTimes(1);
+      expect(logActionMock.mock.calls[0][0]).toEqual(
+        `User ${testUser.email} updated their profile data`
+      );
     });
 
     it("should return 400, and not edit user - if user exists but password is shorter than 4 signs", async () => {

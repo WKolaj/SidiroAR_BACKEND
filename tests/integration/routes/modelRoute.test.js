@@ -23,6 +23,7 @@ let server;
 let Project = require("../../../classes/project");
 let projectDirPath = Project._getProjectDirPath();
 let testDirPath = "__testDir";
+let logger = require("../../../logger/logger");
 
 describe("/sidiroar/api/models", () => {
   let uselessUser;
@@ -33,6 +34,7 @@ describe("/sidiroar/api/models", () => {
   let modelsOfTestAdmin;
   let modelsOfTestUser;
   let modelsOfTestUserAndAdmin;
+  let logActionMock;
 
   beforeEach(async () => {
     //clearing project directory
@@ -56,6 +58,10 @@ describe("/sidiroar/api/models", () => {
     modelsOfTestAdmin = await generateTestModels(testAdmin);
     modelsOfTestUser = await generateTestModels(testUser);
     modelsOfTestUserAndAdmin = await generateTestModels(testUserAndAdmin);
+
+    //Overwriting logget action method
+    logActionMock = jest.fn();
+    logger.action = logActionMock;
   });
 
   afterEach(async () => {
@@ -176,6 +182,12 @@ describe("/sidiroar/api/models", () => {
       };
 
       expect(response.body).toEqual(expectedPayload);
+    });
+
+    it("should not call logger action method", async () => {
+      await exec();
+
+      expect(logActionMock).not.toHaveBeenCalled();
     });
 
     it("should return 404 - if model doesnt exist", async () => {
@@ -395,6 +407,12 @@ describe("/sidiroar/api/models", () => {
       ];
 
       expect(response.body).toEqual(expectedPayload);
+    });
+
+    it("should not call logger action method", async () => {
+      await exec();
+
+      expect(logActionMock).not.toHaveBeenCalled();
     });
 
     it("should return 404 - if user doesnt exist", async () => {
@@ -643,6 +661,15 @@ describe("/sidiroar/api/models", () => {
       expect(modelsFromDatabasePayload).toEqual(expectedModelsPayload);
 
       //#endregion CHECK_DATABASE
+    });
+
+    it("should call logger action method", async () => {
+      let response = await exec();
+
+      expect(logActionMock).toHaveBeenCalledTimes(1);
+      expect(logActionMock.mock.calls[0][0]).toEqual(
+        `User ${testAdmin.email} created new model ${response.body._id}`
+      );
     });
 
     it("should return 404, and do not create new model  - if user do not exist", async () => {
@@ -1797,6 +1824,15 @@ describe("/sidiroar/api/models", () => {
       //#endregion CHECK_FILE
     });
 
+    it("should call logger action method", async () => {
+      let response = await exec();
+
+      expect(logActionMock).toHaveBeenCalledTimes(1);
+      expect(logActionMock.mock.calls[0][0]).toEqual(
+        `User ${testAdmin.email} deleted model ${modelId}`
+      );
+    });
+
     it("should return 404 and do not delete any model - if model doesnt exist", async () => {
       modelId = mongoose.Types.ObjectId();
 
@@ -2617,6 +2653,15 @@ describe("/sidiroar/api/models", () => {
       expect(modelsFromDatabasePayload).toEqual(expectedModelsPayload);
 
       //#endregion CHECK_DATABASE
+    });
+
+    it("should call logger action method", async () => {
+      let response = await exec();
+
+      expect(logActionMock).toHaveBeenCalledTimes(1);
+      expect(logActionMock.mock.calls[0][0]).toEqual(
+        `User ${testAdmin.email} edited model ${modelId}`
+      );
     });
 
     it("should return 400 and not edit model  - if name is undefined", async () => {

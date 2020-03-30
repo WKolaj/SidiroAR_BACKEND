@@ -15,6 +15,7 @@ const isAdmin = require("../middleware/auth/isAdmin");
 const isUser = require("../middleware/auth/isUser");
 const _ = require("lodash");
 const jsonValidation = require("../middleware/jsonError");
+const logger = require("../logger/logger");
 
 //assigning JSON parsing to router
 router.use(express.json());
@@ -111,6 +112,8 @@ router.post(
     //Assigning password additionaly
     payloadToReturn.password = passwordBeforeHash;
 
+    logger.action(`User ${req.user.email} created user ${user.email}`);
+
     return res.status(200).send(payloadToReturn);
   }
 );
@@ -141,6 +144,8 @@ router.delete(
 
     //Remvoing user directory
     await Project.removeUserDirectory(user);
+
+    logger.action(`User ${req.user.email} deleted user ${user.email}`);
 
     return res.status(200).send(payloadToReturn);
   }
@@ -184,6 +189,8 @@ router.put(
     await user.save();
 
     let payloadToReturn = await user.getPayload();
+
+    logger.action(`User ${req.user.email} updated their profile data`);
 
     return res.status(200).send(payloadToReturn);
   }
@@ -236,6 +243,10 @@ router.put(
 
     //Saving changes
     await user.save();
+
+    logger.action(
+      `User ${req.user.email} updated profile data of user ${user.email}`
+    );
 
     let payloadToReturn = await user.getPayload();
 

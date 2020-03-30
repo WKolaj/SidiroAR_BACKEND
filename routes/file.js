@@ -43,6 +43,10 @@ router.get("/me/:id", [hasUser, isUser, validateObjectId], async (req, res) => {
     "Content-Length": stat.size
   });
 
+  logger.action(
+    `User ${req.user.email} started downloading android file for model ${model._id}`
+  );
+
   let fileStream = fs.createReadStream(modelFilePath);
   fileStream.pipe(res);
 });
@@ -85,6 +89,10 @@ router.post(
           throw new Error("File path is empty after upload!");
         await renameAsync(tmpFilePath, modelFilePath);
 
+        logger.action(
+          `User ${req.user.email} uploaded android file for model ${model._id}`
+        );
+
         //returning respone
         return res
           .status(200)
@@ -123,6 +131,10 @@ router.delete(
 
     await removeFileOrDirectoryAsync(modelFilePath);
 
+    logger.action(
+      `User ${req.user.email} deleted android file for model ${model._id}`
+    );
+
     return res.status(200).send("File successfully deleted!");
   }
 );
@@ -146,6 +158,10 @@ router.get(
 
     //Calculating size of file
     let stat = await statAsync(modelFilePath);
+
+    logger.action(
+      `User ${req.user.email} started downloading ios file for model ${model._id}`
+    );
 
     res.writeHead(200, {
       "Content-Type": "application/octet-stream",
@@ -195,6 +211,10 @@ router.post(
           throw new Error("File path is empty after upload!");
         await renameAsync(tmpFilePath, modelFilePath);
 
+        logger.action(
+          `User ${req.user.email} uploaded ios file for model ${model._id}`
+        );
+
         //returning respone
         return res
           .status(200)
@@ -232,6 +252,10 @@ router.delete(
       return res.status(404).send("Model file does not exist...");
 
     await removeFileOrDirectoryAsync(modelFilePath);
+
+    logger.action(
+      `User ${req.user.email} deleted ios file for model ${model._id}`
+    );
 
     return res.status(200).send("File successfully deleted!");
   }

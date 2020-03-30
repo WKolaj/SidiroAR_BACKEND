@@ -26,6 +26,7 @@ let {
 let server;
 let Project = require("../../../classes/project");
 let testDirPath = "__testDir";
+let logger = require("../../../logger/logger");
 
 describe("/sidiroar/api/file", () => {
   let uselessUser;
@@ -36,6 +37,7 @@ describe("/sidiroar/api/file", () => {
   let modelsOfTestAdmin;
   let modelsOfTestUser;
   let modelsOfTestUserAndAdmin;
+  let logActionMock;
 
   beforeEach(async () => {
     //clearing project directory
@@ -59,6 +61,10 @@ describe("/sidiroar/api/file", () => {
     modelsOfTestAdmin = await generateTestModels(testAdmin);
     modelsOfTestUser = await generateTestModels(testUser);
     modelsOfTestUserAndAdmin = await generateTestModels(testUserAndAdmin);
+
+    //Overwriting logget action method
+    logActionMock = jest.fn();
+    logger.action = logActionMock;
   });
 
   afterEach(async () => {
@@ -116,6 +122,15 @@ describe("/sidiroar/api/file", () => {
 
       let responseText = response.body.toString();
       expect(responseText).toEqual(fileContent);
+    });
+
+    it("should call logger action method", async () => {
+      await exec();
+
+      expect(logActionMock).toHaveBeenCalledTimes(1);
+      expect(logActionMock.mock.calls[0][0]).toEqual(
+        `User ${user.email} started downloading android file for model ${modelId}`
+      );
     });
 
     it("should return 404 - if model does not exist", async () => {
@@ -293,6 +308,15 @@ describe("/sidiroar/api/file", () => {
         await readFileAsync(modelFilePath, "utf8")
       ).toString();
       expect(uploadedFileContent).toEqual(fileContent);
+    });
+
+    it("should call logger action method", async () => {
+      await exec();
+
+      expect(logActionMock).toHaveBeenCalledTimes(1);
+      expect(logActionMock.mock.calls[0][0]).toEqual(
+        `User ${testAdmin.email} uploaded android file for model ${modelId}`
+      );
     });
 
     it("should return 404 - if user does not exist", async () => {
@@ -501,6 +525,15 @@ describe("/sidiroar/api/file", () => {
 
       let uploadedFileExists = await checkIfFileExistsAsync(modelFilePath);
       expect(uploadedFileExists).toEqual(false);
+    });
+
+    it("should call logger action method", async () => {
+      await exec();
+
+      expect(logActionMock).toHaveBeenCalledTimes(1);
+      expect(logActionMock.mock.calls[0][0]).toEqual(
+        `User ${testAdmin.email} deleted android file for model ${modelId}`
+      );
     });
 
     it("should return 404 - if user does not exist", async () => {
@@ -718,6 +751,15 @@ describe("/sidiroar/api/file", () => {
       expect(responseText).toEqual(fileContent);
     });
 
+    it("should call logger action method", async () => {
+      await exec();
+
+      expect(logActionMock).toHaveBeenCalledTimes(1);
+      expect(logActionMock.mock.calls[0][0]).toEqual(
+        `User ${user.email} started downloading ios file for model ${modelId}`
+      );
+    });
+
     it("should return 404 - if model does not exist", async () => {
       createFile = false;
       let response = await exec();
@@ -893,6 +935,15 @@ describe("/sidiroar/api/file", () => {
         await readFileAsync(modelFilePath, "utf8")
       ).toString();
       expect(uploadedFileContent).toEqual(fileContent);
+    });
+
+    it("should call logger action method", async () => {
+      await exec();
+
+      expect(logActionMock).toHaveBeenCalledTimes(1);
+      expect(logActionMock.mock.calls[0][0]).toEqual(
+        `User ${testAdmin.email} uploaded ios file for model ${modelId}`
+      );
     });
 
     it("should return 404 - if user does not exist", async () => {
@@ -1101,6 +1152,15 @@ describe("/sidiroar/api/file", () => {
 
       let uploadedFileExists = await checkIfFileExistsAsync(modelFilePath);
       expect(uploadedFileExists).toEqual(false);
+    });
+
+    it("should call logger action method", async () => {
+      await exec();
+
+      expect(logActionMock).toHaveBeenCalledTimes(1);
+      expect(logActionMock.mock.calls[0][0]).toEqual(
+        `User ${testAdmin.email} deleted ios file for model ${modelId}`
+      );
     });
 
     it("should return 404 - if user does not exist", async () => {

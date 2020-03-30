@@ -16,6 +16,7 @@ const isAdmin = require("../middleware/auth/isAdmin");
 const isUser = require("../middleware/auth/isUser");
 const _ = require("lodash");
 const jsonValidation = require("../middleware/jsonError");
+const logger = require("../logger/logger");
 
 //assigning JSON parsing to router
 router.use(express.json());
@@ -89,6 +90,8 @@ router.post(
     //Generating payload to return
     let payloadToReturn = await model.getPayload();
 
+    logger.action(`User ${req.user.email} created new model ${model._id}`);
+
     return res.status(200).send(payloadToReturn);
   }
 );
@@ -130,6 +133,8 @@ router.delete(
     let modelIOSFileExists = await checkIfFileExistsAsync(modelIOSFilePath);
     if (modelIOSFileExists) await removeFileOrDirectoryAsync(modelIOSFilePath);
 
+    logger.action(`User ${req.user.email} deleted model ${model._id}`);
+
     return res.status(200).send(payloadToReturn);
   }
 );
@@ -169,6 +174,8 @@ router.put(
 
     //Generating payload to return of deleted model
     let payloadToReturn = await model.getPayload();
+
+    logger.action(`User ${req.user.email} edited model ${model._id}`);
 
     return res.status(200).send(payloadToReturn);
   }

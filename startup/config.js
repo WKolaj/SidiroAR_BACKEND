@@ -19,6 +19,7 @@ module.exports = async function() {
   throwIfConfigDoesNotExist("userDir");
   throwIfConfigDoesNotExist("fileDir");
   throwIfConfigDoesNotExist("logging");
+  throwIfConfigDoesNotExist("logging.logActions");
   throwIfConfigDoesNotExist("logging.info");
   throwIfConfigDoesNotExist("logging.info.path");
   throwIfConfigDoesNotExist("logging.info.maxsize");

@@ -55,4 +55,14 @@ if (process.env.NODE_ENV === "production") {
   });
 }
 
+let loggingEnabled = config.get("logging.logActions");
+
+/**
+ * @description Method for logging info about user actions
+ * @param {String} text action text to log
+ */
+logger.action = text => {
+  if (loggingEnabled) logger.info(text);
+};
+
 module.exports = logger;

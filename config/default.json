@@ -8,6 +8,7 @@
   "fileDir": "files",
   "iosFileDir": "iosFiles",
   "logging": {
+    "logActions": true,
     "info": {
       "path": "logs/info.log",
       "maxsize": 10485760,

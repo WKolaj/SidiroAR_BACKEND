@@ -11,6 +11,7 @@ const {
 } = require("../utilities/utilities");
 const headerName = config.get("tokenHeader");
 const jsonValidation = require("../middleware/jsonError");
+const logger = require("../logger/logger");
 
 //assigning JSON parsing to router
 router.use(express.json());
@@ -42,6 +43,8 @@ router.post("/", async (req, res) => {
   //assigning jwt to payload to return
   let jwt = await user.generateJWT();
   payloadToReturn.jwt = jwt;
+
+  logger.action(`User ${req.body.email} logged in`);
 
   return res
     .status(200)

@@ -3,7 +3,6 @@ const path = require("path");
 const { promisify } = require("util");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
-const nodemailer = require("nodemailer");
 
 /**
  * Reads all the text in a readable stream and returns it as a string,

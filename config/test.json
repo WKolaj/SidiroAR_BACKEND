@@ -10,6 +10,7 @@
   "jwtPrivateKey": "testPrivateKey",
   "emailPassword": "testSidiroEmailPasssword",
   "logging": {
+    "logActions": true,
     "info": {
       "path": "__testDir/logs/info/info.log",
       "maxsize": 10485760,

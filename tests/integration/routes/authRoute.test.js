@@ -22,6 +22,7 @@ let server;
 let Project = require("../../../classes/project");
 let projectDirPath = Project._getProjectDirPath();
 let testDirPath = "__testDir";
+let logger = require("../../../logger/logger");
 
 //mocking email service
 let sendMailMockFunction = jest.fn(
@@ -34,6 +35,7 @@ describe("/sidiroar/api/users", () => {
   let testAdmin;
   let testUser;
   let testUserAndAdmin;
+  let logActionMock;
 
   beforeEach(async () => {
     //clearing project directory
@@ -52,6 +54,10 @@ describe("/sidiroar/api/users", () => {
     testAdmin = await generateTestAdmin();
     testUser = await generateTestUser();
     testUserAndAdmin = await generateTestAdminAndUser();
+
+    //Overwriting logget action method
+    logActionMock = jest.fn();
+    logger.action = logActionMock;
   });
 
   afterEach(async () => {
@@ -160,6 +166,22 @@ describe("/sidiroar/api/users", () => {
       );
 
       //#endregion CHECKING_HEADER
+
+      //#region CHECKING_LOGGING
+
+      expect(logActionMock).toHaveBeenCalledTimes(1);
+      expect(logActionMock.mock.calls[0][0]).toEqual(
+        `User ${requestPayload.email} logged in`
+      );
+      //#endregion CHECKING_LOGGING
+
+      //#region CHECKING_LOGGING
+
+      expect(logActionMock).toHaveBeenCalledTimes(1);
+      expect(logActionMock.mock.calls[0][0]).toEqual(
+        `User ${requestPayload.email} logged in`
+      );
+      //#endregion CHECKING_LOGGING
     });
 
     it("should return 200 and logged users payload inside body (together with jwt) if user payload is valid and user is admin user", async () => {
@@ -203,6 +225,14 @@ describe("/sidiroar/api/users", () => {
       );
 
       //#endregion CHECKING_HEADER
+
+      //#region CHECKING_LOGGING
+
+      expect(logActionMock).toHaveBeenCalledTimes(1);
+      expect(logActionMock.mock.calls[0][0]).toEqual(
+        `User ${requestPayload.email} logged in`
+      );
+      //#endregion CHECKING_LOGGING
     });
 
     it("should return 200 and logged users payload inside body (together with jwt) if user payload is valid and user is admin and normal user", async () => {
@@ -246,6 +276,14 @@ describe("/sidiroar/api/users", () => {
       );
 
       //#endregion CHECKING_HEADER
+
+      //#region CHECKING_LOGGING
+
+      expect(logActionMock).toHaveBeenCalledTimes(1);
+      expect(logActionMock.mock.calls[0][0]).toEqual(
+        `User ${requestPayload.email} logged in`
+      );
+      //#endregion CHECKING_LOGGING
     });
 
     it("should return 200 and logged users payload inside body (together with jwt) if user has model files", async () => {
@@ -293,6 +331,14 @@ describe("/sidiroar/api/users", () => {
       );
 
       //#endregion CHECKING_HEADER
+
+      //#region CHECKING_LOGGING
+
+      expect(logActionMock).toHaveBeenCalledTimes(1);
+      expect(logActionMock.mock.calls[0][0]).toEqual(
+        `User ${requestPayload.email} logged in`
+      );
+      //#endregion CHECKING_LOGGING
     });
 
     it("should return 200 and logged users payload inside body (together with jwt) if user has ios model files", async () => {
@@ -340,6 +386,14 @@ describe("/sidiroar/api/users", () => {
       );
 
       //#endregion CHECKING_HEADER
+
+      //#region CHECKING_LOGGING
+
+      expect(logActionMock).toHaveBeenCalledTimes(1);
+      expect(logActionMock.mock.calls[0][0]).toEqual(
+        `User ${requestPayload.email} logged in`
+      );
+      //#endregion CHECKING_LOGGING
     });
 
     it("should return 400 and empty body if user payload is not valid - email is not defined", async () => {
@@ -366,6 +420,12 @@ describe("/sidiroar/api/users", () => {
       expect(response.header["x-auth-token"]).not.toBeDefined();
 
       //#endregion CHECKING_HEADER
+
+      //#region CHECKING_LOGGING
+
+      expect(logActionMock).not.toHaveBeenCalled();
+
+      //#endregion CHECKING_LOGGING
     });
 
     it("should return 400 and empty body if user payload is not valid - email is null", async () => {
@@ -392,6 +452,12 @@ describe("/sidiroar/api/users", () => {
       expect(response.header["x-auth-token"]).not.toBeDefined();
 
       //#endregion CHECKING_HEADER
+
+      //#region CHECKING_LOGGING
+
+      expect(logActionMock).not.toHaveBeenCalled();
+
+      //#endregion CHECKING_LOGGING
     });
 
     it("should return 400 and empty body if user payload is not valid - password is not defined", async () => {
@@ -418,6 +484,12 @@ describe("/sidiroar/api/users", () => {
       expect(response.header["x-auth-token"]).not.toBeDefined();
 
       //#endregion CHECKING_HEADER
+
+      //#region CHECKING_LOGGING
+
+      expect(logActionMock).not.toHaveBeenCalled();
+
+      //#endregion CHECKING_LOGGING
     });
 
     it("should return 400 and empty body if user payload is not valid - password is null", async () => {
@@ -444,6 +516,12 @@ describe("/sidiroar/api/users", () => {
       expect(response.header["x-auth-token"]).not.toBeDefined();
 
       //#endregion CHECKING_HEADER
+
+      //#region CHECKING_LOGGING
+
+      expect(logActionMock).not.toHaveBeenCalled();
+
+      //#endregion CHECKING_LOGGING
     });
 
     it("should return 400 and empty body if there is no user of given email", async () => {
@@ -468,6 +546,12 @@ describe("/sidiroar/api/users", () => {
       expect(response.header["x-auth-token"]).not.toBeDefined();
 
       //#endregion CHECKING_HEADER
+
+      //#region CHECKING_LOGGING
+
+      expect(logActionMock).not.toHaveBeenCalled();
+
+      //#endregion CHECKING_LOGGING
     });
 
     it("should return 400 and empty body if password is invalid", async () => {
@@ -492,6 +576,12 @@ describe("/sidiroar/api/users", () => {
       expect(response.header["x-auth-token"]).not.toBeDefined();
 
       //#endregion CHECKING_HEADER
+
+      //#region CHECKING_LOGGING
+
+      expect(logActionMock).not.toHaveBeenCalled();
+
+      //#endregion CHECKING_LOGGING
     });
   });
 });
