@@ -3,7 +3,7 @@ const path = require("path");
 const {
   exists,
   createDirIfNotExists,
-  removeDirectoryIfExists
+  removeDirectoryIfExists,
 } = require("../utilities/utilities");
 const mongoose = require("mongoose");
 
@@ -63,6 +63,13 @@ class Project {
     return path.join(`${model._id.toString()}.smdl`);
   }
 
+  static _getModelIOSFileName(model) {
+    if (!exists(model)) throw new Error("Model cannot be empty");
+    if (!exists(model._id)) throw new Error("Model id cannot be empty");
+
+    return path.join(`${model._id.toString()}.ismdl`);
+  }
+
   /**
    * @description Method for getting model file based on user and model
    * @param {Object} user User of model
@@ -82,7 +89,7 @@ class Project {
    */
   static getModelIOSFilePath(user, model) {
     let userFileDirPath = Project._getIOSFileDirPath(user);
-    let modelFileName = Project._getModelFileName(model);
+    let modelFileName = Project._getModelIOSFileName(model);
 
     return path.join(userFileDirPath, modelFileName);
   }
