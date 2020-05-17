@@ -7,6 +7,7 @@
   "userDir": "users",
   "fileDir": "files",
   "iosFileDir": "iosFiles",
+  "requestTimeout": 600000,
   "logging": {
     "logActions": true,
     "info": {

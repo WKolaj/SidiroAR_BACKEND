@@ -1,18 +1,19 @@
 const logger = require("../logger/logger");
 const config = require("config");
 
-let throwIfConfigDoesNotExist = configName => {
+let throwIfConfigDoesNotExist = (configName) => {
   if (!config.get(configName))
     throw new Error(`FATAL ERROR: ${configName} is not defined in config file`);
 };
 
-module.exports = async function() {
+module.exports = async function () {
   logger.info("initializing app configuration files...");
   throwIfConfigDoesNotExist("dbConnectionString");
   throwIfConfigDoesNotExist("emailLogin");
   throwIfConfigDoesNotExist("emailPassword");
   throwIfConfigDoesNotExist("modelFileExtension");
   throwIfConfigDoesNotExist("port");
+  throwIfConfigDoesNotExist("requestTimeout");
   throwIfConfigDoesNotExist("tokenHeader");
   throwIfConfigDoesNotExist("jwtPrivateKey");
   throwIfConfigDoesNotExist("projectDir");

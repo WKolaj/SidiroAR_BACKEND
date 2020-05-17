@@ -8,7 +8,7 @@ const app = express();
 const path = require("path");
 const helmet = require("helmet");
 
-module.exports = async function(workingDirName) {
+module.exports = async function (workingDirName) {
   if (!workingDirName) workingDirName = __dirname;
 
   //Setting all event emitters limit to 100
@@ -30,7 +30,7 @@ module.exports = async function(workingDirName) {
 
   //Turning on cors
   let corsOptions = {
-    exposedHeaders: [config.get("tokenHeader")]
+    exposedHeaders: [config.get("tokenHeader")],
   };
 
   app.use(cors(corsOptions));
@@ -53,7 +53,11 @@ module.exports = async function(workingDirName) {
     res.sendFile(path.join(workingDirName + "/client/build/index.html"));
   });
 
-  return app.listen(port, () => {
-    log.info(`Listening on port ${port}...`);
-  });
+  return app
+    .listen(port, () => {
+      log.info(`Listening on port ${port}...`);
+    })
+    .setTimeout(config.get("requestTimeout"), () => {
+      log.warn("Request timeout");
+    });
 };
