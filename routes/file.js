@@ -16,7 +16,7 @@ const {
   checkIfFileExistsAsync,
   statAsync,
   renameAsync,
-  removeFileOrDirectoryAsync
+  removeFileOrDirectoryAsync,
 } = require("../utilities/utilities");
 const _ = require("lodash");
 const formidable = require("formidable");
@@ -40,7 +40,7 @@ router.get("/me/:id", [hasUser, isUser, validateObjectId], async (req, res) => {
 
   res.writeHead(200, {
     "Content-Type": "application/octet-stream",
-    "Content-Length": stat.size
+    "Content-Length": stat.size,
   });
 
   logger.action(
@@ -50,6 +50,52 @@ router.get("/me/:id", [hasUser, isUser, validateObjectId], async (req, res) => {
   let fileStream = fs.createReadStream(modelFilePath);
   fileStream.pipe(res);
 });
+
+router.get(
+  "/:userId/:id",
+  [hasUser, isAdmin, validateObjectId],
+  async (req, res) => {
+    //Returning if userId is not defined or invalid - id was checked previously by validateObjectId
+    if (!mongoose.Types.ObjectId.isValid(req.params.userId))
+      return res.status("404").send("Invalid user id...");
+
+    let user = await User.findOne({
+      _id: req.params.userId,
+    });
+
+    //returning 404 if user does not exist
+    if (!exists(user)) return res.status(404).send("User not found...");
+
+    let model = await Model.findOne({
+      _id: req.params.id,
+      user: req.params.userId,
+    });
+
+    //returning 404 if model does not exist
+    if (!exists(model)) return res.status(404).send("Model not found...");
+
+    let modelFilePath = Project.getModelFilePath(user, model);
+
+    //Checking if file exists
+    let fileExists = await checkIfFileExistsAsync(modelFilePath);
+    if (!fileExists) return res.status(404).send("Model file not found...");
+
+    //Calculating size of file
+    let stat = await statAsync(modelFilePath);
+
+    res.writeHead(200, {
+      "Content-Type": "application/octet-stream",
+      "Content-Length": stat.size,
+    });
+
+    logger.action(
+      `User ${user.email} started downloading android file for model ${model._id}`
+    );
+
+    let fileStream = fs.createReadStream(modelFilePath);
+    fileStream.pipe(res);
+  }
+);
 
 router.post(
   "/:userId/:id",
@@ -165,8 +211,54 @@ router.get(
 
     res.writeHead(200, {
       "Content-Type": "application/octet-stream",
-      "Content-Length": stat.size
+      "Content-Length": stat.size,
     });
+
+    let fileStream = fs.createReadStream(modelFilePath);
+    fileStream.pipe(res);
+  }
+);
+
+router.get(
+  "/ios/:userId/:id",
+  [hasUser, isAdmin, validateObjectId],
+  async (req, res) => {
+    //Returning if userId is not defined or invalid - id was checked previously by validateObjectId
+    if (!mongoose.Types.ObjectId.isValid(req.params.userId))
+      return res.status("404").send("Invalid user id...");
+
+    let user = await User.findOne({
+      _id: req.params.userId,
+    });
+
+    //returning 404 if user does not exist
+    if (!exists(user)) return res.status(404).send("User not found...");
+
+    let model = await Model.findOne({
+      _id: req.params.id,
+      user: req.params.userId,
+    });
+
+    //returning 404 if model does not exist
+    if (!exists(model)) return res.status(404).send("Model not found...");
+
+    let modelFilePath = Project.getModelIOSFilePath(user, model);
+
+    //Checking if file exists
+    let fileExists = await checkIfFileExistsAsync(modelFilePath);
+    if (!fileExists) return res.status(404).send("Model file not found...");
+
+    //Calculating size of file
+    let stat = await statAsync(modelFilePath);
+
+    res.writeHead(200, {
+      "Content-Type": "application/octet-stream",
+      "Content-Length": stat.size,
+    });
+
+    logger.action(
+      `User ${user.email} started downloading ios file for model ${model._id}`
+    );
 
     let fileStream = fs.createReadStream(modelFilePath);
     fileStream.pipe(res);

@@ -1,11 +1,20 @@
 const appStart = require("./startup/app");
 
-const { generateTestSuperAdmin } = require("./tests/utilities/testUtilities");
+const {
+  generateTestSuperAdmin,
+  generateTestAdmin,
+  generateTestUser,
+  generateUselessUser,
+  generateTestModels,
+} = require("./tests/utilities/testUtilities");
 
 let exec = async () => {
   await appStart();
 
-  await generateTestSuperAdmin();
+  await generateTestModels(await generateTestSuperAdmin());
+  await generateTestModels(await generateTestAdmin());
+  await generateTestModels(await generateTestUser());
+  await generateTestModels(await generateUselessUser());
 
   console.log("generated");
 };
