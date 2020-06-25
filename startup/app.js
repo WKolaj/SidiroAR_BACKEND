@@ -53,11 +53,7 @@ module.exports = async function (workingDirName) {
     res.sendFile(path.join(workingDirName + "/client/build/index.html"));
   });
 
-  return app
-    .listen(port, () => {
-      log.info(`Listening on port ${port}...`);
-    })
-    .setTimeout(config.get("requestTimeout"), () => {
-      log.warn("Request timeout");
-    });
+  return app.listen(port, () => {
+    log.info(`Listening on port ${port}...`);
+  });
 };

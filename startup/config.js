@@ -8,6 +8,7 @@ let throwIfConfigDoesNotExist = (configName) => {
 
 module.exports = async function () {
   logger.info("initializing app configuration files...");
+
   throwIfConfigDoesNotExist("dbConnectionString");
   throwIfConfigDoesNotExist("emailLogin");
   throwIfConfigDoesNotExist("emailPassword");
@@ -19,6 +20,10 @@ module.exports = async function () {
   throwIfConfigDoesNotExist("projectDir");
   throwIfConfigDoesNotExist("userDir");
   throwIfConfigDoesNotExist("fileDir");
+  throwIfConfigDoesNotExist("smtpServerURL");
+  throwIfConfigDoesNotExist("smtpServerPort");
+  throwIfConfigDoesNotExist("useTLS");
+  throwIfConfigDoesNotExist("useNodemailerPool");
   throwIfConfigDoesNotExist("logging");
   throwIfConfigDoesNotExist("logging.logActions");
   throwIfConfigDoesNotExist("logging.info");

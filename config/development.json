@@ -1,0 +1,4 @@
+{
+  "dbConnectionString": "mongodb://testSidiroAR:testSidiroARPassword@localhost:27017/sidiroar",
+  "jwtPrivateKey": "testPrivateKey"
+}

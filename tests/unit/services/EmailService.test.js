@@ -1,4 +1,4 @@
-const EmailService = require("../../../services/EmailService");
+const EmailService = require("../../../services/EmailService/EmailService");
 const nodemailer = require("nodemailer");
 const config = require("config");
 const { snooze } = require("../../../utilities/utilities");
@@ -22,11 +22,14 @@ describe("EmailService", () => {
       expect(nodemailer.mockSendMailFunction).toHaveBeenCalledTimes(1);
 
       let expectedTranportSettings = {
-        service: "gmail",
+        pool: true,
+        host: "pricelist.nazwa.pl",
+        port: 465,
+        secure: true,
         auth: {
           user: config.get("emailLogin"),
-          pass: config.get("emailPassword")
-        }
+          pass: config.get("emailPassword"),
+        },
       };
       expect(nodemailer.mockSendMailFunction.mock.calls[0][0]).toEqual(
         expectedTranportSettings
@@ -36,7 +39,7 @@ describe("EmailService", () => {
         from: config.get("emailLogin"),
         to: recipient,
         subject: subject,
-        html: htmlContent
+        html: htmlContent,
       };
       expect(nodemailer.mockSendMailFunction.mock.calls[0][1]).toEqual(
         expectedMailOptions

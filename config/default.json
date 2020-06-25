@@ -7,6 +7,10 @@
   "userDir": "users",
   "fileDir": "files",
   "iosFileDir": "iosFiles",
+  "smtpServerURL": "pricelist.nazwa.pl",
+  "smtpServerPort": 465,
+  "useTLS": true,
+  "useNodemailerPool": true,
   "requestTimeout": 600000,
   "logging": {
     "logActions": true,
