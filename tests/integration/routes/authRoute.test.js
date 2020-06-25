@@ -3,7 +3,7 @@ const {
   snooze,
   clearDirectoryAsync,
   exists,
-  createFileAsync
+  createFileAsync,
 } = require("../../../utilities/utilities");
 const _ = require("lodash");
 const request = require("supertest");
@@ -16,7 +16,7 @@ let {
   generateTestUser,
   generateTestAdminAndUser,
   generateUselessUser,
-  generateTestModels
+  generateTestModels,
 } = require("../../utilities/testUtilities");
 let server;
 let Project = require("../../../classes/project");
@@ -77,20 +77,18 @@ describe("/sidiroar/api/users", () => {
     beforeEach(async () => {
       requestPayload = {
         email: testUser.email,
-        password: "4321"
+        password: "4321",
       };
     });
     let exec = async () => {
-      return request(server)
-        .post("/sidiroar/api/auth")
-        .send(requestPayload);
+      return request(server).post("/sidiroar/api/auth").send(requestPayload);
     };
 
     it("should return 200 and logged users payload inside body (together with jwt) if user payload is valid and user is useless (without permissions) user", async () => {
       //Setting payload of normal user
       requestPayload = {
         email: uselessUser.email,
-        password: "1111"
+        password: "1111",
       };
 
       let response = await exec();
@@ -110,7 +108,9 @@ describe("/sidiroar/api/users", () => {
         modelIds: [],
         modelNames: [],
         filesExist: [],
-        iosFilesExist: []
+        iosFilesExist: [],
+        additionalInfo: {},
+        defaultLang: "pl",
       };
 
       //JWT should also be returned in body
@@ -149,7 +149,9 @@ describe("/sidiroar/api/users", () => {
         modelIds: [],
         modelNames: [],
         filesExist: [],
-        iosFilesExist: []
+        iosFilesExist: [],
+        additionalInfo: {},
+        defaultLang: "pl",
       };
 
       //JWT should also be returned in body
@@ -188,7 +190,7 @@ describe("/sidiroar/api/users", () => {
       //Setting payload of normal user
       requestPayload = {
         email: testAdmin.email,
-        password: "1234"
+        password: "1234",
       };
 
       let response = await exec();
@@ -208,7 +210,9 @@ describe("/sidiroar/api/users", () => {
         modelIds: [],
         modelNames: [],
         filesExist: [],
-        iosFilesExist: []
+        iosFilesExist: [],
+        additionalInfo: {},
+        defaultLang: "pl",
       };
 
       //JWT should also be returned in body
@@ -239,7 +243,7 @@ describe("/sidiroar/api/users", () => {
       //Setting payload of normal user
       requestPayload = {
         email: testUserAndAdmin.email,
-        password: "1243"
+        password: "1243",
       };
 
       let response = await exec();
@@ -259,7 +263,9 @@ describe("/sidiroar/api/users", () => {
         modelIds: [],
         modelNames: [],
         filesExist: [],
-        iosFilesExist: []
+        iosFilesExist: [],
+        additionalInfo: {},
+        defaultLang: "pl",
       };
 
       //JWT should also be returned in body
@@ -309,12 +315,14 @@ describe("/sidiroar/api/users", () => {
         email: testUser.email,
         name: testUser.name,
         permissions: testUser.permissions,
-        modelIds: modelsOfTestUser.map(model => model._id.toString()),
-        modelNames: modelsOfTestUser.map(model => model.name.toString()),
+        modelIds: modelsOfTestUser.map((model) => model._id.toString()),
+        modelNames: modelsOfTestUser.map((model) => model.name.toString()),
         filesExist: [false, true, false],
         iosFilesExist: await Promise.all(
-          modelsOfTestUser.map(async model => await model.iosFileExists())
-        )
+          modelsOfTestUser.map(async (model) => await model.iosFileExists())
+        ),
+        additionalInfo: {},
+        defaultLang: "pl",
       };
 
       //JWT should also be returned in body
@@ -364,12 +372,14 @@ describe("/sidiroar/api/users", () => {
         email: testUser.email,
         name: testUser.name,
         permissions: testUser.permissions,
-        modelIds: modelsOfTestUser.map(model => model._id.toString()),
-        modelNames: modelsOfTestUser.map(model => model.name.toString()),
+        modelIds: modelsOfTestUser.map((model) => model._id.toString()),
+        modelNames: modelsOfTestUser.map((model) => model.name.toString()),
         filesExist: await Promise.all(
-          modelsOfTestUser.map(async model => await model.fileExists())
+          modelsOfTestUser.map(async (model) => await model.fileExists())
         ),
-        iosFilesExist: [false, true, false]
+        iosFilesExist: [false, true, false],
+        additionalInfo: {},
+        defaultLang: "pl",
       };
 
       //JWT should also be returned in body

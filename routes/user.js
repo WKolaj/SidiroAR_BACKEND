@@ -8,7 +8,7 @@ const validateObjectId = require("../middleware/validateObjectId");
 const {
   exists,
   hashString,
-  hashedStringMatch
+  hashedStringMatch,
 } = require("../utilities/utilities");
 const hasUser = require("../middleware/auth/hasUser");
 const isAdmin = require("../middleware/auth/isAdmin");
@@ -88,7 +88,14 @@ router.post(
 
     //Create and save new user
     user = new User(
-      _.pick(req.body, ["name", "email", "password", "permissions"])
+      _.pick(req.body, [
+        "name",
+        "email",
+        "password",
+        "permissions",
+        "defaultLang",
+        "additionalInfo",
+      ])
     );
 
     await user.save();
@@ -167,6 +174,9 @@ router.put(
       return res.status(400).send("Invalid permissions for given user");
 
     if (exists(req.body.name)) user.name = req.body.name;
+    if (exists(req.body.additionalInfo))
+      user.additionalInfo = req.body.additionalInfo;
+    if (exists(req.body.defaultLang)) user.defaultLang = req.body.defaultLang;
 
     //Checking if password exists - and edit it if exists
     if (exists(req.body.password)) {
@@ -218,6 +228,10 @@ router.put(
         .send("Access denied. Only superAdmin can edit admins");
 
     if (exists(req.body.name)) user.name = req.body.name;
+    if (exists(req.body.additionalInfo))
+      user.additionalInfo = req.body.additionalInfo;
+    if (exists(req.body.defaultLang)) user.defaultLang = req.body.defaultLang;
+
     if (exists(req.body.permissions)) {
       //Checking if new permissions are admin or userAdmin - making it possible only for superAdmin to change update users to admin or superAdmins
       if (

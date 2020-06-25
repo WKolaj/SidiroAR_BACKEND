@@ -15,14 +15,14 @@ let {
   generateTestAdminAndUser,
   generateUselessUser,
   generateTestSuperAdmin,
-  generateTestModels
+  generateTestModels,
 } = require("../../utilities/testUtilities");
 let {
   exists,
   hashedStringMatch,
   clearDirectoryAsync,
   createFileAsync,
-  checkIfDirectoryExistsAsync
+  checkIfDirectoryExistsAsync,
 } = require("../../../utilities/utilities");
 let server;
 let Project = require("../../../classes/project");
@@ -106,7 +106,13 @@ describe("/sidiroar/api/user", () => {
         email: "1234@abcd.pl",
         name: "testUser",
         permissions: 1,
-        password: "4321"
+        password: "4321",
+        defaultLang: "eng",
+        additionalInfo: {
+          key1: "value1",
+          key2: "value2",
+          key3: "value3",
+        },
       };
 
       jwt = await testAdmin.generateJWT();
@@ -119,9 +125,7 @@ describe("/sidiroar/api/user", () => {
           .set(config.get("tokenHeader"), jwt)
           .send(requestPayload);
       else
-        return request(server)
-          .post("/sidiroar/api/user")
-          .send(requestPayload);
+        return request(server).post("/sidiroar/api/user").send(requestPayload);
     };
 
     it("should create new user and return 200 with user payload inside body if user payload is valid", async () => {
@@ -140,7 +144,7 @@ describe("/sidiroar/api/user", () => {
         modelIds: [],
         modelNames: [],
         filesExist: [],
-        iosFilesExist: []
+        iosFilesExist: [],
       };
 
       expect(response.body).toEqual(expectedBody);
@@ -154,7 +158,13 @@ describe("/sidiroar/api/user", () => {
       expect(user).toBeDefined();
 
       //user payload should be the same to response (except hashed password)
-      let userPayload = _.pick(user, ["email", "name", "permissions"]);
+      let userPayload = _.pick(user, [
+        "email",
+        "name",
+        "permissions",
+        "defaultLang",
+        "additionalInfo",
+      ]);
       //Id should be converted to string
       userPayload._id = user._id.toString();
       userPayload.password = requestPayload.password;
@@ -240,7 +250,7 @@ describe("/sidiroar/api/user", () => {
       requestPayload = {
         email: requestPayload.email,
         name: "testUser2",
-        permissions: 2
+        permissions: 2,
       };
 
       let response = await request(server)
@@ -602,7 +612,7 @@ describe("/sidiroar/api/user", () => {
         modelIds: [],
         modelNames: [],
         filesExist: [],
-        iosFilesExist: []
+        iosFilesExist: [],
       };
 
       expect(response.body).toEqual(expectedBody);
@@ -616,7 +626,13 @@ describe("/sidiroar/api/user", () => {
       expect(user).toBeDefined();
 
       //user payload should be the same to response (excepted hashed password)
-      let userPayload = _.pick(user, ["email", "name", "permissions"]);
+      let userPayload = _.pick(user, [
+        "email",
+        "name",
+        "permissions",
+        "defaultLang",
+        "additionalInfo",
+      ]);
       //Id should be converted to string
       userPayload._id = user._id.toString();
 
@@ -689,7 +705,7 @@ describe("/sidiroar/api/user", () => {
         modelIds: [],
         modelNames: [],
         filesExist: [],
-        iosFilesExist: []
+        iosFilesExist: [],
       };
 
       expect(response.body).toEqual(expectedBody);
@@ -703,7 +719,13 @@ describe("/sidiroar/api/user", () => {
       expect(user).toBeDefined();
 
       //user payload should be the same to response (excepted hashed password)
-      let userPayload = _.pick(user, ["email", "name", "permissions"]);
+      let userPayload = _.pick(user, [
+        "email",
+        "name",
+        "permissions",
+        "defaultLang",
+        "additionalInfo",
+      ]);
       //Id should be converted to string
       userPayload._id = user._id.toString();
 
@@ -746,7 +768,7 @@ describe("/sidiroar/api/user", () => {
         modelIds: [],
         modelNames: [],
         filesExist: [],
-        iosFilesExist: []
+        iosFilesExist: [],
       };
 
       expect(response.body).toEqual(expectedBody);
@@ -760,7 +782,13 @@ describe("/sidiroar/api/user", () => {
       expect(user).toBeDefined();
 
       //user payload should be the same to response (excepted hashed password)
-      let userPayload = _.pick(user, ["email", "name", "permissions"]);
+      let userPayload = _.pick(user, [
+        "email",
+        "name",
+        "permissions",
+        "defaultLang",
+        "additionalInfo",
+      ]);
       //Id should be converted to string
       userPayload._id = user._id.toString();
 
@@ -949,7 +977,7 @@ describe("/sidiroar/api/user", () => {
         modelIds: [],
         modelNames: [],
         filesExist: [],
-        iosFilesExist: []
+        iosFilesExist: [],
       };
 
       expect(response.body).toEqual(expectedBody);
@@ -963,7 +991,13 @@ describe("/sidiroar/api/user", () => {
       expect(user).toBeDefined();
 
       //user payload should be the same to response (excepted hashed password)
-      let userPayload = _.pick(user, ["email", "name", "permissions"]);
+      let userPayload = _.pick(user, [
+        "email",
+        "name",
+        "permissions",
+        "defaultLang",
+        "additionalInfo",
+      ]);
       //Id should be converted to string
       userPayload._id = user._id.toString();
 
@@ -1224,7 +1258,7 @@ describe("/sidiroar/api/user", () => {
         modelIds: [],
         modelNames: [],
         filesExist: [],
-        iosFilesExist: []
+        iosFilesExist: [],
       };
 
       expect(response.body).toEqual(expectedBody);
@@ -1238,7 +1272,13 @@ describe("/sidiroar/api/user", () => {
       expect(user).toBeDefined();
 
       //user payload should be the same to response (excepted hashed password)
-      let userPayload = _.pick(user, ["email", "name", "permissions"]);
+      let userPayload = _.pick(user, [
+        "email",
+        "name",
+        "permissions",
+        "defaultLang",
+        "additionalInfo",
+      ]);
       //Id should be converted to string
       userPayload._id = user._id.toString();
 
@@ -1309,7 +1349,7 @@ describe("/sidiroar/api/user", () => {
         modelIds: [],
         modelNames: [],
         filesExist: [],
-        iosFilesExist: []
+        iosFilesExist: [],
       };
 
       expect(response.body).toEqual(expectedBody);
@@ -1323,7 +1363,13 @@ describe("/sidiroar/api/user", () => {
       expect(user).toBeDefined();
 
       //user payload should be the same to response (excepted hashed password)
-      let userPayload = _.pick(user, ["email", "name", "permissions"]);
+      let userPayload = _.pick(user, [
+        "email",
+        "name",
+        "permissions",
+        "defaultLang",
+        "additionalInfo",
+      ]);
       //Id should be converted to string
       userPayload._id = user._id.toString();
 
@@ -1374,6 +1420,463 @@ describe("/sidiroar/api/user", () => {
     });
 
     //#endregion CHECK_PERMISSIONS
+
+    //#region CHECK_DEFAULT_LANG
+
+    it("should create new user and set defaultLang to pl if defaultLang is not defined", async () => {
+      delete requestPayload.defaultLang;
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(200);
+      expect(response.body).toBeDefined();
+
+      //Body should correspond with payload (except for password and _id)
+      let expectedBody = {
+        ...requestPayload,
+        password: response.body.password,
+        _id: response.body._id,
+        modelIds: [],
+        modelNames: [],
+        filesExist: [],
+        iosFilesExist: [],
+        defaultLang: "pl",
+      };
+
+      expect(response.body).toEqual(expectedBody);
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //New user should be saved inside database
+      let user = await User.findOne({ _id: response.body._id });
+      expect(user).toBeDefined();
+
+      //user payload should be the same to response (excepted hashed password)
+      let userPayload = _.pick(user, [
+        "email",
+        "name",
+        "permissions",
+        "defaultLang",
+        "additionalInfo",
+      ]);
+      //Id should be converted to string
+      userPayload._id = user._id.toString();
+
+      userPayload.password = response.body.password;
+
+      //List of ids and names is empty - new user without any models
+      userPayload.modelIds = [];
+      userPayload.modelNames = [];
+      userPayload.filesExist = [];
+      userPayload.iosFilesExist = [];
+
+      expect(response.body).toEqual(userPayload);
+
+      //Password should be encrypted properly
+      expect(bcrypt.compareSync(response.body.password, user.password));
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should not create new user and return 400 to pl if defaultLang is null", async () => {
+      requestPayload.defaultLang = null;
+
+      let response = await exec();
+
+      //#region CHECKING_EMAIL
+
+      expect(sendMailMockFunction).not.toHaveBeenCalled();
+
+      //#endregion CHECKING_EMAIL
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(400);
+      expect(response.text).toBeDefined();
+      expect(response.text).toContain('"defaultLang" must be one of [pl, eng]');
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //Only five users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser, superAdmin
+      let userCount = await User.countDocuments({});
+
+      expect(userCount).toEqual(5);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should not create new user and return 400 if defaultLang is a empty", async () => {
+      requestPayload.defaultLang = "";
+
+      let response = await exec();
+
+      //#region CHECKING_EMAIL
+
+      expect(sendMailMockFunction).not.toHaveBeenCalled();
+
+      //#endregion CHECKING_EMAIL
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(400);
+      expect(response.text).toBeDefined();
+      expect(response.text).toContain('"defaultLang" must be one of [pl, eng]');
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //Only five users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser, superAdmin
+      let userCount = await User.countDocuments({});
+
+      expect(userCount).toEqual(5);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should not create new user and return 400 if defaultLang is an invalid string", async () => {
+      requestPayload.defaultLang = "1abc";
+
+      let response = await exec();
+
+      //#region CHECKING_EMAIL
+
+      expect(sendMailMockFunction).not.toHaveBeenCalled();
+
+      //#endregion CHECKING_EMAIL
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(400);
+      expect(response.text).toBeDefined();
+      expect(response.text).toContain('"defaultLang" must be one of [pl, eng]');
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //Only five users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser, superAdmin
+      let userCount = await User.countDocuments({});
+
+      expect(userCount).toEqual(5);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should create new user and return 200 if defaultLang is eng", async () => {
+      requestPayload.defaultLang = "eng";
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(200);
+      expect(response.body).toBeDefined();
+
+      //Body should correspond with payload (except for password and _id)
+      let expectedBody = {
+        ...requestPayload,
+        password: response.body.password,
+        _id: response.body._id,
+        modelIds: [],
+        modelNames: [],
+        filesExist: [],
+        iosFilesExist: [],
+      };
+
+      expect(response.body).toEqual(expectedBody);
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //New user should be saved inside database
+      let user = await User.findOne({ _id: response.body._id });
+      expect(user).toBeDefined();
+
+      //user payload should be the same to response (excepted hashed password)
+      let userPayload = _.pick(user, [
+        "email",
+        "name",
+        "permissions",
+        "defaultLang",
+        "additionalInfo",
+      ]);
+      //Id should be converted to string
+      userPayload._id = user._id.toString();
+
+      userPayload.password = response.body.password;
+
+      //List of ids and names is empty - new user without any models
+      userPayload.modelIds = [];
+      userPayload.modelNames = [];
+      userPayload.filesExist = [];
+      userPayload.iosFilesExist = [];
+
+      expect(response.body).toEqual(userPayload);
+
+      //Password should be encrypted properly
+      expect(bcrypt.compareSync(response.body.password, user.password));
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    //#endregion CHECK_DEFAULT_LANG
+
+    //#region CHECK_ADDITIONAL_INFO
+
+    it("should create new user and set additionalInfo to {} if additionalInfo is not defined", async () => {
+      delete requestPayload.additionalInfo;
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(200);
+      expect(response.body).toBeDefined();
+
+      //Body should correspond with payload (except for password and _id)
+      let expectedBody = {
+        ...requestPayload,
+        password: response.body.password,
+        _id: response.body._id,
+        modelIds: [],
+        modelNames: [],
+        filesExist: [],
+        iosFilesExist: [],
+        additionalInfo: {},
+      };
+
+      expect(response.body).toEqual(expectedBody);
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //New user should be saved inside database
+      let user = await User.findOne({ _id: response.body._id });
+      expect(user).toBeDefined();
+
+      //user payload should be the same to response (excepted hashed password)
+      let userPayload = _.pick(user, [
+        "email",
+        "name",
+        "permissions",
+        "defaultLang",
+        "additionalInfo",
+      ]);
+      //Id should be converted to string
+      userPayload._id = user._id.toString();
+
+      userPayload.password = response.body.password;
+
+      //List of ids and names is empty - new user without any models
+      userPayload.modelIds = [];
+      userPayload.modelNames = [];
+      userPayload.filesExist = [];
+      userPayload.iosFilesExist = [];
+
+      expect(response.body).toEqual(userPayload);
+
+      //Password should be encrypted properly
+      expect(bcrypt.compareSync(response.body.password, user.password));
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should not create new user and return 400  if additionalInfo is null", async () => {
+      requestPayload.additionalInfo = null;
+
+      let response = await exec();
+
+      //#region CHECKING_EMAIL
+
+      expect(sendMailMockFunction).not.toHaveBeenCalled();
+
+      //#endregion CHECKING_EMAIL
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(400);
+      expect(response.text).toBeDefined();
+      expect(response.text).toContain('"additionalInfo" must be an object');
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //Only five users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser, superAdmin
+      let userCount = await User.countDocuments({});
+
+      expect(userCount).toEqual(5);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should not create new user and return 400  if additionalInfo is an empty string", async () => {
+      requestPayload.additionalInfo = "";
+
+      let response = await exec();
+
+      //#region CHECKING_EMAIL
+
+      expect(sendMailMockFunction).not.toHaveBeenCalled();
+
+      //#endregion CHECKING_EMAIL
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(400);
+      expect(response.text).toBeDefined();
+      expect(response.text).toContain('"additionalInfo" must be an object');
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //Only five users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser, superAdmin
+      let userCount = await User.countDocuments({});
+
+      expect(userCount).toEqual(5);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should not create new user and return 400  if additionalInfo is a string", async () => {
+      requestPayload.additionalInfo = "testInfo";
+
+      let response = await exec();
+
+      //#region CHECKING_EMAIL
+
+      expect(sendMailMockFunction).not.toHaveBeenCalled();
+
+      //#endregion CHECKING_EMAIL
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(400);
+      expect(response.text).toBeDefined();
+      expect(response.text).toContain('"additionalInfo" must be an object');
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //Only five users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser, superAdmin
+      let userCount = await User.countDocuments({});
+
+      expect(userCount).toEqual(5);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should not create new user and return 400  if additionalInfo is a number", async () => {
+      requestPayload.additionalInfo = 123;
+
+      let response = await exec();
+
+      //#region CHECKING_EMAIL
+
+      expect(sendMailMockFunction).not.toHaveBeenCalled();
+
+      //#endregion CHECKING_EMAIL
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(400);
+      expect(response.text).toBeDefined();
+      expect(response.text).toContain('"additionalInfo" must be an object');
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //Only five users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser, superAdmin
+      let userCount = await User.countDocuments({});
+
+      expect(userCount).toEqual(5);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should not create new user and return 400  if additionalInfo is an empty collection", async () => {
+      requestPayload.additionalInfo = [];
+
+      let response = await exec();
+
+      //#region CHECKING_EMAIL
+
+      expect(sendMailMockFunction).not.toHaveBeenCalled();
+
+      //#endregion CHECKING_EMAIL
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(400);
+      expect(response.text).toBeDefined();
+      expect(response.text).toContain('"additionalInfo" must be an object');
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //Only five users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser, superAdmin
+      let userCount = await User.countDocuments({});
+
+      expect(userCount).toEqual(5);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should not create new user and return 400  if additionalInfo is a collection", async () => {
+      requestPayload.additionalInfo = [1, 2, 3];
+
+      let response = await exec();
+
+      //#region CHECKING_EMAIL
+
+      expect(sendMailMockFunction).not.toHaveBeenCalled();
+
+      //#endregion CHECKING_EMAIL
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(400);
+      expect(response.text).toBeDefined();
+      expect(response.text).toContain('"additionalInfo" must be an object');
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //Only five users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser, superAdmin
+      let userCount = await User.countDocuments({});
+
+      expect(userCount).toEqual(5);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    //#endregion CHECK_ADDITIONAL_INFO
 
     //#region CHECK_AUTHORIZATION
 
@@ -1467,7 +1970,7 @@ describe("/sidiroar/api/user", () => {
         modelIds: [],
         modelNames: [],
         filesExist: [],
-        iosFilesExist: []
+        iosFilesExist: [],
       };
 
       expect(response.body).toEqual(expectedBody);
@@ -1481,7 +1984,13 @@ describe("/sidiroar/api/user", () => {
       expect(user).toBeDefined();
 
       //user payload should be the same to response (except hashed password)
-      let userPayload = _.pick(user, ["email", "name", "permissions"]);
+      let userPayload = _.pick(user, [
+        "email",
+        "name",
+        "permissions",
+        "defaultLang",
+        "additionalInfo",
+      ]);
       //Id should be converted to string
       userPayload._id = user._id.toString();
       userPayload.password = requestPayload.password;
@@ -1528,7 +2037,7 @@ describe("/sidiroar/api/user", () => {
         _id: testAdmin._id,
         email: testAdmin.email,
         name: testAdmin.name,
-        permissions: testAdmin.permissions
+        permissions: testAdmin.permissions,
       };
 
       jwt = await jsonWebToken.sign(fakeUserPayload, "differentTestPrivateKey");
@@ -1600,7 +2109,7 @@ describe("/sidiroar/api/user", () => {
         modelIds: [],
         modelNames: [],
         filesExist: [],
-        iosFilesExist: []
+        iosFilesExist: [],
       };
 
       expect(response.body).toEqual(expectedBody);
@@ -1614,7 +2123,13 @@ describe("/sidiroar/api/user", () => {
       expect(user).toBeDefined();
 
       //user payload should be the same to response (except hashed password)
-      let userPayload = _.pick(user, ["email", "name", "permissions"]);
+      let userPayload = _.pick(user, [
+        "email",
+        "name",
+        "permissions",
+        "defaultLang",
+        "additionalInfo",
+      ]);
       //Id should be converted to string
       userPayload._id = user._id.toString();
       userPayload.password = requestPayload.password;
@@ -1678,7 +2193,7 @@ describe("/sidiroar/api/user", () => {
         modelIds: [],
         modelNames: [],
         filesExist: [],
-        iosFilesExist: []
+        iosFilesExist: [],
       };
 
       expect(response.body).toEqual(expectedBody);
@@ -1692,7 +2207,13 @@ describe("/sidiroar/api/user", () => {
       expect(user).toBeDefined();
 
       //user payload should be the same to response (except hashed password)
-      let userPayload = _.pick(user, ["email", "name", "permissions"]);
+      let userPayload = _.pick(user, [
+        "email",
+        "name",
+        "permissions",
+        "defaultLang",
+        "additionalInfo",
+      ]);
       //Id should be converted to string
       userPayload._id = user._id.toString();
       userPayload.password = requestPayload.password;
@@ -1727,10 +2248,7 @@ describe("/sidiroar/api/user", () => {
           .get("/sidiroar/api/user")
           .set(config.get("tokenHeader"), jwt)
           .send();
-      else
-        return request(server)
-          .get("/sidiroar/api/user")
-          .send();
+      else return request(server).get("/sidiroar/api/user").send();
     };
 
     it("should return 200 and a list of all users - if there are some users", async () => {
@@ -1754,77 +2272,93 @@ describe("/sidiroar/api/user", () => {
           name: uselessUser.name,
           email: uselessUser.email,
           permissions: uselessUser.permissions,
-          modelIds: modelsOfUselessUser.map(model => model._id.toString()),
-          modelNames: modelsOfUselessUser.map(model => model.name),
+          modelIds: modelsOfUselessUser.map((model) => model._id.toString()),
+          modelNames: modelsOfUselessUser.map((model) => model.name),
           filesExist: await Promise.all(
-            modelsOfUselessUser.map(async model => await model.fileExists())
+            modelsOfUselessUser.map(async (model) => await model.fileExists())
           ),
           iosFilesExist: await Promise.all(
-            modelsOfUselessUser.map(async model => await model.iosFileExists())
-          )
+            modelsOfUselessUser.map(
+              async (model) => await model.iosFileExists()
+            )
+          ),
+          additionalInfo: {},
+          defaultLang: "pl",
         },
         {
           _id: testUser._id.toString(),
           name: testUser.name,
           email: testUser.email,
           permissions: testUser.permissions,
-          modelIds: modelsOfTestUser.map(model => model._id.toString()),
-          modelNames: modelsOfTestUser.map(model => model.name),
+          modelIds: modelsOfTestUser.map((model) => model._id.toString()),
+          modelNames: modelsOfTestUser.map((model) => model.name),
           filesExist: await Promise.all(
-            modelsOfTestUser.map(async model => await model.fileExists())
+            modelsOfTestUser.map(async (model) => await model.fileExists())
           ),
           iosFilesExist: await Promise.all(
-            modelsOfTestUser.map(async model => await model.iosFileExists())
-          )
+            modelsOfTestUser.map(async (model) => await model.iosFileExists())
+          ),
+          additionalInfo: {},
+          defaultLang: "pl",
         },
         {
           _id: testAdmin._id.toString(),
           name: testAdmin.name,
           email: testAdmin.email,
           permissions: testAdmin.permissions,
-          modelIds: modelsOfTestAdmin.map(model => model._id.toString()),
-          modelNames: modelsOfTestAdmin.map(model => model.name),
+          modelIds: modelsOfTestAdmin.map((model) => model._id.toString()),
+          modelNames: modelsOfTestAdmin.map((model) => model.name),
           filesExist: await Promise.all(
-            modelsOfTestAdmin.map(async model => await model.fileExists())
+            modelsOfTestAdmin.map(async (model) => await model.fileExists())
           ),
           iosFilesExist: await Promise.all(
-            modelsOfTestAdmin.map(async model => await model.iosFileExists())
-          )
+            modelsOfTestAdmin.map(async (model) => await model.iosFileExists())
+          ),
+          additionalInfo: {},
+          defaultLang: "pl",
         },
         {
           _id: testUserAndAdmin._id.toString(),
           name: testUserAndAdmin.name,
           email: testUserAndAdmin.email,
           permissions: testUserAndAdmin.permissions,
-          modelIds: modelsOfTestUserAndAdmin.map(model => model._id.toString()),
-          modelNames: modelsOfTestUserAndAdmin.map(model => model.name),
+          modelIds: modelsOfTestUserAndAdmin.map((model) =>
+            model._id.toString()
+          ),
+          modelNames: modelsOfTestUserAndAdmin.map((model) => model.name),
           filesExist: await Promise.all(
             modelsOfTestUserAndAdmin.map(
-              async model => await model.fileExists()
+              async (model) => await model.fileExists()
             )
           ),
           iosFilesExist: await Promise.all(
             modelsOfTestUserAndAdmin.map(
-              async model => await model.iosFileExists()
+              async (model) => await model.iosFileExists()
             )
-          )
+          ),
+          additionalInfo: {},
+          defaultLang: "pl",
         },
         {
           _id: testSuperAdmin._id.toString(),
           name: testSuperAdmin.name,
           email: testSuperAdmin.email,
           permissions: testSuperAdmin.permissions,
-          modelIds: modelsOfTestSuperAdmin.map(model => model._id.toString()),
-          modelNames: modelsOfTestSuperAdmin.map(model => model.name),
+          modelIds: modelsOfTestSuperAdmin.map((model) => model._id.toString()),
+          modelNames: modelsOfTestSuperAdmin.map((model) => model.name),
           filesExist: await Promise.all(
-            modelsOfTestSuperAdmin.map(async model => await model.fileExists())
+            modelsOfTestSuperAdmin.map(
+              async (model) => await model.fileExists()
+            )
           ),
           iosFilesExist: await Promise.all(
             modelsOfTestSuperAdmin.map(
-              async model => await model.iosFileExists()
+              async (model) => await model.iosFileExists()
             )
-          )
-        }
+          ),
+          additionalInfo: {},
+          defaultLang: "pl",
+        },
       ];
 
       //ordering both expected and real body by id
@@ -1865,75 +2399,91 @@ describe("/sidiroar/api/user", () => {
           name: uselessUser.name,
           email: uselessUser.email,
           permissions: uselessUser.permissions,
-          modelIds: modelsOfUselessUser.map(model => model._id.toString()),
-          modelNames: modelsOfUselessUser.map(model => model.name),
+          modelIds: modelsOfUselessUser.map((model) => model._id.toString()),
+          modelNames: modelsOfUselessUser.map((model) => model.name),
           filesExist: await Promise.all(
-            modelsOfUselessUser.map(async model => await model.fileExists())
+            modelsOfUselessUser.map(async (model) => await model.fileExists())
           ),
           iosFilesExist: await Promise.all(
-            modelsOfUselessUser.map(async model => await model.iosFileExists())
-          )
+            modelsOfUselessUser.map(
+              async (model) => await model.iosFileExists()
+            )
+          ),
+          additionalInfo: {},
+          defaultLang: "pl",
         },
         {
           _id: testUser._id.toString(),
           name: testUser.name,
           email: testUser.email,
           permissions: testUser.permissions,
-          modelIds: modelsOfTestUser.map(model => model._id.toString()),
-          modelNames: modelsOfTestUser.map(model => model.name),
+          modelIds: modelsOfTestUser.map((model) => model._id.toString()),
+          modelNames: modelsOfTestUser.map((model) => model.name),
           filesExist: [false, true, false],
           iosFilesExist: await Promise.all(
-            modelsOfTestUser.map(async model => await model.iosFileExists())
-          )
+            modelsOfTestUser.map(async (model) => await model.iosFileExists())
+          ),
+          additionalInfo: {},
+          defaultLang: "pl",
         },
         {
           _id: testAdmin._id.toString(),
           name: testAdmin.name,
           email: testAdmin.email,
           permissions: testAdmin.permissions,
-          modelIds: modelsOfTestAdmin.map(model => model._id.toString()),
-          modelNames: modelsOfTestAdmin.map(model => model.name),
+          modelIds: modelsOfTestAdmin.map((model) => model._id.toString()),
+          modelNames: modelsOfTestAdmin.map((model) => model.name),
           filesExist: await Promise.all(
-            modelsOfTestAdmin.map(async model => await model.fileExists())
+            modelsOfTestAdmin.map(async (model) => await model.fileExists())
           ),
           iosFilesExist: await Promise.all(
-            modelsOfTestAdmin.map(async model => await model.iosFileExists())
-          )
+            modelsOfTestAdmin.map(async (model) => await model.iosFileExists())
+          ),
+          additionalInfo: {},
+          defaultLang: "pl",
         },
         {
           _id: testUserAndAdmin._id.toString(),
           name: testUserAndAdmin.name,
           email: testUserAndAdmin.email,
           permissions: testUserAndAdmin.permissions,
-          modelIds: modelsOfTestUserAndAdmin.map(model => model._id.toString()),
-          modelNames: modelsOfTestUserAndAdmin.map(model => model.name),
+          modelIds: modelsOfTestUserAndAdmin.map((model) =>
+            model._id.toString()
+          ),
+          modelNames: modelsOfTestUserAndAdmin.map((model) => model.name),
           filesExist: await Promise.all(
             modelsOfTestUserAndAdmin.map(
-              async model => await model.fileExists()
+              async (model) => await model.fileExists()
             )
           ),
           iosFilesExist: await Promise.all(
             modelsOfTestUserAndAdmin.map(
-              async model => await model.iosFileExists()
+              async (model) => await model.iosFileExists()
             )
-          )
+          ),
+          additionalInfo: {},
+          defaultLang: "pl",
         },
         {
           _id: testSuperAdmin._id.toString(),
           name: testSuperAdmin.name,
           email: testSuperAdmin.email,
           permissions: testSuperAdmin.permissions,
-          modelIds: modelsOfTestSuperAdmin.map(model => model._id.toString()),
-          modelNames: modelsOfTestSuperAdmin.map(model => model.name),
+          modelIds: modelsOfTestSuperAdmin.map((model) => model._id.toString()),
+          modelNames: modelsOfTestSuperAdmin.map((model) => model.name),
           filesExist: await Promise.all(
-            modelsOfTestSuperAdmin.map(async model => await model.fileExists())
+            modelsOfTestSuperAdmin.map(
+              async (model) => await model.fileExists()
+            )
           ),
           iosFilesExist: await Promise.all(
             modelsOfTestSuperAdmin.map(
-              async model => await model.iosFileExists()
+              async (model) => await model.iosFileExists()
             )
-          )
-        }
+          ),
+          additionalInfo: {},
+          defaultLang: "pl",
+        },
       ];
 
       //ordering both expected and real body by id
@@ -1974,75 +2524,91 @@ describe("/sidiroar/api/user", () => {
           name: uselessUser.name,
           email: uselessUser.email,
           permissions: uselessUser.permissions,
-          modelIds: modelsOfUselessUser.map(model => model._id.toString()),
-          modelNames: modelsOfUselessUser.map(model => model.name),
+          modelIds: modelsOfUselessUser.map((model) => model._id.toString()),
+          modelNames: modelsOfUselessUser.map((model) => model.name),
           filesExist: await Promise.all(
-            modelsOfUselessUser.map(async model => await model.fileExists())
+            modelsOfUselessUser.map(async (model) => await model.fileExists())
           ),
           iosFilesExist: await Promise.all(
-            modelsOfUselessUser.map(async model => await model.iosFileExists())
-          )
+            modelsOfUselessUser.map(
+              async (model) => await model.iosFileExists()
+            )
+          ),
+          additionalInfo: {},
+          defaultLang: "pl",
         },
         {
           _id: testUser._id.toString(),
           name: testUser.name,
           email: testUser.email,
           permissions: testUser.permissions,
-          modelIds: modelsOfTestUser.map(model => model._id.toString()),
-          modelNames: modelsOfTestUser.map(model => model.name),
+          modelIds: modelsOfTestUser.map((model) => model._id.toString()),
+          modelNames: modelsOfTestUser.map((model) => model.name),
           filesExist: await Promise.all(
-            modelsOfTestUser.map(async model => await model.fileExists())
+            modelsOfTestUser.map(async (model) => await model.fileExists())
           ),
-          iosFilesExist: [false, true, false]
+          iosFilesExist: [false, true, false],
+          additionalInfo: {},
+          defaultLang: "pl",
         },
         {
           _id: testAdmin._id.toString(),
           name: testAdmin.name,
           email: testAdmin.email,
           permissions: testAdmin.permissions,
-          modelIds: modelsOfTestAdmin.map(model => model._id.toString()),
-          modelNames: modelsOfTestAdmin.map(model => model.name),
+          modelIds: modelsOfTestAdmin.map((model) => model._id.toString()),
+          modelNames: modelsOfTestAdmin.map((model) => model.name),
           filesExist: await Promise.all(
-            modelsOfTestAdmin.map(async model => await model.fileExists())
+            modelsOfTestAdmin.map(async (model) => await model.fileExists())
           ),
           iosFilesExist: await Promise.all(
-            modelsOfTestAdmin.map(async model => await model.iosFileExists())
-          )
+            modelsOfTestAdmin.map(async (model) => await model.iosFileExists())
+          ),
+          additionalInfo: {},
+          defaultLang: "pl",
         },
         {
           _id: testUserAndAdmin._id.toString(),
           name: testUserAndAdmin.name,
           email: testUserAndAdmin.email,
           permissions: testUserAndAdmin.permissions,
-          modelIds: modelsOfTestUserAndAdmin.map(model => model._id.toString()),
-          modelNames: modelsOfTestUserAndAdmin.map(model => model.name),
+          modelIds: modelsOfTestUserAndAdmin.map((model) =>
+            model._id.toString()
+          ),
+          modelNames: modelsOfTestUserAndAdmin.map((model) => model.name),
           filesExist: await Promise.all(
             modelsOfTestUserAndAdmin.map(
-              async model => await model.fileExists()
+              async (model) => await model.fileExists()
             )
           ),
           iosFilesExist: await Promise.all(
             modelsOfTestUserAndAdmin.map(
-              async model => await model.iosFileExists()
+              async (model) => await model.iosFileExists()
             )
-          )
+          ),
+          additionalInfo: {},
+          defaultLang: "pl",
         },
         {
           _id: testSuperAdmin._id.toString(),
           name: testSuperAdmin.name,
           email: testSuperAdmin.email,
           permissions: testSuperAdmin.permissions,
-          modelIds: modelsOfTestSuperAdmin.map(model => model._id.toString()),
-          modelNames: modelsOfTestSuperAdmin.map(model => model.name),
+          modelIds: modelsOfTestSuperAdmin.map((model) => model._id.toString()),
+          modelNames: modelsOfTestSuperAdmin.map((model) => model.name),
           filesExist: await Promise.all(
-            modelsOfTestSuperAdmin.map(async model => await model.fileExists())
+            modelsOfTestSuperAdmin.map(
+              async (model) => await model.fileExists()
+            )
           ),
           iosFilesExist: await Promise.all(
             modelsOfTestSuperAdmin.map(
-              async model => await model.iosFileExists()
+              async (model) => await model.iosFileExists()
             )
-          )
-        }
+          ),
+          additionalInfo: {},
+          defaultLang: "pl",
+        },
       ];
 
       //ordering both expected and real body by id
@@ -2081,7 +2647,9 @@ describe("/sidiroar/api/user", () => {
           modelIds: [],
           modelNames: [],
           filesExist: [],
-          iosFilesExist: []
+          iosFilesExist: [],
+          additionalInfo: {},
+          defaultLang: "pl",
         },
         {
           _id: testUser._id.toString(),
@@ -2091,7 +2659,9 @@ describe("/sidiroar/api/user", () => {
           modelIds: [],
           modelNames: [],
           filesExist: [],
-          iosFilesExist: []
+          iosFilesExist: [],
+          additionalInfo: {},
+          defaultLang: "pl",
         },
         {
           _id: testAdmin._id.toString(),
@@ -2101,7 +2671,9 @@ describe("/sidiroar/api/user", () => {
           modelIds: [],
           modelNames: [],
           filesExist: [],
-          iosFilesExist: []
+          iosFilesExist: [],
+          additionalInfo: {},
+          defaultLang: "pl",
         },
         {
           _id: testUserAndAdmin._id.toString(),
@@ -2111,7 +2683,9 @@ describe("/sidiroar/api/user", () => {
           modelIds: [],
           modelNames: [],
           filesExist: [],
-          iosFilesExist: []
+          iosFilesExist: [],
+          additionalInfo: {},
+          defaultLang: "pl",
         },
         {
           _id: testSuperAdmin._id.toString(),
@@ -2121,8 +2695,10 @@ describe("/sidiroar/api/user", () => {
           modelIds: [],
           modelNames: [],
           filesExist: [],
-          iosFilesExist: []
-        }
+          iosFilesExist: [],
+          additionalInfo: {},
+          defaultLang: "pl",
+        },
       ];
 
       //ordering both expected and real body by id
@@ -2173,16 +2749,268 @@ describe("/sidiroar/api/user", () => {
           name: testUser.name,
           email: testUser.email,
           permissions: testUser.permissions,
-          modelIds: modelsOfTestUser.map(model => model._id.toString()),
-          modelNames: modelsOfTestUser.map(model => model.name),
+          modelIds: modelsOfTestUser.map((model) => model._id.toString()),
+          modelNames: modelsOfTestUser.map((model) => model.name),
           filesExist: await Promise.all(
-            modelsOfTestUser.map(async model => await model.fileExists())
+            modelsOfTestUser.map(async (model) => await model.fileExists())
           ),
           iosFilesExist: await Promise.all(
-            modelsOfTestUser.map(async model => await model.iosFileExists())
-          )
-        }
+            modelsOfTestUser.map(async (model) => await model.iosFileExists())
+          ),
+          additionalInfo: {},
+          defaultLang: "pl",
+        },
       ]);
+
+      //#endregion CHECKING_RESPONSE
+    });
+
+    it("should return 200 and proper list - if user has an additional info defined", async () => {
+      let info = { key1: "value1", key2: "value2", key3: "value3" };
+
+      testUser.additionalInfo = { ...info };
+
+      await testUser.save();
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(200);
+      expect(response.body).toBeDefined();
+
+      //Body should contain all users payload
+      expect(response.body).toBeDefined();
+
+      //There should be 4 users - useless, normal, admin, and normal+admin and superAdmin
+      expect(response.body.length).toEqual(5);
+
+      let expectedBody = [
+        {
+          _id: uselessUser._id.toString(),
+          name: uselessUser.name,
+          email: uselessUser.email,
+          permissions: uselessUser.permissions,
+          modelIds: modelsOfUselessUser.map((model) => model._id.toString()),
+          modelNames: modelsOfUselessUser.map((model) => model.name),
+          filesExist: await Promise.all(
+            modelsOfUselessUser.map(async (model) => await model.fileExists())
+          ),
+          iosFilesExist: await Promise.all(
+            modelsOfUselessUser.map(
+              async (model) => await model.iosFileExists()
+            )
+          ),
+          additionalInfo: {},
+          defaultLang: "pl",
+        },
+        {
+          _id: testUser._id.toString(),
+          name: testUser.name,
+          email: testUser.email,
+          permissions: testUser.permissions,
+          modelIds: modelsOfTestUser.map((model) => model._id.toString()),
+          modelNames: modelsOfTestUser.map((model) => model.name),
+          filesExist: await Promise.all(
+            modelsOfTestUser.map(async (model) => await model.fileExists())
+          ),
+          iosFilesExist: await Promise.all(
+            modelsOfTestUser.map(async (model) => await model.iosFileExists())
+          ),
+          additionalInfo: info,
+          defaultLang: "pl",
+        },
+        {
+          _id: testAdmin._id.toString(),
+          name: testAdmin.name,
+          email: testAdmin.email,
+          permissions: testAdmin.permissions,
+          modelIds: modelsOfTestAdmin.map((model) => model._id.toString()),
+          modelNames: modelsOfTestAdmin.map((model) => model.name),
+          filesExist: await Promise.all(
+            modelsOfTestAdmin.map(async (model) => await model.fileExists())
+          ),
+          iosFilesExist: await Promise.all(
+            modelsOfTestAdmin.map(async (model) => await model.iosFileExists())
+          ),
+          additionalInfo: {},
+          defaultLang: "pl",
+        },
+        {
+          _id: testUserAndAdmin._id.toString(),
+          name: testUserAndAdmin.name,
+          email: testUserAndAdmin.email,
+          permissions: testUserAndAdmin.permissions,
+          modelIds: modelsOfTestUserAndAdmin.map((model) =>
+            model._id.toString()
+          ),
+          modelNames: modelsOfTestUserAndAdmin.map((model) => model.name),
+          filesExist: await Promise.all(
+            modelsOfTestUserAndAdmin.map(
+              async (model) => await model.fileExists()
+            )
+          ),
+          iosFilesExist: await Promise.all(
+            modelsOfTestUserAndAdmin.map(
+              async (model) => await model.iosFileExists()
+            )
+          ),
+          additionalInfo: {},
+          defaultLang: "pl",
+        },
+        {
+          _id: testSuperAdmin._id.toString(),
+          name: testSuperAdmin.name,
+          email: testSuperAdmin.email,
+          permissions: testSuperAdmin.permissions,
+          modelIds: modelsOfTestSuperAdmin.map((model) => model._id.toString()),
+          modelNames: modelsOfTestSuperAdmin.map((model) => model.name),
+          filesExist: await Promise.all(
+            modelsOfTestSuperAdmin.map(
+              async (model) => await model.fileExists()
+            )
+          ),
+          iosFilesExist: await Promise.all(
+            modelsOfTestSuperAdmin.map(
+              async (model) => await model.iosFileExists()
+            )
+          ),
+          additionalInfo: {},
+          defaultLang: "pl",
+        },
+      ];
+
+      //ordering both expected and real body by id
+      let orderedExpectedBody = _.orderBy(expectedBody, "_id", "asc");
+      let orderedResponseBody = _.orderBy(response.body, "_id", "asc");
+
+      //after sorting - both array should be the same
+      expect(orderedResponseBody).toEqual(orderedExpectedBody);
+
+      //#endregion CHECKING_RESPONSE
+    });
+
+    it("should return 200 and proper list - if user has lang eng info defined", async () => {
+      testUser.defaultLang = "eng";
+
+      await testUser.save();
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(200);
+      expect(response.body).toBeDefined();
+
+      //Body should contain all users payload
+      expect(response.body).toBeDefined();
+
+      //There should be 4 users - useless, normal, admin, and normal+admin and superAdmin
+      expect(response.body.length).toEqual(5);
+
+      let expectedBody = [
+        {
+          _id: uselessUser._id.toString(),
+          name: uselessUser.name,
+          email: uselessUser.email,
+          permissions: uselessUser.permissions,
+          modelIds: modelsOfUselessUser.map((model) => model._id.toString()),
+          modelNames: modelsOfUselessUser.map((model) => model.name),
+          filesExist: await Promise.all(
+            modelsOfUselessUser.map(async (model) => await model.fileExists())
+          ),
+          iosFilesExist: await Promise.all(
+            modelsOfUselessUser.map(
+              async (model) => await model.iosFileExists()
+            )
+          ),
+          additionalInfo: {},
+          defaultLang: "pl",
+        },
+        {
+          _id: testUser._id.toString(),
+          name: testUser.name,
+          email: testUser.email,
+          permissions: testUser.permissions,
+          modelIds: modelsOfTestUser.map((model) => model._id.toString()),
+          modelNames: modelsOfTestUser.map((model) => model.name),
+          filesExist: await Promise.all(
+            modelsOfTestUser.map(async (model) => await model.fileExists())
+          ),
+          iosFilesExist: await Promise.all(
+            modelsOfTestUser.map(async (model) => await model.iosFileExists())
+          ),
+          additionalInfo: {},
+          defaultLang: "eng",
+        },
+        {
+          _id: testAdmin._id.toString(),
+          name: testAdmin.name,
+          email: testAdmin.email,
+          permissions: testAdmin.permissions,
+          modelIds: modelsOfTestAdmin.map((model) => model._id.toString()),
+          modelNames: modelsOfTestAdmin.map((model) => model.name),
+          filesExist: await Promise.all(
+            modelsOfTestAdmin.map(async (model) => await model.fileExists())
+          ),
+          iosFilesExist: await Promise.all(
+            modelsOfTestAdmin.map(async (model) => await model.iosFileExists())
+          ),
+          additionalInfo: {},
+          defaultLang: "pl",
+        },
+        {
+          _id: testUserAndAdmin._id.toString(),
+          name: testUserAndAdmin.name,
+          email: testUserAndAdmin.email,
+          permissions: testUserAndAdmin.permissions,
+          modelIds: modelsOfTestUserAndAdmin.map((model) =>
+            model._id.toString()
+          ),
+          modelNames: modelsOfTestUserAndAdmin.map((model) => model.name),
+          filesExist: await Promise.all(
+            modelsOfTestUserAndAdmin.map(
+              async (model) => await model.fileExists()
+            )
+          ),
+          iosFilesExist: await Promise.all(
+            modelsOfTestUserAndAdmin.map(
+              async (model) => await model.iosFileExists()
+            )
+          ),
+          additionalInfo: {},
+          defaultLang: "pl",
+        },
+        {
+          _id: testSuperAdmin._id.toString(),
+          name: testSuperAdmin.name,
+          email: testSuperAdmin.email,
+          permissions: testSuperAdmin.permissions,
+          modelIds: modelsOfTestSuperAdmin.map((model) => model._id.toString()),
+          modelNames: modelsOfTestSuperAdmin.map((model) => model.name),
+          filesExist: await Promise.all(
+            modelsOfTestSuperAdmin.map(
+              async (model) => await model.fileExists()
+            )
+          ),
+          iosFilesExist: await Promise.all(
+            modelsOfTestSuperAdmin.map(
+              async (model) => await model.iosFileExists()
+            )
+          ),
+          additionalInfo: {},
+          defaultLang: "pl",
+        },
+      ];
+
+      //ordering both expected and real body by id
+      let orderedExpectedBody = _.orderBy(expectedBody, "_id", "asc");
+      let orderedResponseBody = _.orderBy(response.body, "_id", "asc");
+
+      //after sorting - both array should be the same
+      expect(orderedResponseBody).toEqual(orderedExpectedBody);
 
       //#endregion CHECKING_RESPONSE
     });
@@ -2261,77 +3089,93 @@ describe("/sidiroar/api/user", () => {
           name: uselessUser.name,
           email: uselessUser.email,
           permissions: uselessUser.permissions,
-          modelIds: modelsOfUselessUser.map(model => model._id.toString()),
-          modelNames: modelsOfUselessUser.map(model => model.name),
+          modelIds: modelsOfUselessUser.map((model) => model._id.toString()),
+          modelNames: modelsOfUselessUser.map((model) => model.name),
           filesExist: await Promise.all(
-            modelsOfUselessUser.map(async model => await model.fileExists())
+            modelsOfUselessUser.map(async (model) => await model.fileExists())
           ),
           iosFilesExist: await Promise.all(
-            modelsOfUselessUser.map(async model => await model.iosFileExists())
-          )
+            modelsOfUselessUser.map(
+              async (model) => await model.iosFileExists()
+            )
+          ),
+          additionalInfo: {},
+          defaultLang: "pl",
         },
         {
           _id: testUser._id.toString(),
           name: testUser.name,
           email: testUser.email,
           permissions: testUser.permissions,
-          modelIds: modelsOfTestUser.map(model => model._id.toString()),
-          modelNames: modelsOfTestUser.map(model => model.name),
+          modelIds: modelsOfTestUser.map((model) => model._id.toString()),
+          modelNames: modelsOfTestUser.map((model) => model.name),
           filesExist: await Promise.all(
-            modelsOfTestUser.map(async model => await model.fileExists())
+            modelsOfTestUser.map(async (model) => await model.fileExists())
           ),
           iosFilesExist: await Promise.all(
-            modelsOfTestUser.map(async model => await model.iosFileExists())
-          )
+            modelsOfTestUser.map(async (model) => await model.iosFileExists())
+          ),
+          additionalInfo: {},
+          defaultLang: "pl",
         },
         {
           _id: testAdmin._id.toString(),
           name: testAdmin.name,
           email: testAdmin.email,
           permissions: testAdmin.permissions,
-          modelIds: modelsOfTestAdmin.map(model => model._id.toString()),
-          modelNames: modelsOfTestAdmin.map(model => model.name),
+          modelIds: modelsOfTestAdmin.map((model) => model._id.toString()),
+          modelNames: modelsOfTestAdmin.map((model) => model.name),
           filesExist: await Promise.all(
-            modelsOfTestAdmin.map(async model => await model.fileExists())
+            modelsOfTestAdmin.map(async (model) => await model.fileExists())
           ),
           iosFilesExist: await Promise.all(
-            modelsOfTestAdmin.map(async model => await model.iosFileExists())
-          )
+            modelsOfTestAdmin.map(async (model) => await model.iosFileExists())
+          ),
+          additionalInfo: {},
+          defaultLang: "pl",
         },
         {
           _id: testUserAndAdmin._id.toString(),
           name: testUserAndAdmin.name,
           email: testUserAndAdmin.email,
           permissions: testUserAndAdmin.permissions,
-          modelIds: modelsOfTestUserAndAdmin.map(model => model._id.toString()),
-          modelNames: modelsOfTestUserAndAdmin.map(model => model.name),
+          modelIds: modelsOfTestUserAndAdmin.map((model) =>
+            model._id.toString()
+          ),
+          modelNames: modelsOfTestUserAndAdmin.map((model) => model.name),
           filesExist: await Promise.all(
             modelsOfTestUserAndAdmin.map(
-              async model => await model.fileExists()
+              async (model) => await model.fileExists()
             )
           ),
           iosFilesExist: await Promise.all(
             modelsOfTestUserAndAdmin.map(
-              async model => await model.iosFileExists()
+              async (model) => await model.iosFileExists()
             )
-          )
+          ),
+          additionalInfo: {},
+          defaultLang: "pl",
         },
         {
           _id: testSuperAdmin._id.toString(),
           name: testSuperAdmin.name,
           email: testSuperAdmin.email,
           permissions: testSuperAdmin.permissions,
-          modelIds: modelsOfTestSuperAdmin.map(model => model._id.toString()),
-          modelNames: modelsOfTestSuperAdmin.map(model => model.name),
+          modelIds: modelsOfTestSuperAdmin.map((model) => model._id.toString()),
+          modelNames: modelsOfTestSuperAdmin.map((model) => model.name),
           filesExist: await Promise.all(
-            modelsOfTestSuperAdmin.map(async model => await model.fileExists())
+            modelsOfTestSuperAdmin.map(
+              async (model) => await model.fileExists()
+            )
           ),
           iosFilesExist: await Promise.all(
             modelsOfTestSuperAdmin.map(
-              async model => await model.iosFileExists()
+              async (model) => await model.iosFileExists()
             )
-          )
-        }
+          ),
+          additionalInfo: {},
+          defaultLang: "pl",
+        },
       ];
 
       //ordering both expected and real body by id
@@ -2373,7 +3217,7 @@ describe("/sidiroar/api/user", () => {
         _id: testAdmin._id,
         email: testAdmin.email,
         name: testAdmin.name,
-        permissions: testAdmin.permissions
+        permissions: testAdmin.permissions,
       };
 
       jwt = await jsonWebToken.sign(fakeUserPayload, "differentTestPrivateKey");
@@ -2407,10 +3251,7 @@ describe("/sidiroar/api/user", () => {
           .get(`/sidiroar/api/user/${id}`)
           .set(config.get("tokenHeader"), jwt)
           .send();
-      else
-        return request(server)
-          .get(`/sidiroar/api/user/${id}`)
-          .send();
+      else return request(server).get(`/sidiroar/api/user/${id}`).send();
     };
 
     it("should return 200 and user of given id - if user exists", async () => {
@@ -2424,14 +3265,16 @@ describe("/sidiroar/api/user", () => {
         name: testUser.name,
         email: testUser.email,
         permissions: testUser.permissions,
-        modelIds: modelsOfTestUser.map(model => model._id.toString()),
-        modelNames: modelsOfTestUser.map(model => model.name),
+        modelIds: modelsOfTestUser.map((model) => model._id.toString()),
+        modelNames: modelsOfTestUser.map((model) => model.name),
         filesExist: await Promise.all(
-          modelsOfTestUser.map(async model => await model.fileExists())
+          modelsOfTestUser.map(async (model) => await model.fileExists())
         ),
         iosFilesExist: await Promise.all(
-          modelsOfTestUser.map(async model => await model.iosFileExists())
-        )
+          modelsOfTestUser.map(async (model) => await model.iosFileExists())
+        ),
+        additionalInfo: {},
+        defaultLang: "pl",
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -2455,12 +3298,14 @@ describe("/sidiroar/api/user", () => {
         name: testUser.name,
         email: testUser.email,
         permissions: testUser.permissions,
-        modelIds: modelsOfTestUser.map(model => model._id.toString()),
-        modelNames: modelsOfTestUser.map(model => model.name),
+        modelIds: modelsOfTestUser.map((model) => model._id.toString()),
+        modelNames: modelsOfTestUser.map((model) => model.name),
         filesExist: [false, true, false],
         iosFilesExist: await Promise.all(
-          modelsOfTestUser.map(async model => await model.iosFileExists())
-        )
+          modelsOfTestUser.map(async (model) => await model.iosFileExists())
+        ),
+        additionalInfo: {},
+        defaultLang: "pl",
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -2484,14 +3329,16 @@ describe("/sidiroar/api/user", () => {
         name: testUser.name,
         email: testUser.email,
         permissions: testUser.permissions,
-        modelIds: modelsOfTestUser.map(model => model._id.toString()),
-        modelNames: modelsOfTestUser.map(model => model.name),
+        modelIds: modelsOfTestUser.map((model) => model._id.toString()),
+        modelNames: modelsOfTestUser.map((model) => model.name),
         filesExist: await Promise.all(
-          modelsOfTestUser.map(async model => await model.fileExists())
+          modelsOfTestUser.map(async (model) => await model.fileExists())
         ),
         iosFilesExist: await Promise.all(
-          modelsOfTestUser.map(async model => await model.iosFileExists())
-        )
+          modelsOfTestUser.map(async (model) => await model.iosFileExists())
+        ),
+        additionalInfo: {},
+        defaultLang: "pl",
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -2513,7 +3360,71 @@ describe("/sidiroar/api/user", () => {
         modelIds: [],
         modelNames: [],
         filesExist: [],
-        iosFilesExist: []
+        iosFilesExist: [],
+        additionalInfo: {},
+        defaultLang: "pl",
+      };
+
+      expect(response.body).toEqual(expectedPayload);
+    });
+
+    it("should return 200 and user of given id - if user exists and has additional info defined", async () => {
+      let info = { key1: "value1", key2: "value2", key3: "value3" };
+
+      testUser.additionalInfo = { ...info };
+
+      await testUser.save();
+
+      let response = await exec();
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(200);
+
+      let expectedPayload = {
+        _id: testUser._id.toString(),
+        name: testUser.name,
+        email: testUser.email,
+        permissions: testUser.permissions,
+        modelIds: modelsOfTestUser.map((model) => model._id.toString()),
+        modelNames: modelsOfTestUser.map((model) => model.name),
+        filesExist: await Promise.all(
+          modelsOfTestUser.map(async (model) => await model.fileExists())
+        ),
+        iosFilesExist: await Promise.all(
+          modelsOfTestUser.map(async (model) => await model.iosFileExists())
+        ),
+        additionalInfo: info,
+        defaultLang: "pl",
+      };
+
+      expect(response.body).toEqual(expectedPayload);
+    });
+
+    it("should return 200 and user of given id - if user exists and has default lang as eng", async () => {
+      testUser.defaultLang = "eng";
+
+      await testUser.save();
+
+      let response = await exec();
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(200);
+
+      let expectedPayload = {
+        _id: testUser._id.toString(),
+        name: testUser.name,
+        email: testUser.email,
+        permissions: testUser.permissions,
+        modelIds: modelsOfTestUser.map((model) => model._id.toString()),
+        modelNames: modelsOfTestUser.map((model) => model.name),
+        filesExist: await Promise.all(
+          modelsOfTestUser.map(async (model) => await model.fileExists())
+        ),
+        iosFilesExist: await Promise.all(
+          modelsOfTestUser.map(async (model) => await model.iosFileExists())
+        ),
+        additionalInfo: {},
+        defaultLang: "eng",
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -2617,14 +3528,16 @@ describe("/sidiroar/api/user", () => {
         name: testUser.name,
         email: testUser.email,
         permissions: testUser.permissions,
-        modelIds: modelsOfTestUser.map(model => model._id.toString()),
-        modelNames: modelsOfTestUser.map(model => model.name),
+        modelIds: modelsOfTestUser.map((model) => model._id.toString()),
+        modelNames: modelsOfTestUser.map((model) => model.name),
         filesExist: await Promise.all(
-          modelsOfTestUser.map(async model => await model.fileExists())
+          modelsOfTestUser.map(async (model) => await model.fileExists())
         ),
         iosFilesExist: await Promise.all(
-          modelsOfTestUser.map(async model => await model.iosFileExists())
-        )
+          modelsOfTestUser.map(async (model) => await model.iosFileExists())
+        ),
+        additionalInfo: {},
+        defaultLang: "pl",
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -2661,7 +3574,7 @@ describe("/sidiroar/api/user", () => {
         _id: testAdmin._id,
         email: testAdmin.email,
         name: testAdmin.name,
-        permissions: testAdmin.permissions
+        permissions: testAdmin.permissions,
       };
 
       jwt = await jsonWebToken.sign(fakeUserPayload, "differentTestPrivateKey");
@@ -2695,10 +3608,7 @@ describe("/sidiroar/api/user", () => {
           .delete(`/sidiroar/api/user/${id}`)
           .set(config.get("tokenHeader"), jwt)
           .send();
-      else
-        return request(server)
-          .delete(`/sidiroar/api/user/${id}`)
-          .send();
+      else return request(server).delete(`/sidiroar/api/user/${id}`).send();
     };
 
     it("should return 200, delete user, its models and return it - if user exists", async () => {
@@ -2714,14 +3624,16 @@ describe("/sidiroar/api/user", () => {
         name: testUser.name,
         email: testUser.email,
         permissions: testUser.permissions,
-        modelIds: modelsOfTestUser.map(model => model._id.toString()),
-        modelNames: modelsOfTestUser.map(model => model.name),
+        modelIds: modelsOfTestUser.map((model) => model._id.toString()),
+        modelNames: modelsOfTestUser.map((model) => model.name),
         filesExist: await Promise.all(
-          modelsOfTestUser.map(async model => await model.fileExists())
+          modelsOfTestUser.map(async (model) => await model.fileExists())
         ),
         iosFilesExist: await Promise.all(
-          modelsOfTestUser.map(async model => await model.iosFileExists())
-        )
+          modelsOfTestUser.map(async (model) => await model.iosFileExists())
+        ),
+        additionalInfo: {},
+        defaultLang: "pl",
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -2732,8 +3644,8 @@ describe("/sidiroar/api/user", () => {
 
       //Database should contain all user except deleted one (testUser)
       let idOfAllUsers = _.sortBy(
-        (await User.find({})).map(user => user._id.toString()),
-        id => id
+        (await User.find({})).map((user) => user._id.toString()),
+        (id) => id
       );
 
       let expectedUserIds = _.sortBy(
@@ -2741,17 +3653,17 @@ describe("/sidiroar/api/user", () => {
           uselessUser._id.toString(),
           testAdmin._id.toString(),
           testUserAndAdmin._id.toString(),
-          testSuperAdmin._id.toString()
+          testSuperAdmin._id.toString(),
         ],
-        id => id
+        (id) => id
       );
 
       expect(idOfAllUsers).toEqual(expectedUserIds);
 
       //Database should contain all models except models of deleted user (testUser)
       let idOfAllModels = _.sortBy(
-        (await Model.find({})).map(model => model._id.toString()),
-        id => id
+        (await Model.find({})).map((model) => model._id.toString()),
+        (id) => id
       );
 
       let expectedModelIds = _.sortBy(
@@ -2759,9 +3671,9 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfUselessUser,
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
-          ...modelsOfTestSuperAdmin
-        ].map(user => user._id.toString()),
-        id => id
+          ...modelsOfTestSuperAdmin,
+        ].map((user) => user._id.toString()),
+        (id) => id
       );
 
       expect(idOfAllModels).toEqual(expectedModelIds);
@@ -2788,7 +3700,9 @@ describe("/sidiroar/api/user", () => {
         modelIds: [],
         modelNames: [],
         filesExist: [],
-        iosFilesExist: []
+        iosFilesExist: [],
+        additionalInfo: {},
+        defaultLang: "pl",
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -2799,8 +3713,8 @@ describe("/sidiroar/api/user", () => {
 
       //Database should contain all user except deleted one (testUser)
       let idOfAllUsers = _.sortBy(
-        (await User.find({})).map(user => user._id.toString()),
-        id => id
+        (await User.find({})).map((user) => user._id.toString()),
+        (id) => id
       );
 
       let expectedUserIds = _.sortBy(
@@ -2808,17 +3722,17 @@ describe("/sidiroar/api/user", () => {
           uselessUser._id.toString(),
           testAdmin._id.toString(),
           testUserAndAdmin._id.toString(),
-          testSuperAdmin._id.toString()
+          testSuperAdmin._id.toString(),
         ],
-        id => id
+        (id) => id
       );
 
       expect(idOfAllUsers).toEqual(expectedUserIds);
 
       //Database should contain all models except models of deleted user (testUser)
       let idOfAllModels = _.sortBy(
-        (await Model.find({})).map(model => model._id.toString()),
-        id => id
+        (await Model.find({})).map((model) => model._id.toString()),
+        (id) => id
       );
 
       let expectedModelIds = _.sortBy(
@@ -2826,9 +3740,9 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfUselessUser,
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
-          ...modelsOfTestSuperAdmin
-        ].map(user => user._id.toString()),
-        id => id
+          ...modelsOfTestSuperAdmin,
+        ].map((user) => user._id.toString()),
+        (id) => id
       );
 
       expect(idOfAllModels).toEqual(expectedModelIds);
@@ -2871,8 +3785,8 @@ describe("/sidiroar/api/user", () => {
 
       //Database should contain all users - nothing should be deleted
       let idOfAllUsers = _.sortBy(
-        (await User.find({})).map(user => user._id.toString()),
-        id => id
+        (await User.find({})).map((user) => user._id.toString()),
+        (id) => id
       );
 
       let expectedUserIds = _.sortBy(
@@ -2881,17 +3795,17 @@ describe("/sidiroar/api/user", () => {
           testUser._id.toString(),
           testAdmin._id.toString(),
           testUserAndAdmin._id.toString(),
-          testSuperAdmin._id.toString()
+          testSuperAdmin._id.toString(),
         ],
-        id => id
+        (id) => id
       );
 
       expect(idOfAllUsers).toEqual(expectedUserIds);
 
       //Database should contain all models - nothing should be deleted
       let idOfAllModels = _.sortBy(
-        (await Model.find({})).map(model => model._id.toString()),
-        id => id
+        (await Model.find({})).map((model) => model._id.toString()),
+        (id) => id
       );
 
       let expectedModelIds = _.sortBy(
@@ -2900,9 +3814,9 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
           ...modelsOfTestUser,
-          ...modelsOfTestSuperAdmin
-        ].map(user => user._id.toString()),
-        id => id
+          ...modelsOfTestSuperAdmin,
+        ].map((user) => user._id.toString()),
+        (id) => id
       );
 
       expect(idOfAllModels).toEqual(expectedModelIds);
@@ -2924,8 +3838,8 @@ describe("/sidiroar/api/user", () => {
 
       //Database should contain all users - nothing should be deleted
       let idOfAllUsers = _.sortBy(
-        (await User.find({})).map(user => user._id.toString()),
-        id => id
+        (await User.find({})).map((user) => user._id.toString()),
+        (id) => id
       );
 
       let expectedUserIds = _.sortBy(
@@ -2934,17 +3848,17 @@ describe("/sidiroar/api/user", () => {
           testUser._id.toString(),
           testAdmin._id.toString(),
           testUserAndAdmin._id.toString(),
-          testSuperAdmin._id.toString()
+          testSuperAdmin._id.toString(),
         ],
-        id => id
+        (id) => id
       );
 
       expect(idOfAllUsers).toEqual(expectedUserIds);
 
       //Database should contain all models - nothing should be deleted
       let idOfAllModels = _.sortBy(
-        (await Model.find({})).map(model => model._id.toString()),
-        id => id
+        (await Model.find({})).map((model) => model._id.toString()),
+        (id) => id
       );
 
       let expectedModelIds = _.sortBy(
@@ -2953,9 +3867,9 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
           ...modelsOfTestUser,
-          ...modelsOfTestSuperAdmin
-        ].map(user => user._id.toString()),
-        id => id
+          ...modelsOfTestSuperAdmin,
+        ].map((user) => user._id.toString()),
+        (id) => id
       );
 
       expect(idOfAllModels).toEqual(expectedModelIds);
@@ -2977,8 +3891,8 @@ describe("/sidiroar/api/user", () => {
 
       //Database should contain all users - nothing should be deleted
       let idOfAllUsers = _.sortBy(
-        (await User.find({})).map(user => user._id.toString()),
-        id => id
+        (await User.find({})).map((user) => user._id.toString()),
+        (id) => id
       );
 
       let expectedUserIds = _.sortBy(
@@ -2987,17 +3901,17 @@ describe("/sidiroar/api/user", () => {
           testUser._id.toString(),
           testAdmin._id.toString(),
           testUserAndAdmin._id.toString(),
-          testSuperAdmin._id.toString()
+          testSuperAdmin._id.toString(),
         ],
-        id => id
+        (id) => id
       );
 
       expect(idOfAllUsers).toEqual(expectedUserIds);
 
       //Database should contain all models - nothing should be deleted
       let idOfAllModels = _.sortBy(
-        (await Model.find({})).map(model => model._id.toString()),
-        id => id
+        (await Model.find({})).map((model) => model._id.toString()),
+        (id) => id
       );
 
       let expectedModelIds = _.sortBy(
@@ -3006,9 +3920,9 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
           ...modelsOfTestUser,
-          ...modelsOfTestSuperAdmin
-        ].map(user => user._id.toString()),
-        id => id
+          ...modelsOfTestSuperAdmin,
+        ].map((user) => user._id.toString()),
+        (id) => id
       );
 
       expect(idOfAllModels).toEqual(expectedModelIds);
@@ -3034,8 +3948,8 @@ describe("/sidiroar/api/user", () => {
 
       //Database should contain all users - nothing should be deleted
       let idOfAllUsers = _.sortBy(
-        (await User.find({})).map(user => user._id.toString()),
-        id => id
+        (await User.find({})).map((user) => user._id.toString()),
+        (id) => id
       );
 
       let expectedUserIds = _.sortBy(
@@ -3044,17 +3958,17 @@ describe("/sidiroar/api/user", () => {
           testUser._id.toString(),
           testAdmin._id.toString(),
           testUserAndAdmin._id.toString(),
-          testSuperAdmin._id.toString()
+          testSuperAdmin._id.toString(),
         ],
-        id => id
+        (id) => id
       );
 
       expect(idOfAllUsers).toEqual(expectedUserIds);
 
       //Database should contain all models - nothing should be deleted
       let idOfAllModels = _.sortBy(
-        (await Model.find({})).map(model => model._id.toString()),
-        id => id
+        (await Model.find({})).map((model) => model._id.toString()),
+        (id) => id
       );
 
       let expectedModelIds = _.sortBy(
@@ -3063,9 +3977,9 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
           ...modelsOfTestUser,
-          ...modelsOfTestSuperAdmin
-        ].map(user => user._id.toString()),
-        id => id
+          ...modelsOfTestSuperAdmin,
+        ].map((user) => user._id.toString()),
+        (id) => id
       );
 
       expect(idOfAllModels).toEqual(expectedModelIds);
@@ -3091,8 +4005,8 @@ describe("/sidiroar/api/user", () => {
 
       //Database should contain all users - nothing should be deleted
       let idOfAllUsers = _.sortBy(
-        (await User.find({})).map(user => user._id.toString()),
-        id => id
+        (await User.find({})).map((user) => user._id.toString()),
+        (id) => id
       );
 
       let expectedUserIds = _.sortBy(
@@ -3101,17 +4015,17 @@ describe("/sidiroar/api/user", () => {
           testUser._id.toString(),
           testAdmin._id.toString(),
           testUserAndAdmin._id.toString(),
-          testSuperAdmin._id.toString()
+          testSuperAdmin._id.toString(),
         ],
-        id => id
+        (id) => id
       );
 
       expect(idOfAllUsers).toEqual(expectedUserIds);
 
       //Database should contain all models - nothing should be deleted
       let idOfAllModels = _.sortBy(
-        (await Model.find({})).map(model => model._id.toString()),
-        id => id
+        (await Model.find({})).map((model) => model._id.toString()),
+        (id) => id
       );
 
       let expectedModelIds = _.sortBy(
@@ -3120,9 +4034,9 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
           ...modelsOfTestUser,
-          ...modelsOfTestSuperAdmin
-        ].map(user => user._id.toString()),
-        id => id
+          ...modelsOfTestSuperAdmin,
+        ].map((user) => user._id.toString()),
+        (id) => id
       );
 
       expect(idOfAllModels).toEqual(expectedModelIds);
@@ -3148,8 +4062,8 @@ describe("/sidiroar/api/user", () => {
 
       //Database should contain all users - nothing should be deleted
       let idOfAllUsers = _.sortBy(
-        (await User.find({})).map(user => user._id.toString()),
-        id => id
+        (await User.find({})).map((user) => user._id.toString()),
+        (id) => id
       );
 
       let expectedUserIds = _.sortBy(
@@ -3158,17 +4072,17 @@ describe("/sidiroar/api/user", () => {
           testUser._id.toString(),
           testAdmin._id.toString(),
           testUserAndAdmin._id.toString(),
-          testSuperAdmin._id.toString()
+          testSuperAdmin._id.toString(),
         ],
-        id => id
+        (id) => id
       );
 
       expect(idOfAllUsers).toEqual(expectedUserIds);
 
       //Database should contain all models - nothing should be deleted
       let idOfAllModels = _.sortBy(
-        (await Model.find({})).map(model => model._id.toString()),
-        id => id
+        (await Model.find({})).map((model) => model._id.toString()),
+        (id) => id
       );
 
       let expectedModelIds = _.sortBy(
@@ -3177,9 +4091,9 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
           ...modelsOfTestUser,
-          ...modelsOfTestSuperAdmin
-        ].map(user => user._id.toString()),
-        id => id
+          ...modelsOfTestSuperAdmin,
+        ].map((user) => user._id.toString()),
+        (id) => id
       );
 
       expect(idOfAllModels).toEqual(expectedModelIds);
@@ -3202,14 +4116,16 @@ describe("/sidiroar/api/user", () => {
         name: testUser.name,
         email: testUser.email,
         permissions: testUser.permissions,
-        modelIds: modelsOfTestUser.map(model => model._id.toString()),
-        modelNames: modelsOfTestUser.map(model => model.name),
+        modelIds: modelsOfTestUser.map((model) => model._id.toString()),
+        modelNames: modelsOfTestUser.map((model) => model.name),
         filesExist: await Promise.all(
-          modelsOfTestUser.map(async model => await model.fileExists())
+          modelsOfTestUser.map(async (model) => await model.fileExists())
         ),
         iosFilesExist: await Promise.all(
-          modelsOfTestUser.map(async model => await model.iosFileExists())
-        )
+          modelsOfTestUser.map(async (model) => await model.iosFileExists())
+        ),
+        additionalInfo: {},
+        defaultLang: "pl",
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -3235,8 +4151,8 @@ describe("/sidiroar/api/user", () => {
 
       //Database should contain all users - nothing should be deleted
       let idOfAllUsers = _.sortBy(
-        (await User.find({})).map(user => user._id.toString()),
-        id => id
+        (await User.find({})).map((user) => user._id.toString()),
+        (id) => id
       );
 
       let expectedUserIds = _.sortBy(
@@ -3245,17 +4161,17 @@ describe("/sidiroar/api/user", () => {
           testUser._id.toString(),
           testAdmin._id.toString(),
           testUserAndAdmin._id.toString(),
-          testSuperAdmin._id.toString()
+          testSuperAdmin._id.toString(),
         ],
-        id => id
+        (id) => id
       );
 
       expect(idOfAllUsers).toEqual(expectedUserIds);
 
       //Database should contain all models - nothing should be deleted
       let idOfAllModels = _.sortBy(
-        (await Model.find({})).map(model => model._id.toString()),
-        id => id
+        (await Model.find({})).map((model) => model._id.toString()),
+        (id) => id
       );
 
       let expectedModelIds = _.sortBy(
@@ -3264,9 +4180,9 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
           ...modelsOfTestUser,
-          ...modelsOfTestSuperAdmin
-        ].map(user => user._id.toString()),
-        id => id
+          ...modelsOfTestSuperAdmin,
+        ].map((user) => user._id.toString()),
+        (id) => id
       );
 
       expect(idOfAllModels).toEqual(expectedModelIds);
@@ -3279,7 +4195,7 @@ describe("/sidiroar/api/user", () => {
         _id: testAdmin._id,
         email: testAdmin.email,
         name: testAdmin.name,
-        permissions: testAdmin.permissions
+        permissions: testAdmin.permissions,
       };
 
       jwt = await jsonWebToken.sign(fakeUserPayload, "differentTestPrivateKey");
@@ -3299,8 +4215,8 @@ describe("/sidiroar/api/user", () => {
 
       //Database should contain all users - nothing should be deleted
       let idOfAllUsers = _.sortBy(
-        (await User.find({})).map(user => user._id.toString()),
-        id => id
+        (await User.find({})).map((user) => user._id.toString()),
+        (id) => id
       );
 
       let expectedUserIds = _.sortBy(
@@ -3309,17 +4225,17 @@ describe("/sidiroar/api/user", () => {
           testUser._id.toString(),
           testAdmin._id.toString(),
           testUserAndAdmin._id.toString(),
-          testSuperAdmin._id.toString()
+          testSuperAdmin._id.toString(),
         ],
-        id => id
+        (id) => id
       );
 
       expect(idOfAllUsers).toEqual(expectedUserIds);
 
       //Database should contain all models - nothing should be deleted
       let idOfAllModels = _.sortBy(
-        (await Model.find({})).map(model => model._id.toString()),
-        id => id
+        (await Model.find({})).map((model) => model._id.toString()),
+        (id) => id
       );
 
       let expectedModelIds = _.sortBy(
@@ -3328,9 +4244,9 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
           ...modelsOfTestUser,
-          ...modelsOfTestSuperAdmin
-        ].map(user => user._id.toString()),
-        id => id
+          ...modelsOfTestSuperAdmin,
+        ].map((user) => user._id.toString()),
+        (id) => id
       );
 
       expect(idOfAllModels).toEqual(expectedModelIds);
@@ -3359,8 +4275,8 @@ describe("/sidiroar/api/user", () => {
 
       //Database should contain all users - nothing should be deleted
       let idOfAllUsers = _.sortBy(
-        (await User.find({})).map(user => user._id.toString()),
-        id => id
+        (await User.find({})).map((user) => user._id.toString()),
+        (id) => id
       );
 
       let expectedUserIds = _.sortBy(
@@ -3369,17 +4285,17 @@ describe("/sidiroar/api/user", () => {
           testUser._id.toString(),
           testAdmin._id.toString(),
           testUserAndAdmin._id.toString(),
-          testSuperAdmin._id.toString()
+          testSuperAdmin._id.toString(),
         ],
-        id => id
+        (id) => id
       );
 
       expect(idOfAllUsers).toEqual(expectedUserIds);
 
       //Database should contain all models - nothing should be deleted
       let idOfAllModels = _.sortBy(
-        (await Model.find({})).map(model => model._id.toString()),
-        id => id
+        (await Model.find({})).map((model) => model._id.toString()),
+        (id) => id
       );
 
       let expectedModelIds = _.sortBy(
@@ -3388,9 +4304,9 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
           ...modelsOfTestUser,
-          ...modelsOfTestSuperAdmin
-        ].map(user => user._id.toString()),
-        id => id
+          ...modelsOfTestSuperAdmin,
+        ].map((user) => user._id.toString()),
+        (id) => id
       );
 
       expect(idOfAllModels).toEqual(expectedModelIds);
@@ -3414,14 +4330,18 @@ describe("/sidiroar/api/user", () => {
         name: testUserAndAdmin.name,
         email: testUserAndAdmin.email,
         permissions: testUserAndAdmin.permissions,
-        modelIds: modelsOfTestUserAndAdmin.map(model => model._id.toString()),
-        modelNames: modelsOfTestUserAndAdmin.map(model => model.name),
+        modelIds: modelsOfTestUserAndAdmin.map((model) => model._id.toString()),
+        modelNames: modelsOfTestUserAndAdmin.map((model) => model.name),
         filesExist: await Promise.all(
-          modelsOfTestUserAndAdmin.map(async model => await model.fileExists())
+          modelsOfTestUserAndAdmin.map(
+            async (model) => await model.fileExists()
+          )
         ),
         iosFilesExist: await Promise.all(
-          modelsOfTestUser.map(async model => await model.iosFileExists())
-        )
+          modelsOfTestUser.map(async (model) => await model.iosFileExists())
+        ),
+        additionalInfo: {},
+        defaultLang: "pl",
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -3432,8 +4352,8 @@ describe("/sidiroar/api/user", () => {
 
       //Database should contain all user except deleted one (testUser)
       let idOfAllUsers = _.sortBy(
-        (await User.find({})).map(user => user._id.toString()),
-        id => id
+        (await User.find({})).map((user) => user._id.toString()),
+        (id) => id
       );
 
       let expectedUserIds = _.sortBy(
@@ -3441,17 +4361,17 @@ describe("/sidiroar/api/user", () => {
           uselessUser._id.toString(),
           testUser._id.toString(),
           testAdmin._id.toString(),
-          testSuperAdmin._id.toString()
+          testSuperAdmin._id.toString(),
         ],
-        id => id
+        (id) => id
       );
 
       expect(idOfAllUsers).toEqual(expectedUserIds);
 
       //Database should contain all models except models of deleted user (testUser)
       let idOfAllModels = _.sortBy(
-        (await Model.find({})).map(model => model._id.toString()),
-        id => id
+        (await Model.find({})).map((model) => model._id.toString()),
+        (id) => id
       );
 
       let expectedModelIds = _.sortBy(
@@ -3459,9 +4379,9 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfUselessUser,
           ...modelsOfTestAdmin,
           ...modelsOfTestUser,
-          ...modelsOfTestSuperAdmin
-        ].map(user => user._id.toString()),
-        id => id
+          ...modelsOfTestSuperAdmin,
+        ].map((user) => user._id.toString()),
+        (id) => id
       );
 
       expect(idOfAllModels).toEqual(expectedModelIds);
@@ -3490,8 +4410,8 @@ describe("/sidiroar/api/user", () => {
 
       //Database should contain all users - nothing should be deleted
       let idOfAllUsers = _.sortBy(
-        (await User.find({})).map(user => user._id.toString()),
-        id => id
+        (await User.find({})).map((user) => user._id.toString()),
+        (id) => id
       );
 
       let expectedUserIds = _.sortBy(
@@ -3500,17 +4420,17 @@ describe("/sidiroar/api/user", () => {
           testUser._id.toString(),
           testAdmin._id.toString(),
           testUserAndAdmin._id.toString(),
-          testSuperAdmin._id.toString()
+          testSuperAdmin._id.toString(),
         ],
-        id => id
+        (id) => id
       );
 
       expect(idOfAllUsers).toEqual(expectedUserIds);
 
       //Database should contain all models - nothing should be deleted
       let idOfAllModels = _.sortBy(
-        (await Model.find({})).map(model => model._id.toString()),
-        id => id
+        (await Model.find({})).map((model) => model._id.toString()),
+        (id) => id
       );
 
       let expectedModelIds = _.sortBy(
@@ -3519,9 +4439,9 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
           ...modelsOfTestUser,
-          ...modelsOfTestSuperAdmin
-        ].map(user => user._id.toString()),
-        id => id
+          ...modelsOfTestSuperAdmin,
+        ].map((user) => user._id.toString()),
+        (id) => id
       );
 
       expect(idOfAllModels).toEqual(expectedModelIds);
@@ -3545,14 +4465,16 @@ describe("/sidiroar/api/user", () => {
         name: testSuperAdmin.name,
         email: testSuperAdmin.email,
         permissions: testSuperAdmin.permissions,
-        modelIds: modelsOfTestSuperAdmin.map(model => model._id.toString()),
-        modelNames: modelsOfTestSuperAdmin.map(model => model.name),
+        modelIds: modelsOfTestSuperAdmin.map((model) => model._id.toString()),
+        modelNames: modelsOfTestSuperAdmin.map((model) => model.name),
         filesExist: await Promise.all(
-          modelsOfTestSuperAdmin.map(async model => await model.fileExists())
+          modelsOfTestSuperAdmin.map(async (model) => await model.fileExists())
         ),
         iosFilesExist: await Promise.all(
-          modelsOfTestUser.map(async model => await model.iosFileExists())
-        )
+          modelsOfTestUser.map(async (model) => await model.iosFileExists())
+        ),
+        additionalInfo: {},
+        defaultLang: "pl",
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -3563,8 +4485,8 @@ describe("/sidiroar/api/user", () => {
 
       //Database should contain all user except deleted one (testUser)
       let idOfAllUsers = _.sortBy(
-        (await User.find({})).map(user => user._id.toString()),
-        id => id
+        (await User.find({})).map((user) => user._id.toString()),
+        (id) => id
       );
 
       let expectedUserIds = _.sortBy(
@@ -3572,17 +4494,17 @@ describe("/sidiroar/api/user", () => {
           uselessUser._id.toString(),
           testUser._id.toString(),
           testUserAndAdmin._id.toString(),
-          testAdmin._id.toString()
+          testAdmin._id.toString(),
         ],
-        id => id
+        (id) => id
       );
 
       expect(idOfAllUsers).toEqual(expectedUserIds);
 
       //Database should contain all models except models of deleted user (testUser)
       let idOfAllModels = _.sortBy(
-        (await Model.find({})).map(model => model._id.toString()),
-        id => id
+        (await Model.find({})).map((model) => model._id.toString()),
+        (id) => id
       );
 
       let expectedModelIds = _.sortBy(
@@ -3590,9 +4512,9 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfUselessUser,
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
-          ...modelsOfTestUser
-        ].map(user => user._id.toString()),
-        id => id
+          ...modelsOfTestUser,
+        ].map((user) => user._id.toString()),
+        (id) => id
       );
 
       expect(idOfAllModels).toEqual(expectedModelIds);
@@ -3614,7 +4536,9 @@ describe("/sidiroar/api/user", () => {
         email: testUser.email,
         name: "editedTestUser",
         permissions: 0,
-        password: "9876"
+        password: "9876",
+        additionalInfo: { key1: "value1", key2: "value2", key3: "value3" },
+        defaultLang: "eng",
       };
     });
 
@@ -3643,14 +4567,16 @@ describe("/sidiroar/api/user", () => {
         name: requestPayload.name,
         email: requestPayload.email,
         permissions: requestPayload.permissions,
-        modelIds: modelsOfTestUser.map(model => model._id.toString()),
-        modelNames: modelsOfTestUser.map(model => model.name),
+        modelIds: modelsOfTestUser.map((model) => model._id.toString()),
+        modelNames: modelsOfTestUser.map((model) => model.name),
         filesExist: await Promise.all(
-          modelsOfTestUser.map(async model => await model.fileExists())
+          modelsOfTestUser.map(async (model) => await model.fileExists())
         ),
         iosFilesExist: await Promise.all(
-          modelsOfTestUser.map(async model => await model.iosFileExists())
-        )
+          modelsOfTestUser.map(async (model) => await model.iosFileExists())
+        ),
+        additionalInfo: { key1: "value1", key2: "value2", key3: "value3" },
+        defaultLang: "eng",
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -3694,14 +4620,16 @@ describe("/sidiroar/api/user", () => {
         name: requestPayload.name,
         email: requestPayload.email,
         permissions: requestPayload.permissions,
-        modelIds: modelsOfTestUser.map(model => model._id.toString()),
-        modelNames: modelsOfTestUser.map(model => model.name),
+        modelIds: modelsOfTestUser.map((model) => model._id.toString()),
+        modelNames: modelsOfTestUser.map((model) => model.name),
         filesExist: await Promise.all(
-          modelsOfTestUser.map(async model => await model.fileExists())
+          modelsOfTestUser.map(async (model) => await model.fileExists())
         ),
         iosFilesExist: await Promise.all(
-          modelsOfTestUser.map(async model => await model.iosFileExists())
-        )
+          modelsOfTestUser.map(async (model) => await model.iosFileExists())
+        ),
+        additionalInfo: { key1: "value1", key2: "value2", key3: "value3" },
+        defaultLang: "eng",
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -3910,8 +4838,8 @@ describe("/sidiroar/api/user", () => {
 
       //Database should contain all users - nothing should be changed
       let idOfAllUsers = _.sortBy(
-        (await User.find({})).map(user => user._id.toString()),
-        id => id
+        (await User.find({})).map((user) => user._id.toString()),
+        (id) => id
       );
 
       let expectedUserIds = _.sortBy(
@@ -3920,17 +4848,17 @@ describe("/sidiroar/api/user", () => {
           testUser._id.toString(),
           testAdmin._id.toString(),
           testUserAndAdmin._id.toString(),
-          testSuperAdmin._id.toString()
+          testSuperAdmin._id.toString(),
         ],
-        id => id
+        (id) => id
       );
 
       expect(idOfAllUsers).toEqual(expectedUserIds);
 
       //Database should contain all models - nothing should be changed
       let idOfAllModels = _.sortBy(
-        (await Model.find({})).map(model => model._id.toString()),
-        id => id
+        (await Model.find({})).map((model) => model._id.toString()),
+        (id) => id
       );
 
       let expectedModelIds = _.sortBy(
@@ -3939,9 +4867,9 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
           ...modelsOfTestUser,
-          ...modelsOfTestSuperAdmin
-        ].map(user => user._id.toString()),
-        id => id
+          ...modelsOfTestSuperAdmin,
+        ].map((user) => user._id.toString()),
+        (id) => id
       );
 
       expect(idOfAllModels).toEqual(expectedModelIds);
@@ -3967,8 +4895,8 @@ describe("/sidiroar/api/user", () => {
 
       //Database should contain all users - nothing should be changed
       let idOfAllUsers = _.sortBy(
-        (await User.find({})).map(user => user._id.toString()),
-        id => id
+        (await User.find({})).map((user) => user._id.toString()),
+        (id) => id
       );
 
       let expectedUserIds = _.sortBy(
@@ -3977,17 +4905,17 @@ describe("/sidiroar/api/user", () => {
           testUser._id.toString(),
           testAdmin._id.toString(),
           testUserAndAdmin._id.toString(),
-          testSuperAdmin._id.toString()
+          testSuperAdmin._id.toString(),
         ],
-        id => id
+        (id) => id
       );
 
       expect(idOfAllUsers).toEqual(expectedUserIds);
 
       //Database should contain all models - nothing should be changed
       let idOfAllModels = _.sortBy(
-        (await Model.find({})).map(model => model._id.toString()),
-        id => id
+        (await Model.find({})).map((model) => model._id.toString()),
+        (id) => id
       );
 
       let expectedModelIds = _.sortBy(
@@ -3996,9 +4924,9 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
           ...modelsOfTestUser,
-          ...modelsOfTestSuperAdmin
-        ].map(user => user._id.toString()),
-        id => id
+          ...modelsOfTestSuperAdmin,
+        ].map((user) => user._id.toString()),
+        (id) => id
       );
 
       expect(idOfAllModels).toEqual(expectedModelIds);
@@ -4024,8 +4952,8 @@ describe("/sidiroar/api/user", () => {
 
       //Database should contain all users - nothing should be changed
       let idOfAllUsers = _.sortBy(
-        (await User.find({})).map(user => user._id.toString()),
-        id => id
+        (await User.find({})).map((user) => user._id.toString()),
+        (id) => id
       );
 
       let expectedUserIds = _.sortBy(
@@ -4034,17 +4962,17 @@ describe("/sidiroar/api/user", () => {
           testUser._id.toString(),
           testAdmin._id.toString(),
           testUserAndAdmin._id.toString(),
-          testSuperAdmin._id.toString()
+          testSuperAdmin._id.toString(),
         ],
-        id => id
+        (id) => id
       );
 
       expect(idOfAllUsers).toEqual(expectedUserIds);
 
       //Database should contain all models - nothing should be changed
       let idOfAllModels = _.sortBy(
-        (await Model.find({})).map(model => model._id.toString()),
-        id => id
+        (await Model.find({})).map((model) => model._id.toString()),
+        (id) => id
       );
 
       let expectedModelIds = _.sortBy(
@@ -4053,9 +4981,9 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
           ...modelsOfTestUser,
-          ...modelsOfTestSuperAdmin
-        ].map(user => user._id.toString()),
-        id => id
+          ...modelsOfTestSuperAdmin,
+        ].map((user) => user._id.toString()),
+        (id) => id
       );
 
       expect(idOfAllModels).toEqual(expectedModelIds);
@@ -4081,8 +5009,8 @@ describe("/sidiroar/api/user", () => {
 
       //Database should contain all users - nothing should be changed
       let idOfAllUsers = _.sortBy(
-        (await User.find({})).map(user => user._id.toString()),
-        id => id
+        (await User.find({})).map((user) => user._id.toString()),
+        (id) => id
       );
 
       let expectedUserIds = _.sortBy(
@@ -4091,17 +5019,17 @@ describe("/sidiroar/api/user", () => {
           testUser._id.toString(),
           testAdmin._id.toString(),
           testUserAndAdmin._id.toString(),
-          testSuperAdmin._id.toString()
+          testSuperAdmin._id.toString(),
         ],
-        id => id
+        (id) => id
       );
 
       expect(idOfAllUsers).toEqual(expectedUserIds);
 
       //Database should contain all models - nothing should be changed
       let idOfAllModels = _.sortBy(
-        (await Model.find({})).map(model => model._id.toString()),
-        id => id
+        (await Model.find({})).map((model) => model._id.toString()),
+        (id) => id
       );
 
       let expectedModelIds = _.sortBy(
@@ -4110,9 +5038,9 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
           ...modelsOfTestUser,
-          ...modelsOfTestSuperAdmin
-        ].map(user => user._id.toString()),
-        id => id
+          ...modelsOfTestSuperAdmin,
+        ].map((user) => user._id.toString()),
+        (id) => id
       );
 
       expect(idOfAllModels).toEqual(expectedModelIds);
@@ -4138,8 +5066,8 @@ describe("/sidiroar/api/user", () => {
 
       //Database should contain all users - nothing should be changed
       let idOfAllUsers = _.sortBy(
-        (await User.find({})).map(user => user._id.toString()),
-        id => id
+        (await User.find({})).map((user) => user._id.toString()),
+        (id) => id
       );
 
       let expectedUserIds = _.sortBy(
@@ -4148,17 +5076,17 @@ describe("/sidiroar/api/user", () => {
           testUser._id.toString(),
           testAdmin._id.toString(),
           testUserAndAdmin._id.toString(),
-          testSuperAdmin._id.toString()
+          testSuperAdmin._id.toString(),
         ],
-        id => id
+        (id) => id
       );
 
       expect(idOfAllUsers).toEqual(expectedUserIds);
 
       //Database should contain all models - nothing should be changed
       let idOfAllModels = _.sortBy(
-        (await Model.find({})).map(model => model._id.toString()),
-        id => id
+        (await Model.find({})).map((model) => model._id.toString()),
+        (id) => id
       );
 
       let expectedModelIds = _.sortBy(
@@ -4167,9 +5095,9 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
           ...modelsOfTestUser,
-          ...modelsOfTestSuperAdmin
-        ].map(user => user._id.toString()),
-        id => id
+          ...modelsOfTestSuperAdmin,
+        ].map((user) => user._id.toString()),
+        (id) => id
       );
 
       expect(idOfAllModels).toEqual(expectedModelIds);
@@ -4195,8 +5123,8 @@ describe("/sidiroar/api/user", () => {
 
       //Database should contain all users - nothing should be changed
       let idOfAllUsers = _.sortBy(
-        (await User.find({})).map(user => user._id.toString()),
-        id => id
+        (await User.find({})).map((user) => user._id.toString()),
+        (id) => id
       );
 
       let expectedUserIds = _.sortBy(
@@ -4205,17 +5133,17 @@ describe("/sidiroar/api/user", () => {
           testUser._id.toString(),
           testAdmin._id.toString(),
           testUserAndAdmin._id.toString(),
-          testSuperAdmin._id.toString()
+          testSuperAdmin._id.toString(),
         ],
-        id => id
+        (id) => id
       );
 
       expect(idOfAllUsers).toEqual(expectedUserIds);
 
       //Database should contain all models - nothing should be changed
       let idOfAllModels = _.sortBy(
-        (await Model.find({})).map(model => model._id.toString()),
-        id => id
+        (await Model.find({})).map((model) => model._id.toString()),
+        (id) => id
       );
 
       let expectedModelIds = _.sortBy(
@@ -4224,9 +5152,9 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
           ...modelsOfTestUser,
-          ...modelsOfTestSuperAdmin
-        ].map(user => user._id.toString()),
-        id => id
+          ...modelsOfTestSuperAdmin,
+        ].map((user) => user._id.toString()),
+        (id) => id
       );
 
       expect(idOfAllModels).toEqual(expectedModelIds);
@@ -4252,8 +5180,8 @@ describe("/sidiroar/api/user", () => {
 
       //Database should contain all users - nothing should be changed
       let idOfAllUsers = _.sortBy(
-        (await User.find({})).map(user => user._id.toString()),
-        id => id
+        (await User.find({})).map((user) => user._id.toString()),
+        (id) => id
       );
 
       let expectedUserIds = _.sortBy(
@@ -4262,17 +5190,17 @@ describe("/sidiroar/api/user", () => {
           testUser._id.toString(),
           testAdmin._id.toString(),
           testUserAndAdmin._id.toString(),
-          testSuperAdmin._id.toString()
+          testSuperAdmin._id.toString(),
         ],
-        id => id
+        (id) => id
       );
 
       expect(idOfAllUsers).toEqual(expectedUserIds);
 
       //Database should contain all models - nothing should be changed
       let idOfAllModels = _.sortBy(
-        (await Model.find({})).map(model => model._id.toString()),
-        id => id
+        (await Model.find({})).map((model) => model._id.toString()),
+        (id) => id
       );
 
       let expectedModelIds = _.sortBy(
@@ -4281,9 +5209,9 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
           ...modelsOfTestUser,
-          ...modelsOfTestSuperAdmin
-        ].map(user => user._id.toString()),
-        id => id
+          ...modelsOfTestSuperAdmin,
+        ].map((user) => user._id.toString()),
+        (id) => id
       );
 
       expect(idOfAllModels).toEqual(expectedModelIds);
@@ -4309,8 +5237,8 @@ describe("/sidiroar/api/user", () => {
 
       //Database should contain all users - nothing should be changed
       let idOfAllUsers = _.sortBy(
-        (await User.find({})).map(user => user._id.toString()),
-        id => id
+        (await User.find({})).map((user) => user._id.toString()),
+        (id) => id
       );
 
       let expectedUserIds = _.sortBy(
@@ -4319,17 +5247,17 @@ describe("/sidiroar/api/user", () => {
           testUser._id.toString(),
           testAdmin._id.toString(),
           testUserAndAdmin._id.toString(),
-          testSuperAdmin._id.toString()
+          testSuperAdmin._id.toString(),
         ],
-        id => id
+        (id) => id
       );
 
       expect(idOfAllUsers).toEqual(expectedUserIds);
 
       //Database should contain all models - nothing should be changed
       let idOfAllModels = _.sortBy(
-        (await Model.find({})).map(model => model._id.toString()),
-        id => id
+        (await Model.find({})).map((model) => model._id.toString()),
+        (id) => id
       );
 
       let expectedModelIds = _.sortBy(
@@ -4338,9 +5266,9 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
           ...modelsOfTestUser,
-          ...modelsOfTestSuperAdmin
-        ].map(user => user._id.toString()),
-        id => id
+          ...modelsOfTestSuperAdmin,
+        ].map((user) => user._id.toString()),
+        (id) => id
       );
 
       expect(idOfAllModels).toEqual(expectedModelIds);
@@ -4368,8 +5296,8 @@ describe("/sidiroar/api/user", () => {
 
       //Database should contain all users - nothing should be changed
       let idOfAllUsers = _.sortBy(
-        (await User.find({})).map(user => user._id.toString()),
-        id => id
+        (await User.find({})).map((user) => user._id.toString()),
+        (id) => id
       );
 
       let expectedUserIds = _.sortBy(
@@ -4378,17 +5306,17 @@ describe("/sidiroar/api/user", () => {
           testUser._id.toString(),
           testAdmin._id.toString(),
           testUserAndAdmin._id.toString(),
-          testSuperAdmin._id.toString()
+          testSuperAdmin._id.toString(),
         ],
-        id => id
+        (id) => id
       );
 
       expect(idOfAllUsers).toEqual(expectedUserIds);
 
       //Database should contain all models - nothing should be changed
       let idOfAllModels = _.sortBy(
-        (await Model.find({})).map(model => model._id.toString()),
-        id => id
+        (await Model.find({})).map((model) => model._id.toString()),
+        (id) => id
       );
 
       let expectedModelIds = _.sortBy(
@@ -4397,9 +5325,9 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
           ...modelsOfTestUser,
-          ...modelsOfTestSuperAdmin
-        ].map(user => user._id.toString()),
-        id => id
+          ...modelsOfTestSuperAdmin,
+        ].map((user) => user._id.toString()),
+        (id) => id
       );
 
       expect(idOfAllModels).toEqual(expectedModelIds);
@@ -4421,14 +5349,16 @@ describe("/sidiroar/api/user", () => {
         name: requestPayload.name,
         email: requestPayload.email,
         permissions: requestPayload.permissions,
-        modelIds: modelsOfTestUser.map(model => model._id.toString()),
-        modelNames: modelsOfTestUser.map(model => model.name),
+        modelIds: modelsOfTestUser.map((model) => model._id.toString()),
+        modelNames: modelsOfTestUser.map((model) => model.name),
         filesExist: await Promise.all(
-          modelsOfTestUser.map(async model => await model.fileExists())
+          modelsOfTestUser.map(async (model) => await model.fileExists())
         ),
         iosFilesExist: await Promise.all(
-          modelsOfTestUser.map(async model => await model.iosFileExists())
-        )
+          modelsOfTestUser.map(async (model) => await model.iosFileExists())
+        ),
+        additionalInfo: { key1: "value1", key2: "value2", key3: "value3" },
+        defaultLang: "eng",
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -4478,8 +5408,8 @@ describe("/sidiroar/api/user", () => {
 
       //Database should contain all users - nothing should be changed
       let idOfAllUsers = _.sortBy(
-        (await User.find({})).map(user => user._id.toString()),
-        id => id
+        (await User.find({})).map((user) => user._id.toString()),
+        (id) => id
       );
 
       let expectedUserIds = _.sortBy(
@@ -4488,17 +5418,17 @@ describe("/sidiroar/api/user", () => {
           testUser._id.toString(),
           testAdmin._id.toString(),
           testUserAndAdmin._id.toString(),
-          testSuperAdmin._id.toString()
+          testSuperAdmin._id.toString(),
         ],
-        id => id
+        (id) => id
       );
 
       expect(idOfAllUsers).toEqual(expectedUserIds);
 
       //Database should contain all models - nothing should be changed
       let idOfAllModels = _.sortBy(
-        (await Model.find({})).map(model => model._id.toString()),
-        id => id
+        (await Model.find({})).map((model) => model._id.toString()),
+        (id) => id
       );
 
       let expectedModelIds = _.sortBy(
@@ -4507,9 +5437,9 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
           ...modelsOfTestUser,
-          ...modelsOfTestSuperAdmin
-        ].map(user => user._id.toString()),
-        id => id
+          ...modelsOfTestSuperAdmin,
+        ].map((user) => user._id.toString()),
+        (id) => id
       );
 
       expect(idOfAllModels).toEqual(expectedModelIds);
@@ -4533,14 +5463,16 @@ describe("/sidiroar/api/user", () => {
         name: requestPayload.name,
         email: requestPayload.email,
         permissions: requestPayload.permissions,
-        modelIds: modelsOfTestUser.map(model => model._id.toString()),
-        modelNames: modelsOfTestUser.map(model => model.name),
+        modelIds: modelsOfTestUser.map((model) => model._id.toString()),
+        modelNames: modelsOfTestUser.map((model) => model.name),
         filesExist: await Promise.all(
-          modelsOfTestUser.map(async model => await model.fileExists())
+          modelsOfTestUser.map(async (model) => await model.fileExists())
         ),
         iosFilesExist: await Promise.all(
-          modelsOfTestUser.map(async model => await model.iosFileExists())
-        )
+          modelsOfTestUser.map(async (model) => await model.iosFileExists())
+        ),
+        additionalInfo: { key1: "value1", key2: "value2", key3: "value3" },
+        defaultLang: "eng",
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -4570,6 +5502,611 @@ describe("/sidiroar/api/user", () => {
       //#endregion CHECKING_DATABASE
     });
 
+    it("should return 200, edit user and not edit additionalInfo, and return it - if additionalInfo is not defined in payload, and was set previously", async () => {
+      //Setting info non-empty value
+      let info = { key1: "value1", key2: "value2" };
+      testUser.additionalInfo = { ...info };
+      await testUser.save();
+
+      delete requestPayload.additionalInfo;
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(200);
+
+      let expectedPayload = {
+        _id: testUser._id.toString(),
+        name: requestPayload.name,
+        email: requestPayload.email,
+        permissions: requestPayload.permissions,
+        modelIds: modelsOfTestUser.map((model) => model._id.toString()),
+        modelNames: modelsOfTestUser.map((model) => model.name),
+        filesExist: await Promise.all(
+          modelsOfTestUser.map(async (model) => await model.fileExists())
+        ),
+        iosFilesExist: await Promise.all(
+          modelsOfTestUser.map(async (model) => await model.iosFileExists())
+        ),
+        additionalInfo: info,
+        defaultLang: "eng",
+      };
+
+      expect(response.body).toEqual(expectedPayload);
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //User should also be edited in database
+
+      //Getting user from db
+      let userFromDatabase = await User.findOne({ _id: id });
+      expect(userFromDatabase).toBeDefined();
+
+      //Checking payload
+      let userFromDatabasePayload = await userFromDatabase.getPayload();
+      expect(userFromDatabasePayload).toEqual(expectedPayload);
+
+      //Checking password
+      let newPasswordMatches = await hashedStringMatch(
+        requestPayload.password,
+        userFromDatabase.password
+      );
+
+      expect(newPasswordMatches).toEqual(true);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should return 400, and not edit any user- if additionalInfo is null in payload, and was set previously", async () => {
+      //Setting info non-empty value
+      let info = { key1: "value1", key2: "value2" };
+      testUser.additionalInfo = { ...info };
+      await testUser.save();
+
+      requestPayload.additionalInfo = null;
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(400);
+      expect(response.text).toContain('"additionalInfo" must be an object');
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //Database should contain all users - nothing should be changed
+      let idOfAllUsers = _.sortBy(
+        (await User.find({})).map((user) => user._id.toString()),
+        (id) => id
+      );
+
+      let expectedUserIds = _.sortBy(
+        [
+          uselessUser._id.toString(),
+          testUser._id.toString(),
+          testAdmin._id.toString(),
+          testUserAndAdmin._id.toString(),
+          testSuperAdmin._id.toString(),
+        ],
+        (id) => id
+      );
+
+      expect(idOfAllUsers).toEqual(expectedUserIds);
+
+      //Database should contain all models - nothing should be changed
+      let idOfAllModels = _.sortBy(
+        (await Model.find({})).map((model) => model._id.toString()),
+        (id) => id
+      );
+
+      let expectedModelIds = _.sortBy(
+        [
+          ...modelsOfUselessUser,
+          ...modelsOfTestAdmin,
+          ...modelsOfTestUserAndAdmin,
+          ...modelsOfTestUser,
+          ...modelsOfTestSuperAdmin,
+        ].map((user) => user._id.toString()),
+        (id) => id
+      );
+
+      expect(idOfAllModels).toEqual(expectedModelIds);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should return 400, and not edit any user- if additionalInfo is a string in payload, and was set previously", async () => {
+      //Setting info non-empty value
+      let info = { key1: "value1", key2: "value2" };
+      testUser.additionalInfo = { ...info };
+      await testUser.save();
+
+      requestPayload.additionalInfo = "testString";
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(400);
+      expect(response.text).toContain('"additionalInfo" must be an object');
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //Database should contain all users - nothing should be changed
+      let idOfAllUsers = _.sortBy(
+        (await User.find({})).map((user) => user._id.toString()),
+        (id) => id
+      );
+
+      let expectedUserIds = _.sortBy(
+        [
+          uselessUser._id.toString(),
+          testUser._id.toString(),
+          testAdmin._id.toString(),
+          testUserAndAdmin._id.toString(),
+          testSuperAdmin._id.toString(),
+        ],
+        (id) => id
+      );
+
+      expect(idOfAllUsers).toEqual(expectedUserIds);
+
+      //Database should contain all models - nothing should be changed
+      let idOfAllModels = _.sortBy(
+        (await Model.find({})).map((model) => model._id.toString()),
+        (id) => id
+      );
+
+      let expectedModelIds = _.sortBy(
+        [
+          ...modelsOfUselessUser,
+          ...modelsOfTestAdmin,
+          ...modelsOfTestUserAndAdmin,
+          ...modelsOfTestUser,
+          ...modelsOfTestSuperAdmin,
+        ].map((user) => user._id.toString()),
+        (id) => id
+      );
+
+      expect(idOfAllModels).toEqual(expectedModelIds);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should return 400, and not edit any user- if additionalInfo is a number in payload, and was set previously", async () => {
+      //Setting info non-empty value
+      let info = { key1: "value1", key2: "value2" };
+      testUser.additionalInfo = { ...info };
+      await testUser.save();
+
+      requestPayload.additionalInfo = 123;
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(400);
+      expect(response.text).toContain('"additionalInfo" must be an object');
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //Database should contain all users - nothing should be changed
+      let idOfAllUsers = _.sortBy(
+        (await User.find({})).map((user) => user._id.toString()),
+        (id) => id
+      );
+
+      let expectedUserIds = _.sortBy(
+        [
+          uselessUser._id.toString(),
+          testUser._id.toString(),
+          testAdmin._id.toString(),
+          testUserAndAdmin._id.toString(),
+          testSuperAdmin._id.toString(),
+        ],
+        (id) => id
+      );
+
+      expect(idOfAllUsers).toEqual(expectedUserIds);
+
+      //Database should contain all models - nothing should be changed
+      let idOfAllModels = _.sortBy(
+        (await Model.find({})).map((model) => model._id.toString()),
+        (id) => id
+      );
+
+      let expectedModelIds = _.sortBy(
+        [
+          ...modelsOfUselessUser,
+          ...modelsOfTestAdmin,
+          ...modelsOfTestUserAndAdmin,
+          ...modelsOfTestUser,
+          ...modelsOfTestSuperAdmin,
+        ].map((user) => user._id.toString()),
+        (id) => id
+      );
+
+      expect(idOfAllModels).toEqual(expectedModelIds);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should return 400, and not edit any user- if additionalInfo is a boolean in payload, and was set previously", async () => {
+      //Setting info non-empty value
+      let info = { key1: "value1", key2: "value2" };
+      testUser.additionalInfo = { ...info };
+      await testUser.save();
+
+      requestPayload.additionalInfo = true;
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(400);
+      expect(response.text).toContain('"additionalInfo" must be an object');
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //Database should contain all users - nothing should be changed
+      let idOfAllUsers = _.sortBy(
+        (await User.find({})).map((user) => user._id.toString()),
+        (id) => id
+      );
+
+      let expectedUserIds = _.sortBy(
+        [
+          uselessUser._id.toString(),
+          testUser._id.toString(),
+          testAdmin._id.toString(),
+          testUserAndAdmin._id.toString(),
+          testSuperAdmin._id.toString(),
+        ],
+        (id) => id
+      );
+
+      expect(idOfAllUsers).toEqual(expectedUserIds);
+
+      //Database should contain all models - nothing should be changed
+      let idOfAllModels = _.sortBy(
+        (await Model.find({})).map((model) => model._id.toString()),
+        (id) => id
+      );
+
+      let expectedModelIds = _.sortBy(
+        [
+          ...modelsOfUselessUser,
+          ...modelsOfTestAdmin,
+          ...modelsOfTestUserAndAdmin,
+          ...modelsOfTestUser,
+          ...modelsOfTestSuperAdmin,
+        ].map((user) => user._id.toString()),
+        (id) => id
+      );
+
+      expect(idOfAllModels).toEqual(expectedModelIds);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should return 200, edit user and not edit defaultLang- if defaultLang is not defined in payload, and was set previously to eng", async () => {
+      //Setting initial lang value
+      testUser.defaultLang = "eng";
+      await testUser.save();
+
+      delete requestPayload.defaultLang;
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(200);
+
+      let expectedPayload = {
+        _id: testUser._id.toString(),
+        name: requestPayload.name,
+        email: requestPayload.email,
+        permissions: requestPayload.permissions,
+        modelIds: modelsOfTestUser.map((model) => model._id.toString()),
+        modelNames: modelsOfTestUser.map((model) => model.name),
+        filesExist: await Promise.all(
+          modelsOfTestUser.map(async (model) => await model.fileExists())
+        ),
+        iosFilesExist: await Promise.all(
+          modelsOfTestUser.map(async (model) => await model.iosFileExists())
+        ),
+        additionalInfo: { key1: "value1", key2: "value2", key3: "value3" },
+        defaultLang: "eng",
+      };
+
+      expect(response.body).toEqual(expectedPayload);
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //User should also be edited in database
+
+      //Getting user from db
+      let userFromDatabase = await User.findOne({ _id: id });
+      expect(userFromDatabase).toBeDefined();
+
+      //Checking payload
+      let userFromDatabasePayload = await userFromDatabase.getPayload();
+      expect(userFromDatabasePayload).toEqual(expectedPayload);
+
+      //Checking password
+      let newPasswordMatches = await hashedStringMatch(
+        requestPayload.password,
+        userFromDatabase.password
+      );
+
+      expect(newPasswordMatches).toEqual(true);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should return 400, and not edit any user- if defaultLang is null in payload, and was set previously to eng", async () => {
+      //Setting info non-empty value
+      //Setting initial lang value
+      testUser.defaultLang = "eng";
+      await testUser.save();
+
+      requestPayload.defaultLang = null;
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(400);
+      expect(response.text).toContain('"defaultLang" must be one of [pl, eng]');
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //Database should contain all users - nothing should be changed
+      let idOfAllUsers = _.sortBy(
+        (await User.find({})).map((user) => user._id.toString()),
+        (id) => id
+      );
+
+      let expectedUserIds = _.sortBy(
+        [
+          uselessUser._id.toString(),
+          testUser._id.toString(),
+          testAdmin._id.toString(),
+          testUserAndAdmin._id.toString(),
+          testSuperAdmin._id.toString(),
+        ],
+        (id) => id
+      );
+
+      expect(idOfAllUsers).toEqual(expectedUserIds);
+
+      //Database should contain all models - nothing should be changed
+      let idOfAllModels = _.sortBy(
+        (await Model.find({})).map((model) => model._id.toString()),
+        (id) => id
+      );
+
+      let expectedModelIds = _.sortBy(
+        [
+          ...modelsOfUselessUser,
+          ...modelsOfTestAdmin,
+          ...modelsOfTestUserAndAdmin,
+          ...modelsOfTestUser,
+          ...modelsOfTestSuperAdmin,
+        ].map((user) => user._id.toString()),
+        (id) => id
+      );
+
+      expect(idOfAllModels).toEqual(expectedModelIds);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should return 400, and not edit any user- if defaultLang is an invalid string in payload, and was set previously to eng", async () => {
+      //Setting info non-empty value
+      //Setting initial lang value
+      testUser.defaultLang = "eng";
+      await testUser.save();
+
+      requestPayload.defaultLang = "invalidString";
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(400);
+      expect(response.text).toContain('"defaultLang" must be one of [pl, eng]');
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //Database should contain all users - nothing should be changed
+      let idOfAllUsers = _.sortBy(
+        (await User.find({})).map((user) => user._id.toString()),
+        (id) => id
+      );
+
+      let expectedUserIds = _.sortBy(
+        [
+          uselessUser._id.toString(),
+          testUser._id.toString(),
+          testAdmin._id.toString(),
+          testUserAndAdmin._id.toString(),
+          testSuperAdmin._id.toString(),
+        ],
+        (id) => id
+      );
+
+      expect(idOfAllUsers).toEqual(expectedUserIds);
+
+      //Database should contain all models - nothing should be changed
+      let idOfAllModels = _.sortBy(
+        (await Model.find({})).map((model) => model._id.toString()),
+        (id) => id
+      );
+
+      let expectedModelIds = _.sortBy(
+        [
+          ...modelsOfUselessUser,
+          ...modelsOfTestAdmin,
+          ...modelsOfTestUserAndAdmin,
+          ...modelsOfTestUser,
+          ...modelsOfTestSuperAdmin,
+        ].map((user) => user._id.toString()),
+        (id) => id
+      );
+
+      expect(idOfAllModels).toEqual(expectedModelIds);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should return 400, and not edit any user- if defaultLang is a number in payload, and was set previously to eng", async () => {
+      //Setting info non-empty value
+      //Setting initial lang value
+      testUser.defaultLang = "eng";
+      await testUser.save();
+
+      requestPayload.defaultLang = 123;
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(400);
+      expect(response.text).toContain('"defaultLang" must be one of [pl, eng]');
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //Database should contain all users - nothing should be changed
+      let idOfAllUsers = _.sortBy(
+        (await User.find({})).map((user) => user._id.toString()),
+        (id) => id
+      );
+
+      let expectedUserIds = _.sortBy(
+        [
+          uselessUser._id.toString(),
+          testUser._id.toString(),
+          testAdmin._id.toString(),
+          testUserAndAdmin._id.toString(),
+          testSuperAdmin._id.toString(),
+        ],
+        (id) => id
+      );
+
+      expect(idOfAllUsers).toEqual(expectedUserIds);
+
+      //Database should contain all models - nothing should be changed
+      let idOfAllModels = _.sortBy(
+        (await Model.find({})).map((model) => model._id.toString()),
+        (id) => id
+      );
+
+      let expectedModelIds = _.sortBy(
+        [
+          ...modelsOfUselessUser,
+          ...modelsOfTestAdmin,
+          ...modelsOfTestUserAndAdmin,
+          ...modelsOfTestUser,
+          ...modelsOfTestSuperAdmin,
+        ].map((user) => user._id.toString()),
+        (id) => id
+      );
+
+      expect(idOfAllModels).toEqual(expectedModelIds);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should return 400, and not edit any user- if defaultLang is a boolean in payload, and was set previously to eng", async () => {
+      //Setting info non-empty value
+      //Setting initial lang value
+      testUser.defaultLang = "eng";
+      await testUser.save();
+
+      requestPayload.defaultLang = true;
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(400);
+      expect(response.text).toContain('"defaultLang" must be one of [pl, eng]');
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //Database should contain all users - nothing should be changed
+      let idOfAllUsers = _.sortBy(
+        (await User.find({})).map((user) => user._id.toString()),
+        (id) => id
+      );
+
+      let expectedUserIds = _.sortBy(
+        [
+          uselessUser._id.toString(),
+          testUser._id.toString(),
+          testAdmin._id.toString(),
+          testUserAndAdmin._id.toString(),
+          testSuperAdmin._id.toString(),
+        ],
+        (id) => id
+      );
+
+      expect(idOfAllUsers).toEqual(expectedUserIds);
+
+      //Database should contain all models - nothing should be changed
+      let idOfAllModels = _.sortBy(
+        (await Model.find({})).map((model) => model._id.toString()),
+        (id) => id
+      );
+
+      let expectedModelIds = _.sortBy(
+        [
+          ...modelsOfUselessUser,
+          ...modelsOfTestAdmin,
+          ...modelsOfTestUserAndAdmin,
+          ...modelsOfTestUser,
+          ...modelsOfTestSuperAdmin,
+        ].map((user) => user._id.toString()),
+        (id) => id
+      );
+
+      expect(idOfAllModels).toEqual(expectedModelIds);
+
+      //#endregion CHECKING_DATABASE
+    });
+
     it("should return 400, and not edit any user- if users permissions is not defined", async () => {
       delete requestPayload.permissions;
 
@@ -4587,8 +6124,8 @@ describe("/sidiroar/api/user", () => {
 
       //Database should contain all users - nothing should be changed
       let idOfAllUsers = _.sortBy(
-        (await User.find({})).map(user => user._id.toString()),
-        id => id
+        (await User.find({})).map((user) => user._id.toString()),
+        (id) => id
       );
 
       let expectedUserIds = _.sortBy(
@@ -4597,17 +6134,17 @@ describe("/sidiroar/api/user", () => {
           testUser._id.toString(),
           testAdmin._id.toString(),
           testUserAndAdmin._id.toString(),
-          testSuperAdmin._id.toString()
+          testSuperAdmin._id.toString(),
         ],
-        id => id
+        (id) => id
       );
 
       expect(idOfAllUsers).toEqual(expectedUserIds);
 
       //Database should contain all models - nothing should be changed
       let idOfAllModels = _.sortBy(
-        (await Model.find({})).map(model => model._id.toString()),
-        id => id
+        (await Model.find({})).map((model) => model._id.toString()),
+        (id) => id
       );
 
       let expectedModelIds = _.sortBy(
@@ -4616,9 +6153,9 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
           ...modelsOfTestUser,
-          ...modelsOfTestSuperAdmin
-        ].map(user => user._id.toString()),
-        id => id
+          ...modelsOfTestSuperAdmin,
+        ].map((user) => user._id.toString()),
+        (id) => id
       );
 
       expect(idOfAllModels).toEqual(expectedModelIds);
@@ -4643,8 +6180,8 @@ describe("/sidiroar/api/user", () => {
 
       //Database should contain all users - nothing should be changed
       let idOfAllUsers = _.sortBy(
-        (await User.find({})).map(user => user._id.toString()),
-        id => id
+        (await User.find({})).map((user) => user._id.toString()),
+        (id) => id
       );
 
       let expectedUserIds = _.sortBy(
@@ -4653,17 +6190,17 @@ describe("/sidiroar/api/user", () => {
           testUser._id.toString(),
           testAdmin._id.toString(),
           testUserAndAdmin._id.toString(),
-          testSuperAdmin._id.toString()
+          testSuperAdmin._id.toString(),
         ],
-        id => id
+        (id) => id
       );
 
       expect(idOfAllUsers).toEqual(expectedUserIds);
 
       //Database should contain all models - nothing should be changed
       let idOfAllModels = _.sortBy(
-        (await Model.find({})).map(model => model._id.toString()),
-        id => id
+        (await Model.find({})).map((model) => model._id.toString()),
+        (id) => id
       );
 
       let expectedModelIds = _.sortBy(
@@ -4672,9 +6209,9 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
           ...modelsOfTestUser,
-          ...modelsOfTestSuperAdmin
-        ].map(user => user._id.toString()),
-        id => id
+          ...modelsOfTestSuperAdmin,
+        ].map((user) => user._id.toString()),
+        (id) => id
       );
 
       expect(idOfAllModels).toEqual(expectedModelIds);
@@ -4701,8 +6238,8 @@ describe("/sidiroar/api/user", () => {
 
       //Database should contain all users - nothing should be changed
       let idOfAllUsers = _.sortBy(
-        (await User.find({})).map(user => user._id.toString()),
-        id => id
+        (await User.find({})).map((user) => user._id.toString()),
+        (id) => id
       );
 
       let expectedUserIds = _.sortBy(
@@ -4711,17 +6248,17 @@ describe("/sidiroar/api/user", () => {
           testUser._id.toString(),
           testAdmin._id.toString(),
           testUserAndAdmin._id.toString(),
-          testSuperAdmin._id.toString()
+          testSuperAdmin._id.toString(),
         ],
-        id => id
+        (id) => id
       );
 
       expect(idOfAllUsers).toEqual(expectedUserIds);
 
       //Database should contain all models - nothing should be changed
       let idOfAllModels = _.sortBy(
-        (await Model.find({})).map(model => model._id.toString()),
-        id => id
+        (await Model.find({})).map((model) => model._id.toString()),
+        (id) => id
       );
 
       let expectedModelIds = _.sortBy(
@@ -4730,9 +6267,9 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
           ...modelsOfTestUser,
-          ...modelsOfTestSuperAdmin
-        ].map(user => user._id.toString()),
-        id => id
+          ...modelsOfTestSuperAdmin,
+        ].map((user) => user._id.toString()),
+        (id) => id
       );
 
       expect(idOfAllModels).toEqual(expectedModelIds);
@@ -4756,14 +6293,16 @@ describe("/sidiroar/api/user", () => {
         name: requestPayload.name,
         email: requestPayload.email,
         permissions: requestPayload.permissions,
-        modelIds: modelsOfTestUser.map(model => model._id.toString()),
-        modelNames: modelsOfTestUser.map(model => model.name),
+        modelIds: modelsOfTestUser.map((model) => model._id.toString()),
+        modelNames: modelsOfTestUser.map((model) => model.name),
         filesExist: await Promise.all(
-          modelsOfTestUser.map(async model => await model.fileExists())
+          modelsOfTestUser.map(async (model) => await model.fileExists())
         ),
         iosFilesExist: await Promise.all(
-          modelsOfTestUser.map(async model => await model.iosFileExists())
-        )
+          modelsOfTestUser.map(async (model) => await model.iosFileExists())
+        ),
+        additionalInfo: { key1: "value1", key2: "value2", key3: "value3" },
+        defaultLang: "eng",
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -4812,8 +6351,8 @@ describe("/sidiroar/api/user", () => {
 
       //Database should contain all users - nothing should be changed
       let idOfAllUsers = _.sortBy(
-        (await User.find({})).map(user => user._id.toString()),
-        id => id
+        (await User.find({})).map((user) => user._id.toString()),
+        (id) => id
       );
 
       let expectedUserIds = _.sortBy(
@@ -4822,17 +6361,17 @@ describe("/sidiroar/api/user", () => {
           testUser._id.toString(),
           testAdmin._id.toString(),
           testUserAndAdmin._id.toString(),
-          testSuperAdmin._id.toString()
+          testSuperAdmin._id.toString(),
         ],
-        id => id
+        (id) => id
       );
 
       expect(idOfAllUsers).toEqual(expectedUserIds);
 
       //Database should contain all models - nothing should be changed
       let idOfAllModels = _.sortBy(
-        (await Model.find({})).map(model => model._id.toString()),
-        id => id
+        (await Model.find({})).map((model) => model._id.toString()),
+        (id) => id
       );
 
       let expectedModelIds = _.sortBy(
@@ -4841,9 +6380,9 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
           ...modelsOfTestUser,
-          ...modelsOfTestSuperAdmin
-        ].map(user => user._id.toString()),
-        id => id
+          ...modelsOfTestSuperAdmin,
+        ].map((user) => user._id.toString()),
+        (id) => id
       );
 
       expect(idOfAllModels).toEqual(expectedModelIds);
@@ -4868,14 +6407,16 @@ describe("/sidiroar/api/user", () => {
         name: requestPayload.name,
         email: requestPayload.email,
         permissions: requestPayload.permissions,
-        modelIds: modelsOfTestUser.map(model => model._id.toString()),
-        modelNames: modelsOfTestUser.map(model => model.name),
+        modelIds: modelsOfTestUser.map((model) => model._id.toString()),
+        modelNames: modelsOfTestUser.map((model) => model.name),
         filesExist: await Promise.all(
-          modelsOfTestUser.map(async model => await model.fileExists())
+          modelsOfTestUser.map(async (model) => await model.fileExists())
         ),
         iosFilesExist: await Promise.all(
-          modelsOfTestUser.map(async model => await model.iosFileExists())
-        )
+          modelsOfTestUser.map(async (model) => await model.iosFileExists())
+        ),
+        additionalInfo: { key1: "value1", key2: "value2", key3: "value3" },
+        defaultLang: "eng",
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -4923,8 +6464,8 @@ describe("/sidiroar/api/user", () => {
 
       //Database should contain all users - nothing should be changed
       let idOfAllUsers = _.sortBy(
-        (await User.find({})).map(user => user._id.toString()),
-        id => id
+        (await User.find({})).map((user) => user._id.toString()),
+        (id) => id
       );
 
       let expectedUserIds = _.sortBy(
@@ -4933,17 +6474,17 @@ describe("/sidiroar/api/user", () => {
           testUser._id.toString(),
           testAdmin._id.toString(),
           testUserAndAdmin._id.toString(),
-          testSuperAdmin._id.toString()
+          testSuperAdmin._id.toString(),
         ],
-        id => id
+        (id) => id
       );
 
       expect(idOfAllUsers).toEqual(expectedUserIds);
 
       //Database should contain all models - nothing should be changed
       let idOfAllModels = _.sortBy(
-        (await Model.find({})).map(model => model._id.toString()),
-        id => id
+        (await Model.find({})).map((model) => model._id.toString()),
+        (id) => id
       );
 
       let expectedModelIds = _.sortBy(
@@ -4952,9 +6493,9 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
           ...modelsOfTestUser,
-          ...modelsOfTestSuperAdmin
-        ].map(user => user._id.toString()),
-        id => id
+          ...modelsOfTestSuperAdmin,
+        ].map((user) => user._id.toString()),
+        (id) => id
       );
 
       expect(idOfAllModels).toEqual(expectedModelIds);
@@ -4980,8 +6521,8 @@ describe("/sidiroar/api/user", () => {
 
       //Database should contain all users - nothing should be changed
       let idOfAllUsers = _.sortBy(
-        (await User.find({})).map(user => user._id.toString()),
-        id => id
+        (await User.find({})).map((user) => user._id.toString()),
+        (id) => id
       );
 
       let expectedUserIds = _.sortBy(
@@ -4990,17 +6531,17 @@ describe("/sidiroar/api/user", () => {
           testUser._id.toString(),
           testAdmin._id.toString(),
           testUserAndAdmin._id.toString(),
-          testSuperAdmin._id.toString()
+          testSuperAdmin._id.toString(),
         ],
-        id => id
+        (id) => id
       );
 
       expect(idOfAllUsers).toEqual(expectedUserIds);
 
       //Database should contain all models - nothing should be changed
       let idOfAllModels = _.sortBy(
-        (await Model.find({})).map(model => model._id.toString()),
-        id => id
+        (await Model.find({})).map((model) => model._id.toString()),
+        (id) => id
       );
 
       let expectedModelIds = _.sortBy(
@@ -5009,9 +6550,9 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
           ...modelsOfTestUser,
-          ...modelsOfTestSuperAdmin
-        ].map(user => user._id.toString()),
-        id => id
+          ...modelsOfTestSuperAdmin,
+        ].map((user) => user._id.toString()),
+        (id) => id
       );
 
       expect(idOfAllModels).toEqual(expectedModelIds);
@@ -5037,8 +6578,8 @@ describe("/sidiroar/api/user", () => {
 
       //Database should contain all users - nothing should be changed
       let idOfAllUsers = _.sortBy(
-        (await User.find({})).map(user => user._id.toString()),
-        id => id
+        (await User.find({})).map((user) => user._id.toString()),
+        (id) => id
       );
 
       let expectedUserIds = _.sortBy(
@@ -5047,17 +6588,17 @@ describe("/sidiroar/api/user", () => {
           testUser._id.toString(),
           testAdmin._id.toString(),
           testUserAndAdmin._id.toString(),
-          testSuperAdmin._id.toString()
+          testSuperAdmin._id.toString(),
         ],
-        id => id
+        (id) => id
       );
 
       expect(idOfAllUsers).toEqual(expectedUserIds);
 
       //Database should contain all models - nothing should be changed
       let idOfAllModels = _.sortBy(
-        (await Model.find({})).map(model => model._id.toString()),
-        id => id
+        (await Model.find({})).map((model) => model._id.toString()),
+        (id) => id
       );
 
       let expectedModelIds = _.sortBy(
@@ -5066,9 +6607,9 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
           ...modelsOfTestUser,
-          ...modelsOfTestSuperAdmin
-        ].map(user => user._id.toString()),
-        id => id
+          ...modelsOfTestSuperAdmin,
+        ].map((user) => user._id.toString()),
+        (id) => id
       );
 
       expect(idOfAllModels).toEqual(expectedModelIds);
@@ -5091,14 +6632,16 @@ describe("/sidiroar/api/user", () => {
         name: requestPayload.name,
         email: requestPayload.email,
         permissions: requestPayload.permissions,
-        modelIds: modelsOfTestUser.map(model => model._id.toString()),
-        modelNames: modelsOfTestUser.map(model => model.name),
+        modelIds: modelsOfTestUser.map((model) => model._id.toString()),
+        modelNames: modelsOfTestUser.map((model) => model.name),
         filesExist: await Promise.all(
-          modelsOfTestUser.map(async model => await model.fileExists())
+          modelsOfTestUser.map(async (model) => await model.fileExists())
         ),
         iosFilesExist: await Promise.all(
-          modelsOfTestUser.map(async model => await model.iosFileExists())
-        )
+          modelsOfTestUser.map(async (model) => await model.iosFileExists())
+        ),
+        additionalInfo: { key1: "value1", key2: "value2", key3: "value3" },
+        defaultLang: "eng",
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -5146,8 +6689,8 @@ describe("/sidiroar/api/user", () => {
 
       //Database should contain all users - nothing should be changed
       let idOfAllUsers = _.sortBy(
-        (await User.find({})).map(user => user._id.toString()),
-        id => id
+        (await User.find({})).map((user) => user._id.toString()),
+        (id) => id
       );
 
       let expectedUserIds = _.sortBy(
@@ -5156,17 +6699,17 @@ describe("/sidiroar/api/user", () => {
           testUser._id.toString(),
           testAdmin._id.toString(),
           testUserAndAdmin._id.toString(),
-          testSuperAdmin._id.toString()
+          testSuperAdmin._id.toString(),
         ],
-        id => id
+        (id) => id
       );
 
       expect(idOfAllUsers).toEqual(expectedUserIds);
 
       //Database should contain all models - nothing should be changed
       let idOfAllModels = _.sortBy(
-        (await Model.find({})).map(model => model._id.toString()),
-        id => id
+        (await Model.find({})).map((model) => model._id.toString()),
+        (id) => id
       );
 
       let expectedModelIds = _.sortBy(
@@ -5175,9 +6718,9 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
           ...modelsOfTestUser,
-          ...modelsOfTestSuperAdmin
-        ].map(user => user._id.toString()),
-        id => id
+          ...modelsOfTestSuperAdmin,
+        ].map((user) => user._id.toString()),
+        (id) => id
       );
 
       expect(idOfAllModels).toEqual(expectedModelIds);
@@ -5190,7 +6733,7 @@ describe("/sidiroar/api/user", () => {
         _id: testAdmin._id,
         email: testAdmin.email,
         name: testAdmin.name,
-        permissions: testAdmin.permissions
+        permissions: testAdmin.permissions,
       };
 
       jwt = await jsonWebToken.sign(fakeUserPayload, "differentTestPrivateKey");
@@ -5210,8 +6753,8 @@ describe("/sidiroar/api/user", () => {
 
       //Database should contain all users - nothing should be changed
       let idOfAllUsers = _.sortBy(
-        (await User.find({})).map(user => user._id.toString()),
-        id => id
+        (await User.find({})).map((user) => user._id.toString()),
+        (id) => id
       );
 
       let expectedUserIds = _.sortBy(
@@ -5220,17 +6763,17 @@ describe("/sidiroar/api/user", () => {
           testUser._id.toString(),
           testAdmin._id.toString(),
           testUserAndAdmin._id.toString(),
-          testSuperAdmin._id.toString()
+          testSuperAdmin._id.toString(),
         ],
-        id => id
+        (id) => id
       );
 
       expect(idOfAllUsers).toEqual(expectedUserIds);
 
       //Database should contain all models - nothing should be changed
       let idOfAllModels = _.sortBy(
-        (await Model.find({})).map(model => model._id.toString()),
-        id => id
+        (await Model.find({})).map((model) => model._id.toString()),
+        (id) => id
       );
 
       let expectedModelIds = _.sortBy(
@@ -5239,9 +6782,9 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
           ...modelsOfTestUser,
-          ...modelsOfTestSuperAdmin
-        ].map(user => user._id.toString()),
-        id => id
+          ...modelsOfTestSuperAdmin,
+        ].map((user) => user._id.toString()),
+        (id) => id
       );
 
       expect(idOfAllModels).toEqual(expectedModelIds);
@@ -5256,7 +6799,7 @@ describe("/sidiroar/api/user", () => {
         email: testUserAndAdmin.email,
         name: "editedTestUser",
         permissions: 0,
-        password: "9876"
+        password: "9876",
       };
 
       let response = await exec();
@@ -5275,8 +6818,8 @@ describe("/sidiroar/api/user", () => {
 
       //Database should contain all users - nothing should be changed
       let idOfAllUsers = _.sortBy(
-        (await User.find({})).map(user => user._id.toString()),
-        id => id
+        (await User.find({})).map((user) => user._id.toString()),
+        (id) => id
       );
 
       let expectedUserIds = _.sortBy(
@@ -5285,17 +6828,17 @@ describe("/sidiroar/api/user", () => {
           testUser._id.toString(),
           testAdmin._id.toString(),
           testUserAndAdmin._id.toString(),
-          testSuperAdmin._id.toString()
+          testSuperAdmin._id.toString(),
         ],
-        id => id
+        (id) => id
       );
 
       expect(idOfAllUsers).toEqual(expectedUserIds);
 
       //Database should contain all models - nothing should be changed
       let idOfAllModels = _.sortBy(
-        (await Model.find({})).map(model => model._id.toString()),
-        id => id
+        (await Model.find({})).map((model) => model._id.toString()),
+        (id) => id
       );
 
       let expectedModelIds = _.sortBy(
@@ -5304,9 +6847,9 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
           ...modelsOfTestUser,
-          ...modelsOfTestSuperAdmin
-        ].map(user => user._id.toString()),
-        id => id
+          ...modelsOfTestSuperAdmin,
+        ].map((user) => user._id.toString()),
+        (id) => id
       );
 
       expect(idOfAllModels).toEqual(expectedModelIds);
@@ -5321,7 +6864,9 @@ describe("/sidiroar/api/user", () => {
         email: testUserAndAdmin.email,
         name: "editedTestUser",
         permissions: 0,
-        password: "9876"
+        password: "9876",
+        additionalInfo: { key1: "value1", key2: "value2", key3: "value3" },
+        defaultLang: "eng",
       };
 
       let response = await exec();
@@ -5336,16 +6881,20 @@ describe("/sidiroar/api/user", () => {
         name: requestPayload.name,
         email: requestPayload.email,
         permissions: requestPayload.permissions,
-        modelIds: modelsOfTestUserAndAdmin.map(model => model._id.toString()),
-        modelNames: modelsOfTestUserAndAdmin.map(model => model.name),
+        modelIds: modelsOfTestUserAndAdmin.map((model) => model._id.toString()),
+        modelNames: modelsOfTestUserAndAdmin.map((model) => model.name),
         filesExist: await Promise.all(
-          modelsOfTestUserAndAdmin.map(async model => await model.fileExists())
+          modelsOfTestUserAndAdmin.map(
+            async (model) => await model.fileExists()
+          )
         ),
         iosFilesExist: await Promise.all(
           modelsOfTestUserAndAdmin.map(
-            async model => await model.iosFileExists()
+            async (model) => await model.iosFileExists()
           )
-        )
+        ),
+        additionalInfo: { key1: "value1", key2: "value2", key3: "value3" },
+        defaultLang: "eng",
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -5382,7 +6931,7 @@ describe("/sidiroar/api/user", () => {
         email: testUserAndAdmin.email,
         name: "editedTestUser",
         permissions: 0,
-        password: "9876"
+        password: "9876",
       };
 
       let response = await exec();
@@ -5402,8 +6951,8 @@ describe("/sidiroar/api/user", () => {
 
       //Database should contain all users - nothing should be changed
       let idOfAllUsers = _.sortBy(
-        (await User.find({})).map(user => user._id.toString()),
-        id => id
+        (await User.find({})).map((user) => user._id.toString()),
+        (id) => id
       );
 
       let expectedUserIds = _.sortBy(
@@ -5412,17 +6961,17 @@ describe("/sidiroar/api/user", () => {
           testUser._id.toString(),
           testAdmin._id.toString(),
           testUserAndAdmin._id.toString(),
-          testSuperAdmin._id.toString()
+          testSuperAdmin._id.toString(),
         ],
-        id => id
+        (id) => id
       );
 
       expect(idOfAllUsers).toEqual(expectedUserIds);
 
       //Database should contain all models - nothing should be changed
       let idOfAllModels = _.sortBy(
-        (await Model.find({})).map(model => model._id.toString()),
-        id => id
+        (await Model.find({})).map((model) => model._id.toString()),
+        (id) => id
       );
 
       let expectedModelIds = _.sortBy(
@@ -5431,9 +6980,9 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
           ...modelsOfTestUser,
-          ...modelsOfTestSuperAdmin
-        ].map(user => user._id.toString()),
-        id => id
+          ...modelsOfTestSuperAdmin,
+        ].map((user) => user._id.toString()),
+        (id) => id
       );
 
       expect(idOfAllModels).toEqual(expectedModelIds);
@@ -5448,7 +6997,9 @@ describe("/sidiroar/api/user", () => {
         email: testSuperAdmin.email,
         name: "editedTestUser",
         permissions: 0,
-        password: "9876"
+        password: "9876",
+        additionalInfo: { key1: "value1", key2: "value2", key3: "value3" },
+        defaultLang: "eng",
       };
 
       let response = await exec();
@@ -5463,14 +7014,18 @@ describe("/sidiroar/api/user", () => {
         name: requestPayload.name,
         email: requestPayload.email,
         permissions: requestPayload.permissions,
-        modelIds: modelsOfTestSuperAdmin.map(model => model._id.toString()),
-        modelNames: modelsOfTestSuperAdmin.map(model => model.name),
+        modelIds: modelsOfTestSuperAdmin.map((model) => model._id.toString()),
+        modelNames: modelsOfTestSuperAdmin.map((model) => model.name),
         filesExist: await Promise.all(
-          modelsOfTestSuperAdmin.map(async model => await model.fileExists())
+          modelsOfTestSuperAdmin.map(async (model) => await model.fileExists())
         ),
         iosFilesExist: await Promise.all(
-          modelsOfTestSuperAdmin.map(async model => await model.iosFileExists())
-        )
+          modelsOfTestSuperAdmin.map(
+            async (model) => await model.iosFileExists()
+          )
+        ),
+        additionalInfo: { key1: "value1", key2: "value2", key3: "value3" },
+        defaultLang: "eng",
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -5507,7 +7062,7 @@ describe("/sidiroar/api/user", () => {
         email: testUser.email,
         name: "editedTestUser",
         permissions: 2,
-        password: "9876"
+        password: "9876",
       };
 
       let response = await exec();
@@ -5527,8 +7082,8 @@ describe("/sidiroar/api/user", () => {
 
       //Database should contain all users - nothing should be changed
       let idOfAllUsers = _.sortBy(
-        (await User.find({})).map(user => user._id.toString()),
-        id => id
+        (await User.find({})).map((user) => user._id.toString()),
+        (id) => id
       );
 
       let expectedUserIds = _.sortBy(
@@ -5537,17 +7092,17 @@ describe("/sidiroar/api/user", () => {
           testUser._id.toString(),
           testAdmin._id.toString(),
           testUserAndAdmin._id.toString(),
-          testSuperAdmin._id.toString()
+          testSuperAdmin._id.toString(),
         ],
-        id => id
+        (id) => id
       );
 
       expect(idOfAllUsers).toEqual(expectedUserIds);
 
       //Database should contain all models - nothing should be changed
       let idOfAllModels = _.sortBy(
-        (await Model.find({})).map(model => model._id.toString()),
-        id => id
+        (await Model.find({})).map((model) => model._id.toString()),
+        (id) => id
       );
 
       let expectedModelIds = _.sortBy(
@@ -5556,9 +7111,9 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
           ...modelsOfTestUser,
-          ...modelsOfTestSuperAdmin
-        ].map(user => user._id.toString()),
-        id => id
+          ...modelsOfTestSuperAdmin,
+        ].map((user) => user._id.toString()),
+        (id) => id
       );
 
       expect(idOfAllModels).toEqual(expectedModelIds);
@@ -5573,7 +7128,9 @@ describe("/sidiroar/api/user", () => {
         email: testUser.email,
         name: "editedTestUser",
         permissions: 2,
-        password: "9876"
+        password: "9876",
+        additionalInfo: { key1: "value1", key2: "value2", key3: "value3" },
+        defaultLang: "eng",
       };
 
       let response = await exec();
@@ -5588,14 +7145,16 @@ describe("/sidiroar/api/user", () => {
         name: requestPayload.name,
         email: requestPayload.email,
         permissions: requestPayload.permissions,
-        modelIds: modelsOfTestUser.map(model => model._id.toString()),
-        modelNames: modelsOfTestUser.map(model => model.name),
+        modelIds: modelsOfTestUser.map((model) => model._id.toString()),
+        modelNames: modelsOfTestUser.map((model) => model.name),
         filesExist: await Promise.all(
-          modelsOfTestUser.map(async model => await model.fileExists())
+          modelsOfTestUser.map(async (model) => await model.fileExists())
         ),
         iosFilesExist: await Promise.all(
-          modelsOfTestUser.map(async model => await model.iosFileExists())
-        )
+          modelsOfTestUser.map(async (model) => await model.iosFileExists())
+        ),
+        additionalInfo: { key1: "value1", key2: "value2", key3: "value3" },
+        defaultLang: "eng",
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -5633,7 +7192,7 @@ describe("/sidiroar/api/user", () => {
         email: testUser.email,
         name: "editedTestUser",
         permissions: 4,
-        password: "9876"
+        password: "9876",
       };
 
       let response = await exec();
@@ -5653,8 +7212,8 @@ describe("/sidiroar/api/user", () => {
 
       //Database should contain all users - nothing should be changed
       let idOfAllUsers = _.sortBy(
-        (await User.find({})).map(user => user._id.toString()),
-        id => id
+        (await User.find({})).map((user) => user._id.toString()),
+        (id) => id
       );
 
       let expectedUserIds = _.sortBy(
@@ -5663,17 +7222,17 @@ describe("/sidiroar/api/user", () => {
           testUser._id.toString(),
           testAdmin._id.toString(),
           testUserAndAdmin._id.toString(),
-          testSuperAdmin._id.toString()
+          testSuperAdmin._id.toString(),
         ],
-        id => id
+        (id) => id
       );
 
       expect(idOfAllUsers).toEqual(expectedUserIds);
 
       //Database should contain all models - nothing should be changed
       let idOfAllModels = _.sortBy(
-        (await Model.find({})).map(model => model._id.toString()),
-        id => id
+        (await Model.find({})).map((model) => model._id.toString()),
+        (id) => id
       );
 
       let expectedModelIds = _.sortBy(
@@ -5682,9 +7241,9 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
           ...modelsOfTestUser,
-          ...modelsOfTestSuperAdmin
-        ].map(user => user._id.toString()),
-        id => id
+          ...modelsOfTestSuperAdmin,
+        ].map((user) => user._id.toString()),
+        (id) => id
       );
 
       expect(idOfAllModels).toEqual(expectedModelIds);
@@ -5699,7 +7258,9 @@ describe("/sidiroar/api/user", () => {
         email: testUser.email,
         name: "editedTestUser",
         permissions: 4,
-        password: "9876"
+        password: "9876",
+        additionalInfo: { key1: "value1", key2: "value2", key3: "value3" },
+        defaultLang: "eng",
       };
 
       let response = await exec();
@@ -5714,14 +7275,16 @@ describe("/sidiroar/api/user", () => {
         name: requestPayload.name,
         email: requestPayload.email,
         permissions: requestPayload.permissions,
-        modelIds: modelsOfTestUser.map(model => model._id.toString()),
-        modelNames: modelsOfTestUser.map(model => model.name),
+        modelIds: modelsOfTestUser.map((model) => model._id.toString()),
+        modelNames: modelsOfTestUser.map((model) => model.name),
         filesExist: await Promise.all(
-          modelsOfTestUser.map(async model => await model.fileExists())
+          modelsOfTestUser.map(async (model) => await model.fileExists())
         ),
         iosFilesExist: await Promise.all(
-          modelsOfTestUser.map(async model => await model.iosFileExists())
-        )
+          modelsOfTestUser.map(async (model) => await model.iosFileExists())
+        ),
+        additionalInfo: { key1: "value1", key2: "value2", key3: "value3" },
+        defaultLang: "eng",
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -5758,7 +7321,9 @@ describe("/sidiroar/api/user", () => {
         email: testAdmin.email,
         name: "editedTestUser",
         permissions: 4,
-        password: "9876"
+        password: "9876",
+        additionalInfo: { key1: "value1", key2: "value2", key3: "value3" },
+        defaultLang: "eng",
       };
 
       let response = await exec();
@@ -5773,14 +7338,16 @@ describe("/sidiroar/api/user", () => {
         name: requestPayload.name,
         email: requestPayload.email,
         permissions: requestPayload.permissions,
-        modelIds: modelsOfTestAdmin.map(model => model._id.toString()),
-        modelNames: modelsOfTestAdmin.map(model => model.name),
+        modelIds: modelsOfTestAdmin.map((model) => model._id.toString()),
+        modelNames: modelsOfTestAdmin.map((model) => model.name),
         filesExist: await Promise.all(
-          modelsOfTestAdmin.map(async model => await model.fileExists())
+          modelsOfTestAdmin.map(async (model) => await model.fileExists())
         ),
         iosFilesExist: await Promise.all(
-          modelsOfTestAdmin.map(async model => await model.iosFileExists())
-        )
+          modelsOfTestAdmin.map(async (model) => await model.iosFileExists())
+        ),
+        additionalInfo: { key1: "value1", key2: "value2", key3: "value3" },
+        defaultLang: "eng",
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -5825,10 +7392,7 @@ describe("/sidiroar/api/user", () => {
           .get(`/sidiroar/api/user/me`)
           .set(config.get("tokenHeader"), jwt)
           .send();
-      else
-        return request(server)
-          .get(`/sidiroar/api/user/me`)
-          .send();
+      else return request(server).get(`/sidiroar/api/user/me`).send();
     };
 
     it("should return 200 and payload of user based on jwt - if user exists", async () => {
@@ -5842,14 +7406,16 @@ describe("/sidiroar/api/user", () => {
         name: testUser.name,
         email: testUser.email,
         permissions: testUser.permissions,
-        modelIds: modelsOfTestUser.map(model => model._id.toString()),
-        modelNames: modelsOfTestUser.map(model => model.name),
+        modelIds: modelsOfTestUser.map((model) => model._id.toString()),
+        modelNames: modelsOfTestUser.map((model) => model.name),
         filesExist: await Promise.all(
-          modelsOfTestUser.map(async model => await model.fileExists())
+          modelsOfTestUser.map(async (model) => await model.fileExists())
         ),
         iosFilesExist: await Promise.all(
-          modelsOfTestUser.map(async model => await model.iosFileExists())
-        )
+          modelsOfTestUser.map(async (model) => await model.iosFileExists())
+        ),
+        additionalInfo: {},
+        defaultLang: "pl",
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -5888,7 +7454,68 @@ describe("/sidiroar/api/user", () => {
         modelIds: [],
         modelNames: [],
         filesExist: [],
-        iosFilesExist: []
+        iosFilesExist: [],
+        additionalInfo: {},
+        defaultLang: "pl",
+      };
+
+      expect(response.body).toEqual(expectedPayload);
+    });
+
+    it("should return 200 and user - if user has additionalInfo defined", async () => {
+      let info = { key1: "value1", key2: "value2", key3: "value3" };
+      testUser.additionalInfo = { ...info };
+      await testUser.save();
+
+      let response = await exec();
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(200);
+
+      let expectedPayload = {
+        _id: testUser._id.toString(),
+        name: testUser.name,
+        email: testUser.email,
+        permissions: testUser.permissions,
+        modelIds: modelsOfTestUser.map((model) => model._id.toString()),
+        modelNames: modelsOfTestUser.map((model) => model.name),
+        filesExist: await Promise.all(
+          modelsOfTestUser.map(async (model) => await model.fileExists())
+        ),
+        iosFilesExist: await Promise.all(
+          modelsOfTestUser.map(async (model) => await model.iosFileExists())
+        ),
+        additionalInfo: info,
+        defaultLang: "pl",
+      };
+
+      expect(response.body).toEqual(expectedPayload);
+    });
+
+    it("should return 200 and user - if user has defaultLang defined as eng", async () => {
+      testUser.defaultLang = "eng";
+      await testUser.save();
+
+      let response = await exec();
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(200);
+
+      let expectedPayload = {
+        _id: testUser._id.toString(),
+        name: testUser.name,
+        email: testUser.email,
+        permissions: testUser.permissions,
+        modelIds: modelsOfTestUser.map((model) => model._id.toString()),
+        modelNames: modelsOfTestUser.map((model) => model.name),
+        filesExist: await Promise.all(
+          modelsOfTestUser.map(async (model) => await model.fileExists())
+        ),
+        iosFilesExist: await Promise.all(
+          modelsOfTestUser.map(async (model) => await model.iosFileExists())
+        ),
+        additionalInfo: {},
+        defaultLang: "eng",
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -5952,16 +7579,20 @@ describe("/sidiroar/api/user", () => {
         name: testUserAndAdmin.name,
         email: testUserAndAdmin.email,
         permissions: testUserAndAdmin.permissions,
-        modelIds: modelsOfTestUserAndAdmin.map(model => model._id.toString()),
-        modelNames: modelsOfTestUserAndAdmin.map(model => model.name),
+        modelIds: modelsOfTestUserAndAdmin.map((model) => model._id.toString()),
+        modelNames: modelsOfTestUserAndAdmin.map((model) => model.name),
         filesExist: await Promise.all(
-          modelsOfTestUserAndAdmin.map(async model => await model.fileExists())
+          modelsOfTestUserAndAdmin.map(
+            async (model) => await model.fileExists()
+          )
         ),
         iosFilesExist: await Promise.all(
           modelsOfTestUserAndAdmin.map(
-            async model => await model.iosFileExists()
+            async (model) => await model.iosFileExists()
           )
-        )
+        ),
+        additionalInfo: {},
+        defaultLang: "pl",
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -5996,7 +7627,7 @@ describe("/sidiroar/api/user", () => {
         _id: testAdmin._id,
         email: testAdmin.email,
         name: testAdmin.name,
-        permissions: testAdmin.permissions
+        permissions: testAdmin.permissions,
       };
 
       jwt = await jsonWebToken.sign(fakeUserPayload, "differentTestPrivateKey");
@@ -6026,7 +7657,13 @@ describe("/sidiroar/api/user", () => {
         name: "editedTestUser",
         permissions: testUser.permissions,
         password: "9876",
-        oldPassword: "4321"
+        oldPassword: "4321",
+        additionalInfo: {
+          key1: "value1",
+          key2: "value2",
+          key3: "value3",
+        },
+        defaultLang: "eng",
       };
     });
 
@@ -6055,14 +7692,20 @@ describe("/sidiroar/api/user", () => {
         name: requestPayload.name,
         email: requestPayload.email,
         permissions: requestPayload.permissions,
-        modelIds: modelsOfTestUser.map(model => model._id.toString()),
-        modelNames: modelsOfTestUser.map(model => model.name),
+        modelIds: modelsOfTestUser.map((model) => model._id.toString()),
+        modelNames: modelsOfTestUser.map((model) => model.name),
         filesExist: await Promise.all(
-          modelsOfTestUser.map(async model => await model.fileExists())
+          modelsOfTestUser.map(async (model) => await model.fileExists())
         ),
         iosFilesExist: await Promise.all(
-          modelsOfTestUser.map(async model => await model.iosFileExists())
-        )
+          modelsOfTestUser.map(async (model) => await model.iosFileExists())
+        ),
+        additionalInfo: {
+          key1: "value1",
+          key2: "value2",
+          key3: "value3",
+        },
+        defaultLang: "eng",
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -6107,14 +7750,20 @@ describe("/sidiroar/api/user", () => {
         name: requestPayload.name,
         email: requestPayload.email,
         permissions: requestPayload.permissions,
-        modelIds: modelsOfTestUser.map(model => model._id.toString()),
-        modelNames: modelsOfTestUser.map(model => model.name),
+        modelIds: modelsOfTestUser.map((model) => model._id.toString()),
+        modelNames: modelsOfTestUser.map((model) => model.name),
         filesExist: await Promise.all(
-          modelsOfTestUser.map(async model => await model.fileExists())
+          modelsOfTestUser.map(async (model) => await model.fileExists())
         ),
         iosFilesExist: await Promise.all(
-          modelsOfTestUser.map(async model => await model.iosFileExists())
-        )
+          modelsOfTestUser.map(async (model) => await model.iosFileExists())
+        ),
+        additionalInfo: {
+          key1: "value1",
+          key2: "value2",
+          key3: "value3",
+        },
+        defaultLang: "eng",
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -6418,6 +8067,43 @@ describe("/sidiroar/api/user", () => {
       //#endregion CHECKING_DATABASE
     });
 
+    it("should return 400, and not edit user - if user exists but old password is invalid", async () => {
+      requestPayload.oldPassword = "9999";
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(400);
+
+      expect(response.text).toContain("Invalid old password");
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //User should not be edited in database
+      let expectedPayload = await testUser.getPayload();
+
+      //Getting user from db
+      let userFromDatabase = await User.findOne({ _id: testUser._id });
+      expect(userFromDatabase).toBeDefined();
+
+      //Checking payload
+      let userFromDatabasePayload = await userFromDatabase.getPayload();
+      expect(userFromDatabasePayload).toEqual(expectedPayload);
+
+      //Checking password - it should have not been changed
+      let newPasswordMatches = await hashedStringMatch(
+        "4321",
+        userFromDatabase.password
+      );
+
+      expect(newPasswordMatches).toEqual(true);
+
+      //#endregion CHECKING_DATABASE
+    });
+
     it("should return 404, and not edit any user- if user of given id in jwt does not exist", async () => {
       await User.deleteMany({ _id: testUser._id });
 
@@ -6435,8 +8121,8 @@ describe("/sidiroar/api/user", () => {
 
       //Database should contain all users - nothing should be changed
       let idOfAllUsers = _.sortBy(
-        (await User.find({})).map(user => user._id.toString()),
-        id => id
+        (await User.find({})).map((user) => user._id.toString()),
+        (id) => id
       );
 
       let expectedUserIds = _.sortBy(
@@ -6444,17 +8130,17 @@ describe("/sidiroar/api/user", () => {
           uselessUser._id.toString(),
           testAdmin._id.toString(),
           testUserAndAdmin._id.toString(),
-          testSuperAdmin._id.toString()
+          testSuperAdmin._id.toString(),
         ],
-        id => id
+        (id) => id
       );
 
       expect(idOfAllUsers).toEqual(expectedUserIds);
 
       //Database should contain all models - nothing should be changed
       let idOfAllModels = _.sortBy(
-        (await Model.find({})).map(model => model._id.toString()),
-        id => id
+        (await Model.find({})).map((model) => model._id.toString()),
+        (id) => id
       );
 
       let expectedModelIds = _.sortBy(
@@ -6463,9 +8149,9 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
           ...modelsOfTestUser,
-          ...modelsOfTestSuperAdmin
-        ].map(user => user._id.toString()),
-        id => id
+          ...modelsOfTestSuperAdmin,
+        ].map((user) => user._id.toString()),
+        (id) => id
       );
 
       expect(idOfAllModels).toEqual(expectedModelIds);
@@ -6491,8 +8177,8 @@ describe("/sidiroar/api/user", () => {
 
       //Database should contain all users - nothing should be changed
       let idOfAllUsers = _.sortBy(
-        (await User.find({})).map(user => user._id.toString()),
-        id => id
+        (await User.find({})).map((user) => user._id.toString()),
+        (id) => id
       );
 
       let expectedUserIds = _.sortBy(
@@ -6501,17 +8187,17 @@ describe("/sidiroar/api/user", () => {
           testUser._id.toString(),
           testAdmin._id.toString(),
           testUserAndAdmin._id.toString(),
-          testSuperAdmin._id.toString()
+          testSuperAdmin._id.toString(),
         ],
-        id => id
+        (id) => id
       );
 
       expect(idOfAllUsers).toEqual(expectedUserIds);
 
       //Database should contain all models - nothing should be changed
       let idOfAllModels = _.sortBy(
-        (await Model.find({})).map(model => model._id.toString()),
-        id => id
+        (await Model.find({})).map((model) => model._id.toString()),
+        (id) => id
       );
 
       let expectedModelIds = _.sortBy(
@@ -6520,9 +8206,9 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
           ...modelsOfTestUser,
-          ...modelsOfTestSuperAdmin
-        ].map(user => user._id.toString()),
-        id => id
+          ...modelsOfTestSuperAdmin,
+        ].map((user) => user._id.toString()),
+        (id) => id
       );
 
       expect(idOfAllModels).toEqual(expectedModelIds);
@@ -6548,8 +8234,8 @@ describe("/sidiroar/api/user", () => {
 
       //Database should contain all users - nothing should be changed
       let idOfAllUsers = _.sortBy(
-        (await User.find({})).map(user => user._id.toString()),
-        id => id
+        (await User.find({})).map((user) => user._id.toString()),
+        (id) => id
       );
 
       let expectedUserIds = _.sortBy(
@@ -6558,17 +8244,17 @@ describe("/sidiroar/api/user", () => {
           testUser._id.toString(),
           testAdmin._id.toString(),
           testUserAndAdmin._id.toString(),
-          testSuperAdmin._id.toString()
+          testSuperAdmin._id.toString(),
         ],
-        id => id
+        (id) => id
       );
 
       expect(idOfAllUsers).toEqual(expectedUserIds);
 
       //Database should contain all models - nothing should be changed
       let idOfAllModels = _.sortBy(
-        (await Model.find({})).map(model => model._id.toString()),
-        id => id
+        (await Model.find({})).map((model) => model._id.toString()),
+        (id) => id
       );
 
       let expectedModelIds = _.sortBy(
@@ -6577,9 +8263,9 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
           ...modelsOfTestUser,
-          ...modelsOfTestSuperAdmin
-        ].map(user => user._id.toString()),
-        id => id
+          ...modelsOfTestSuperAdmin,
+        ].map((user) => user._id.toString()),
+        (id) => id
       );
 
       expect(idOfAllModels).toEqual(expectedModelIds);
@@ -6605,8 +8291,8 @@ describe("/sidiroar/api/user", () => {
 
       //Database should contain all users - nothing should be changed
       let idOfAllUsers = _.sortBy(
-        (await User.find({})).map(user => user._id.toString()),
-        id => id
+        (await User.find({})).map((user) => user._id.toString()),
+        (id) => id
       );
 
       let expectedUserIds = _.sortBy(
@@ -6615,17 +8301,17 @@ describe("/sidiroar/api/user", () => {
           testUser._id.toString(),
           testAdmin._id.toString(),
           testUserAndAdmin._id.toString(),
-          testSuperAdmin._id.toString()
+          testSuperAdmin._id.toString(),
         ],
-        id => id
+        (id) => id
       );
 
       expect(idOfAllUsers).toEqual(expectedUserIds);
 
       //Database should contain all models - nothing should be changed
       let idOfAllModels = _.sortBy(
-        (await Model.find({})).map(model => model._id.toString()),
-        id => id
+        (await Model.find({})).map((model) => model._id.toString()),
+        (id) => id
       );
 
       let expectedModelIds = _.sortBy(
@@ -6634,9 +8320,9 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
           ...modelsOfTestUser,
-          ...modelsOfTestSuperAdmin
-        ].map(user => user._id.toString()),
-        id => id
+          ...modelsOfTestSuperAdmin,
+        ].map((user) => user._id.toString()),
+        (id) => id
       );
 
       expect(idOfAllModels).toEqual(expectedModelIds);
@@ -6662,8 +8348,8 @@ describe("/sidiroar/api/user", () => {
 
       //Database should contain all users - nothing should be changed
       let idOfAllUsers = _.sortBy(
-        (await User.find({})).map(user => user._id.toString()),
-        id => id
+        (await User.find({})).map((user) => user._id.toString()),
+        (id) => id
       );
 
       let expectedUserIds = _.sortBy(
@@ -6672,17 +8358,17 @@ describe("/sidiroar/api/user", () => {
           testUser._id.toString(),
           testAdmin._id.toString(),
           testUserAndAdmin._id.toString(),
-          testSuperAdmin._id.toString()
+          testSuperAdmin._id.toString(),
         ],
-        id => id
+        (id) => id
       );
 
       expect(idOfAllUsers).toEqual(expectedUserIds);
 
       //Database should contain all models - nothing should be changed
       let idOfAllModels = _.sortBy(
-        (await Model.find({})).map(model => model._id.toString()),
-        id => id
+        (await Model.find({})).map((model) => model._id.toString()),
+        (id) => id
       );
 
       let expectedModelIds = _.sortBy(
@@ -6691,9 +8377,9 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
           ...modelsOfTestUser,
-          ...modelsOfTestSuperAdmin
-        ].map(user => user._id.toString()),
-        id => id
+          ...modelsOfTestSuperAdmin,
+        ].map((user) => user._id.toString()),
+        (id) => id
       );
 
       expect(idOfAllModels).toEqual(expectedModelIds);
@@ -6719,8 +8405,8 @@ describe("/sidiroar/api/user", () => {
 
       //Database should contain all users - nothing should be changed
       let idOfAllUsers = _.sortBy(
-        (await User.find({})).map(user => user._id.toString()),
-        id => id
+        (await User.find({})).map((user) => user._id.toString()),
+        (id) => id
       );
 
       let expectedUserIds = _.sortBy(
@@ -6729,17 +8415,17 @@ describe("/sidiroar/api/user", () => {
           testUser._id.toString(),
           testAdmin._id.toString(),
           testUserAndAdmin._id.toString(),
-          testSuperAdmin._id.toString()
+          testSuperAdmin._id.toString(),
         ],
-        id => id
+        (id) => id
       );
 
       expect(idOfAllUsers).toEqual(expectedUserIds);
 
       //Database should contain all models - nothing should be changed
       let idOfAllModels = _.sortBy(
-        (await Model.find({})).map(model => model._id.toString()),
-        id => id
+        (await Model.find({})).map((model) => model._id.toString()),
+        (id) => id
       );
 
       let expectedModelIds = _.sortBy(
@@ -6748,9 +8434,9 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
           ...modelsOfTestUser,
-          ...modelsOfTestSuperAdmin
-        ].map(user => user._id.toString()),
-        id => id
+          ...modelsOfTestSuperAdmin,
+        ].map((user) => user._id.toString()),
+        (id) => id
       );
 
       expect(idOfAllModels).toEqual(expectedModelIds);
@@ -6776,8 +8462,8 @@ describe("/sidiroar/api/user", () => {
 
       //Database should contain all users - nothing should be changed
       let idOfAllUsers = _.sortBy(
-        (await User.find({})).map(user => user._id.toString()),
-        id => id
+        (await User.find({})).map((user) => user._id.toString()),
+        (id) => id
       );
 
       let expectedUserIds = _.sortBy(
@@ -6786,17 +8472,17 @@ describe("/sidiroar/api/user", () => {
           testUser._id.toString(),
           testAdmin._id.toString(),
           testUserAndAdmin._id.toString(),
-          testSuperAdmin._id.toString()
+          testSuperAdmin._id.toString(),
         ],
-        id => id
+        (id) => id
       );
 
       expect(idOfAllUsers).toEqual(expectedUserIds);
 
       //Database should contain all models - nothing should be changed
       let idOfAllModels = _.sortBy(
-        (await Model.find({})).map(model => model._id.toString()),
-        id => id
+        (await Model.find({})).map((model) => model._id.toString()),
+        (id) => id
       );
 
       let expectedModelIds = _.sortBy(
@@ -6805,9 +8491,9 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
           ...modelsOfTestUser,
-          ...modelsOfTestSuperAdmin
-        ].map(user => user._id.toString()),
-        id => id
+          ...modelsOfTestSuperAdmin,
+        ].map((user) => user._id.toString()),
+        (id) => id
       );
 
       expect(idOfAllModels).toEqual(expectedModelIds);
@@ -6835,8 +8521,8 @@ describe("/sidiroar/api/user", () => {
 
       //Database should contain all users - nothing should be changed
       let idOfAllUsers = _.sortBy(
-        (await User.find({})).map(user => user._id.toString()),
-        id => id
+        (await User.find({})).map((user) => user._id.toString()),
+        (id) => id
       );
 
       let expectedUserIds = _.sortBy(
@@ -6845,17 +8531,17 @@ describe("/sidiroar/api/user", () => {
           testUser._id.toString(),
           testAdmin._id.toString(),
           testUserAndAdmin._id.toString(),
-          testSuperAdmin._id.toString()
+          testSuperAdmin._id.toString(),
         ],
-        id => id
+        (id) => id
       );
 
       expect(idOfAllUsers).toEqual(expectedUserIds);
 
       //Database should contain all models - nothing should be changed
       let idOfAllModels = _.sortBy(
-        (await Model.find({})).map(model => model._id.toString()),
-        id => id
+        (await Model.find({})).map((model) => model._id.toString()),
+        (id) => id
       );
 
       let expectedModelIds = _.sortBy(
@@ -6864,9 +8550,9 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
           ...modelsOfTestUser,
-          ...modelsOfTestSuperAdmin
-        ].map(user => user._id.toString()),
-        id => id
+          ...modelsOfTestSuperAdmin,
+        ].map((user) => user._id.toString()),
+        (id) => id
       );
 
       expect(idOfAllModels).toEqual(expectedModelIds);
@@ -6888,14 +8574,20 @@ describe("/sidiroar/api/user", () => {
         name: requestPayload.name,
         email: requestPayload.email,
         permissions: requestPayload.permissions,
-        modelIds: modelsOfTestUser.map(model => model._id.toString()),
-        modelNames: modelsOfTestUser.map(model => model.name),
+        modelIds: modelsOfTestUser.map((model) => model._id.toString()),
+        modelNames: modelsOfTestUser.map((model) => model.name),
         filesExist: await Promise.all(
-          modelsOfTestUser.map(async model => await model.fileExists())
+          modelsOfTestUser.map(async (model) => await model.fileExists())
         ),
         iosFilesExist: await Promise.all(
-          modelsOfTestUser.map(async model => await model.iosFileExists())
-        )
+          modelsOfTestUser.map(async (model) => await model.iosFileExists())
+        ),
+        additionalInfo: {
+          key1: "value1",
+          key2: "value2",
+          key3: "value3",
+        },
+        defaultLang: "eng",
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -6945,8 +8637,8 @@ describe("/sidiroar/api/user", () => {
 
       //Database should contain all users - nothing should be changed
       let idOfAllUsers = _.sortBy(
-        (await User.find({})).map(user => user._id.toString()),
-        id => id
+        (await User.find({})).map((user) => user._id.toString()),
+        (id) => id
       );
 
       let expectedUserIds = _.sortBy(
@@ -6955,17 +8647,17 @@ describe("/sidiroar/api/user", () => {
           testUser._id.toString(),
           testAdmin._id.toString(),
           testUserAndAdmin._id.toString(),
-          testSuperAdmin._id.toString()
+          testSuperAdmin._id.toString(),
         ],
-        id => id
+        (id) => id
       );
 
       expect(idOfAllUsers).toEqual(expectedUserIds);
 
       //Database should contain all models - nothing should be changed
       let idOfAllModels = _.sortBy(
-        (await Model.find({})).map(model => model._id.toString()),
-        id => id
+        (await Model.find({})).map((model) => model._id.toString()),
+        (id) => id
       );
 
       let expectedModelIds = _.sortBy(
@@ -6974,9 +8666,9 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
           ...modelsOfTestUser,
-          ...modelsOfTestSuperAdmin
-        ].map(user => user._id.toString()),
-        id => id
+          ...modelsOfTestSuperAdmin,
+        ].map((user) => user._id.toString()),
+        (id) => id
       );
 
       expect(idOfAllModels).toEqual(expectedModelIds);
@@ -7000,14 +8692,20 @@ describe("/sidiroar/api/user", () => {
         name: requestPayload.name,
         email: requestPayload.email,
         permissions: requestPayload.permissions,
-        modelIds: modelsOfTestUser.map(model => model._id.toString()),
-        modelNames: modelsOfTestUser.map(model => model.name),
+        modelIds: modelsOfTestUser.map((model) => model._id.toString()),
+        modelNames: modelsOfTestUser.map((model) => model.name),
         filesExist: await Promise.all(
-          modelsOfTestUser.map(async model => await model.fileExists())
+          modelsOfTestUser.map(async (model) => await model.fileExists())
         ),
         iosFilesExist: await Promise.all(
-          modelsOfTestUser.map(async model => await model.iosFileExists())
-        )
+          modelsOfTestUser.map(async (model) => await model.iosFileExists())
+        ),
+        additionalInfo: {
+          key1: "value1",
+          key2: "value2",
+          key3: "value3",
+        },
+        defaultLang: "eng",
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -7037,6 +8735,328 @@ describe("/sidiroar/api/user", () => {
       //#endregion CHECKING_DATABASE
     });
 
+    it("should return 200, edit user, and return it - if additional info is not defined in payload and was prevously set", async () => {
+      //setting additional info
+      testUser.additionalInfo = {
+        key1: "value1",
+        key2: "value2",
+        key3: "value3",
+      };
+      await testUser.save();
+
+      delete requestPayload.additionalInfo;
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(200);
+
+      let expectedPayload = {
+        _id: testUser._id.toString(),
+        name: requestPayload.name,
+        email: requestPayload.email,
+        permissions: requestPayload.permissions,
+        modelIds: modelsOfTestUser.map((model) => model._id.toString()),
+        modelNames: modelsOfTestUser.map((model) => model.name),
+        filesExist: await Promise.all(
+          modelsOfTestUser.map(async (model) => await model.fileExists())
+        ),
+        iosFilesExist: await Promise.all(
+          modelsOfTestUser.map(async (model) => await model.iosFileExists())
+        ),
+        additionalInfo: {
+          key1: "value1",
+          key2: "value2",
+          key3: "value3",
+        },
+        defaultLang: "eng",
+      };
+
+      expect(response.body).toEqual(expectedPayload);
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //User should also be edited in database
+
+      //Getting user from db
+      let userFromDatabase = await User.findOne({ _id: testUser._id });
+      expect(userFromDatabase).toBeDefined();
+
+      //Checking payload
+      let userFromDatabasePayload = await userFromDatabase.getPayload();
+      expect(userFromDatabasePayload).toEqual(expectedPayload);
+
+      //Checking password
+      let newPasswordMatches = await hashedStringMatch(
+        requestPayload.password,
+        userFromDatabase.password
+      );
+
+      expect(newPasswordMatches).toEqual(true);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should return 400, and not edit any user- if additional info is null and was prevously set", async () => {
+      //setting additional info
+      testUser.additionalInfo = {
+        key1: "value1",
+        key2: "value2",
+        key3: "value3",
+      };
+      await testUser.save();
+
+      requestPayload.additionalInfo = null;
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(400);
+      expect(response.text).toContain('"additionalInfo" must be an object');
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //Database should contain all users - nothing should be changed
+      let idOfAllUsers = _.sortBy(
+        (await User.find({})).map((user) => user._id.toString()),
+        (id) => id
+      );
+
+      let expectedUserIds = _.sortBy(
+        [
+          uselessUser._id.toString(),
+          testUser._id.toString(),
+          testAdmin._id.toString(),
+          testUserAndAdmin._id.toString(),
+          testSuperAdmin._id.toString(),
+        ],
+        (id) => id
+      );
+
+      expect(idOfAllUsers).toEqual(expectedUserIds);
+
+      //Database should contain all models - nothing should be changed
+      let idOfAllModels = _.sortBy(
+        (await Model.find({})).map((model) => model._id.toString()),
+        (id) => id
+      );
+
+      let expectedModelIds = _.sortBy(
+        [
+          ...modelsOfUselessUser,
+          ...modelsOfTestAdmin,
+          ...modelsOfTestUserAndAdmin,
+          ...modelsOfTestUser,
+          ...modelsOfTestSuperAdmin,
+        ].map((user) => user._id.toString()),
+        (id) => id
+      );
+
+      expect(idOfAllModels).toEqual(expectedModelIds);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should return 400, and not edit any user- if additional info is a string and was prevously set", async () => {
+      //setting additional info
+      testUser.additionalInfo = {
+        key1: "value1",
+        key2: "value2",
+        key3: "value3",
+      };
+      await testUser.save();
+
+      requestPayload.additionalInfo = "testString";
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(400);
+      expect(response.text).toContain('"additionalInfo" must be an object');
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //Database should contain all users - nothing should be changed
+      let idOfAllUsers = _.sortBy(
+        (await User.find({})).map((user) => user._id.toString()),
+        (id) => id
+      );
+
+      let expectedUserIds = _.sortBy(
+        [
+          uselessUser._id.toString(),
+          testUser._id.toString(),
+          testAdmin._id.toString(),
+          testUserAndAdmin._id.toString(),
+          testSuperAdmin._id.toString(),
+        ],
+        (id) => id
+      );
+
+      expect(idOfAllUsers).toEqual(expectedUserIds);
+
+      //Database should contain all models - nothing should be changed
+      let idOfAllModels = _.sortBy(
+        (await Model.find({})).map((model) => model._id.toString()),
+        (id) => id
+      );
+
+      let expectedModelIds = _.sortBy(
+        [
+          ...modelsOfUselessUser,
+          ...modelsOfTestAdmin,
+          ...modelsOfTestUserAndAdmin,
+          ...modelsOfTestUser,
+          ...modelsOfTestSuperAdmin,
+        ].map((user) => user._id.toString()),
+        (id) => id
+      );
+
+      expect(idOfAllModels).toEqual(expectedModelIds);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should return 400, and not edit any user- if additional info is a number and was prevously set", async () => {
+      //setting additional info
+      testUser.additionalInfo = {
+        key1: "value1",
+        key2: "value2",
+        key3: "value3",
+      };
+      await testUser.save();
+
+      requestPayload.additionalInfo = 123;
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(400);
+      expect(response.text).toContain('"additionalInfo" must be an object');
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //Database should contain all users - nothing should be changed
+      let idOfAllUsers = _.sortBy(
+        (await User.find({})).map((user) => user._id.toString()),
+        (id) => id
+      );
+
+      let expectedUserIds = _.sortBy(
+        [
+          uselessUser._id.toString(),
+          testUser._id.toString(),
+          testAdmin._id.toString(),
+          testUserAndAdmin._id.toString(),
+          testSuperAdmin._id.toString(),
+        ],
+        (id) => id
+      );
+
+      expect(idOfAllUsers).toEqual(expectedUserIds);
+
+      //Database should contain all models - nothing should be changed
+      let idOfAllModels = _.sortBy(
+        (await Model.find({})).map((model) => model._id.toString()),
+        (id) => id
+      );
+
+      let expectedModelIds = _.sortBy(
+        [
+          ...modelsOfUselessUser,
+          ...modelsOfTestAdmin,
+          ...modelsOfTestUserAndAdmin,
+          ...modelsOfTestUser,
+          ...modelsOfTestSuperAdmin,
+        ].map((user) => user._id.toString()),
+        (id) => id
+      );
+
+      expect(idOfAllModels).toEqual(expectedModelIds);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should return 400, and not edit any user- if additional info is a boolean and was prevously set", async () => {
+      //setting additional info
+      testUser.additionalInfo = {
+        key1: "value1",
+        key2: "value2",
+        key3: "value3",
+      };
+      await testUser.save();
+
+      requestPayload.additionalInfo = true;
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(400);
+      expect(response.text).toContain('"additionalInfo" must be an object');
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //Database should contain all users - nothing should be changed
+      let idOfAllUsers = _.sortBy(
+        (await User.find({})).map((user) => user._id.toString()),
+        (id) => id
+      );
+
+      let expectedUserIds = _.sortBy(
+        [
+          uselessUser._id.toString(),
+          testUser._id.toString(),
+          testAdmin._id.toString(),
+          testUserAndAdmin._id.toString(),
+          testSuperAdmin._id.toString(),
+        ],
+        (id) => id
+      );
+
+      expect(idOfAllUsers).toEqual(expectedUserIds);
+
+      //Database should contain all models - nothing should be changed
+      let idOfAllModels = _.sortBy(
+        (await Model.find({})).map((model) => model._id.toString()),
+        (id) => id
+      );
+
+      let expectedModelIds = _.sortBy(
+        [
+          ...modelsOfUselessUser,
+          ...modelsOfTestAdmin,
+          ...modelsOfTestUserAndAdmin,
+          ...modelsOfTestUser,
+          ...modelsOfTestSuperAdmin,
+        ].map((user) => user._id.toString()),
+        (id) => id
+      );
+
+      expect(idOfAllModels).toEqual(expectedModelIds);
+
+      //#endregion CHECKING_DATABASE
+    });
+
     it("should return 400, and not edit any user- if users permissions is not defined", async () => {
       delete requestPayload.permissions;
 
@@ -7054,8 +9074,8 @@ describe("/sidiroar/api/user", () => {
 
       //Database should contain all users - nothing should be changed
       let idOfAllUsers = _.sortBy(
-        (await User.find({})).map(user => user._id.toString()),
-        id => id
+        (await User.find({})).map((user) => user._id.toString()),
+        (id) => id
       );
 
       let expectedUserIds = _.sortBy(
@@ -7064,17 +9084,17 @@ describe("/sidiroar/api/user", () => {
           testUser._id.toString(),
           testAdmin._id.toString(),
           testUserAndAdmin._id.toString(),
-          testSuperAdmin._id.toString()
+          testSuperAdmin._id.toString(),
         ],
-        id => id
+        (id) => id
       );
 
       expect(idOfAllUsers).toEqual(expectedUserIds);
 
       //Database should contain all models - nothing should be changed
       let idOfAllModels = _.sortBy(
-        (await Model.find({})).map(model => model._id.toString()),
-        id => id
+        (await Model.find({})).map((model) => model._id.toString()),
+        (id) => id
       );
 
       let expectedModelIds = _.sortBy(
@@ -7083,9 +9103,311 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
           ...modelsOfTestUser,
-          ...modelsOfTestSuperAdmin
-        ].map(user => user._id.toString()),
-        id => id
+          ...modelsOfTestSuperAdmin,
+        ].map((user) => user._id.toString()),
+        (id) => id
+      );
+
+      expect(idOfAllModels).toEqual(expectedModelIds);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should return 200, edit user, and return it - if defaultLang is not defined in payload and was prevously set to eng", async () => {
+      //setting defaultLang
+      testUser.defaultLang = "eng";
+      await testUser.save();
+
+      delete requestPayload.defaultLang;
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(200);
+
+      let expectedPayload = {
+        _id: testUser._id.toString(),
+        name: requestPayload.name,
+        email: requestPayload.email,
+        permissions: requestPayload.permissions,
+        modelIds: modelsOfTestUser.map((model) => model._id.toString()),
+        modelNames: modelsOfTestUser.map((model) => model.name),
+        filesExist: await Promise.all(
+          modelsOfTestUser.map(async (model) => await model.fileExists())
+        ),
+        iosFilesExist: await Promise.all(
+          modelsOfTestUser.map(async (model) => await model.iosFileExists())
+        ),
+        additionalInfo: {
+          key1: "value1",
+          key2: "value2",
+          key3: "value3",
+        },
+        defaultLang: "eng",
+      };
+
+      expect(response.body).toEqual(expectedPayload);
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //User should also be edited in database
+
+      //Getting user from db
+      let userFromDatabase = await User.findOne({ _id: testUser._id });
+      expect(userFromDatabase).toBeDefined();
+
+      //Checking payload
+      let userFromDatabasePayload = await userFromDatabase.getPayload();
+      expect(userFromDatabasePayload).toEqual(expectedPayload);
+
+      //Checking password
+      let newPasswordMatches = await hashedStringMatch(
+        requestPayload.password,
+        userFromDatabase.password
+      );
+
+      expect(newPasswordMatches).toEqual(true);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should return 400, and not edit any user- if defaultLang is null in payload and was prevously set to eng", async () => {
+      //setting defaultLang
+      testUser.defaultLang = "eng";
+      await testUser.save();
+
+      requestPayload.defaultLang = null;
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(400);
+      expect(response.text).toContain('"defaultLang" must be one of [pl, eng]');
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //Database should contain all users - nothing should be changed
+      let idOfAllUsers = _.sortBy(
+        (await User.find({})).map((user) => user._id.toString()),
+        (id) => id
+      );
+
+      let expectedUserIds = _.sortBy(
+        [
+          uselessUser._id.toString(),
+          testUser._id.toString(),
+          testAdmin._id.toString(),
+          testUserAndAdmin._id.toString(),
+          testSuperAdmin._id.toString(),
+        ],
+        (id) => id
+      );
+
+      expect(idOfAllUsers).toEqual(expectedUserIds);
+
+      //Database should contain all models - nothing should be changed
+      let idOfAllModels = _.sortBy(
+        (await Model.find({})).map((model) => model._id.toString()),
+        (id) => id
+      );
+
+      let expectedModelIds = _.sortBy(
+        [
+          ...modelsOfUselessUser,
+          ...modelsOfTestAdmin,
+          ...modelsOfTestUserAndAdmin,
+          ...modelsOfTestUser,
+          ...modelsOfTestSuperAdmin,
+        ].map((user) => user._id.toString()),
+        (id) => id
+      );
+
+      expect(idOfAllModels).toEqual(expectedModelIds);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should return 400, and not edit any user- if defaultLang is invalid string in payload and was prevously set to eng", async () => {
+      //setting defaultLang
+      testUser.defaultLang = "eng";
+      await testUser.save();
+
+      requestPayload.defaultLang = "invalidString";
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(400);
+      expect(response.text).toContain('"defaultLang" must be one of [pl, eng]');
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //Database should contain all users - nothing should be changed
+      let idOfAllUsers = _.sortBy(
+        (await User.find({})).map((user) => user._id.toString()),
+        (id) => id
+      );
+
+      let expectedUserIds = _.sortBy(
+        [
+          uselessUser._id.toString(),
+          testUser._id.toString(),
+          testAdmin._id.toString(),
+          testUserAndAdmin._id.toString(),
+          testSuperAdmin._id.toString(),
+        ],
+        (id) => id
+      );
+
+      expect(idOfAllUsers).toEqual(expectedUserIds);
+
+      //Database should contain all models - nothing should be changed
+      let idOfAllModels = _.sortBy(
+        (await Model.find({})).map((model) => model._id.toString()),
+        (id) => id
+      );
+
+      let expectedModelIds = _.sortBy(
+        [
+          ...modelsOfUselessUser,
+          ...modelsOfTestAdmin,
+          ...modelsOfTestUserAndAdmin,
+          ...modelsOfTestUser,
+          ...modelsOfTestSuperAdmin,
+        ].map((user) => user._id.toString()),
+        (id) => id
+      );
+
+      expect(idOfAllModels).toEqual(expectedModelIds);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should return 400, and not edit any user- if defaultLang is a number in payload and was prevously set to eng", async () => {
+      //setting defaultLang
+      testUser.defaultLang = "eng";
+      await testUser.save();
+
+      requestPayload.defaultLang = 123;
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(400);
+      expect(response.text).toContain('"defaultLang" must be one of [pl, eng]');
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //Database should contain all users - nothing should be changed
+      let idOfAllUsers = _.sortBy(
+        (await User.find({})).map((user) => user._id.toString()),
+        (id) => id
+      );
+
+      let expectedUserIds = _.sortBy(
+        [
+          uselessUser._id.toString(),
+          testUser._id.toString(),
+          testAdmin._id.toString(),
+          testUserAndAdmin._id.toString(),
+          testSuperAdmin._id.toString(),
+        ],
+        (id) => id
+      );
+
+      expect(idOfAllUsers).toEqual(expectedUserIds);
+
+      //Database should contain all models - nothing should be changed
+      let idOfAllModels = _.sortBy(
+        (await Model.find({})).map((model) => model._id.toString()),
+        (id) => id
+      );
+
+      let expectedModelIds = _.sortBy(
+        [
+          ...modelsOfUselessUser,
+          ...modelsOfTestAdmin,
+          ...modelsOfTestUserAndAdmin,
+          ...modelsOfTestUser,
+          ...modelsOfTestSuperAdmin,
+        ].map((user) => user._id.toString()),
+        (id) => id
+      );
+
+      expect(idOfAllModels).toEqual(expectedModelIds);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should return 400, and not edit any user- if defaultLang is a boolean in payload and was prevously set to eng", async () => {
+      //setting defaultLang
+      testUser.defaultLang = "eng";
+      await testUser.save();
+
+      requestPayload.defaultLang = true;
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(400);
+      expect(response.text).toContain('"defaultLang" must be one of [pl, eng]');
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //Database should contain all users - nothing should be changed
+      let idOfAllUsers = _.sortBy(
+        (await User.find({})).map((user) => user._id.toString()),
+        (id) => id
+      );
+
+      let expectedUserIds = _.sortBy(
+        [
+          uselessUser._id.toString(),
+          testUser._id.toString(),
+          testAdmin._id.toString(),
+          testUserAndAdmin._id.toString(),
+          testSuperAdmin._id.toString(),
+        ],
+        (id) => id
+      );
+
+      expect(idOfAllUsers).toEqual(expectedUserIds);
+
+      //Database should contain all models - nothing should be changed
+      let idOfAllModels = _.sortBy(
+        (await Model.find({})).map((model) => model._id.toString()),
+        (id) => id
+      );
+
+      let expectedModelIds = _.sortBy(
+        [
+          ...modelsOfUselessUser,
+          ...modelsOfTestAdmin,
+          ...modelsOfTestUserAndAdmin,
+          ...modelsOfTestUser,
+          ...modelsOfTestSuperAdmin,
+        ].map((user) => user._id.toString()),
+        (id) => id
       );
 
       expect(idOfAllModels).toEqual(expectedModelIds);
@@ -7110,8 +9432,8 @@ describe("/sidiroar/api/user", () => {
 
       //Database should contain all users - nothing should be changed
       let idOfAllUsers = _.sortBy(
-        (await User.find({})).map(user => user._id.toString()),
-        id => id
+        (await User.find({})).map((user) => user._id.toString()),
+        (id) => id
       );
 
       let expectedUserIds = _.sortBy(
@@ -7120,17 +9442,17 @@ describe("/sidiroar/api/user", () => {
           testUser._id.toString(),
           testAdmin._id.toString(),
           testUserAndAdmin._id.toString(),
-          testSuperAdmin._id.toString()
+          testSuperAdmin._id.toString(),
         ],
-        id => id
+        (id) => id
       );
 
       expect(idOfAllUsers).toEqual(expectedUserIds);
 
       //Database should contain all models - nothing should be changed
       let idOfAllModels = _.sortBy(
-        (await Model.find({})).map(model => model._id.toString()),
-        id => id
+        (await Model.find({})).map((model) => model._id.toString()),
+        (id) => id
       );
 
       let expectedModelIds = _.sortBy(
@@ -7139,9 +9461,9 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
           ...modelsOfTestUser,
-          ...modelsOfTestSuperAdmin
-        ].map(user => user._id.toString()),
-        id => id
+          ...modelsOfTestSuperAdmin,
+        ].map((user) => user._id.toString()),
+        (id) => id
       );
 
       expect(idOfAllModels).toEqual(expectedModelIds);
@@ -7168,8 +9490,8 @@ describe("/sidiroar/api/user", () => {
 
       //Database should contain all users - nothing should be changed
       let idOfAllUsers = _.sortBy(
-        (await User.find({})).map(user => user._id.toString()),
-        id => id
+        (await User.find({})).map((user) => user._id.toString()),
+        (id) => id
       );
 
       let expectedUserIds = _.sortBy(
@@ -7178,17 +9500,17 @@ describe("/sidiroar/api/user", () => {
           testUser._id.toString(),
           testAdmin._id.toString(),
           testUserAndAdmin._id.toString(),
-          testSuperAdmin._id.toString()
+          testSuperAdmin._id.toString(),
         ],
-        id => id
+        (id) => id
       );
 
       expect(idOfAllUsers).toEqual(expectedUserIds);
 
       //Database should contain all models - nothing should be changed
       let idOfAllModels = _.sortBy(
-        (await Model.find({})).map(model => model._id.toString()),
-        id => id
+        (await Model.find({})).map((model) => model._id.toString()),
+        (id) => id
       );
 
       let expectedModelIds = _.sortBy(
@@ -7197,9 +9519,9 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
           ...modelsOfTestUser,
-          ...modelsOfTestSuperAdmin
-        ].map(user => user._id.toString()),
-        id => id
+          ...modelsOfTestSuperAdmin,
+        ].map((user) => user._id.toString()),
+        (id) => id
       );
 
       expect(idOfAllModels).toEqual(expectedModelIds);
@@ -7226,8 +9548,8 @@ describe("/sidiroar/api/user", () => {
 
       //Database should contain all users - nothing should be changed
       let idOfAllUsers = _.sortBy(
-        (await User.find({})).map(user => user._id.toString()),
-        id => id
+        (await User.find({})).map((user) => user._id.toString()),
+        (id) => id
       );
 
       let expectedUserIds = _.sortBy(
@@ -7236,17 +9558,17 @@ describe("/sidiroar/api/user", () => {
           testUser._id.toString(),
           testAdmin._id.toString(),
           testUserAndAdmin._id.toString(),
-          testSuperAdmin._id.toString()
+          testSuperAdmin._id.toString(),
         ],
-        id => id
+        (id) => id
       );
 
       expect(idOfAllUsers).toEqual(expectedUserIds);
 
       //Database should contain all models - nothing should be changed
       let idOfAllModels = _.sortBy(
-        (await Model.find({})).map(model => model._id.toString()),
-        id => id
+        (await Model.find({})).map((model) => model._id.toString()),
+        (id) => id
       );
 
       let expectedModelIds = _.sortBy(
@@ -7255,9 +9577,9 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
           ...modelsOfTestUser,
-          ...modelsOfTestSuperAdmin
-        ].map(user => user._id.toString()),
-        id => id
+          ...modelsOfTestSuperAdmin,
+        ].map((user) => user._id.toString()),
+        (id) => id
       );
 
       expect(idOfAllModels).toEqual(expectedModelIds);
@@ -7282,8 +9604,8 @@ describe("/sidiroar/api/user", () => {
 
       //Database should contain all users - nothing should be changed
       let idOfAllUsers = _.sortBy(
-        (await User.find({})).map(user => user._id.toString()),
-        id => id
+        (await User.find({})).map((user) => user._id.toString()),
+        (id) => id
       );
 
       let expectedUserIds = _.sortBy(
@@ -7292,17 +9614,17 @@ describe("/sidiroar/api/user", () => {
           testUser._id.toString(),
           testAdmin._id.toString(),
           testUserAndAdmin._id.toString(),
-          testSuperAdmin._id.toString()
+          testSuperAdmin._id.toString(),
         ],
-        id => id
+        (id) => id
       );
 
       expect(idOfAllUsers).toEqual(expectedUserIds);
 
       //Database should contain all models - nothing should be changed
       let idOfAllModels = _.sortBy(
-        (await Model.find({})).map(model => model._id.toString()),
-        id => id
+        (await Model.find({})).map((model) => model._id.toString()),
+        (id) => id
       );
 
       let expectedModelIds = _.sortBy(
@@ -7311,9 +9633,9 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
           ...modelsOfTestUser,
-          ...modelsOfTestSuperAdmin
-        ].map(user => user._id.toString()),
-        id => id
+          ...modelsOfTestSuperAdmin,
+        ].map((user) => user._id.toString()),
+        (id) => id
       );
 
       expect(idOfAllModels).toEqual(expectedModelIds);
@@ -7339,8 +9661,8 @@ describe("/sidiroar/api/user", () => {
 
       //Database should contain all users - nothing should be changed
       let idOfAllUsers = _.sortBy(
-        (await User.find({})).map(user => user._id.toString()),
-        id => id
+        (await User.find({})).map((user) => user._id.toString()),
+        (id) => id
       );
 
       let expectedUserIds = _.sortBy(
@@ -7349,17 +9671,17 @@ describe("/sidiroar/api/user", () => {
           testUser._id.toString(),
           testAdmin._id.toString(),
           testUserAndAdmin._id.toString(),
-          testSuperAdmin._id.toString()
+          testSuperAdmin._id.toString(),
         ],
-        id => id
+        (id) => id
       );
 
       expect(idOfAllUsers).toEqual(expectedUserIds);
 
       //Database should contain all models - nothing should be changed
       let idOfAllModels = _.sortBy(
-        (await Model.find({})).map(model => model._id.toString()),
-        id => id
+        (await Model.find({})).map((model) => model._id.toString()),
+        (id) => id
       );
 
       let expectedModelIds = _.sortBy(
@@ -7368,9 +9690,9 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
           ...modelsOfTestUser,
-          ...modelsOfTestSuperAdmin
-        ].map(user => user._id.toString()),
-        id => id
+          ...modelsOfTestSuperAdmin,
+        ].map((user) => user._id.toString()),
+        (id) => id
       );
 
       expect(idOfAllModels).toEqual(expectedModelIds);
@@ -7396,8 +9718,8 @@ describe("/sidiroar/api/user", () => {
 
       //Database should contain all users - nothing should be changed
       let idOfAllUsers = _.sortBy(
-        (await User.find({})).map(user => user._id.toString()),
-        id => id
+        (await User.find({})).map((user) => user._id.toString()),
+        (id) => id
       );
 
       let expectedUserIds = _.sortBy(
@@ -7406,17 +9728,17 @@ describe("/sidiroar/api/user", () => {
           testUser._id.toString(),
           testAdmin._id.toString(),
           testUserAndAdmin._id.toString(),
-          testSuperAdmin._id.toString()
+          testSuperAdmin._id.toString(),
         ],
-        id => id
+        (id) => id
       );
 
       expect(idOfAllUsers).toEqual(expectedUserIds);
 
       //Database should contain all models - nothing should be changed
       let idOfAllModels = _.sortBy(
-        (await Model.find({})).map(model => model._id.toString()),
-        id => id
+        (await Model.find({})).map((model) => model._id.toString()),
+        (id) => id
       );
 
       let expectedModelIds = _.sortBy(
@@ -7425,9 +9747,9 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
           ...modelsOfTestUser,
-          ...modelsOfTestSuperAdmin
-        ].map(user => user._id.toString()),
-        id => id
+          ...modelsOfTestSuperAdmin,
+        ].map((user) => user._id.toString()),
+        (id) => id
       );
 
       expect(idOfAllModels).toEqual(expectedModelIds);
@@ -7453,8 +9775,8 @@ describe("/sidiroar/api/user", () => {
 
       //Database should contain all users - nothing should be changed
       let idOfAllUsers = _.sortBy(
-        (await User.find({})).map(user => user._id.toString()),
-        id => id
+        (await User.find({})).map((user) => user._id.toString()),
+        (id) => id
       );
 
       let expectedUserIds = _.sortBy(
@@ -7463,17 +9785,17 @@ describe("/sidiroar/api/user", () => {
           testUser._id.toString(),
           testAdmin._id.toString(),
           testUserAndAdmin._id.toString(),
-          testSuperAdmin._id.toString()
+          testSuperAdmin._id.toString(),
         ],
-        id => id
+        (id) => id
       );
 
       expect(idOfAllUsers).toEqual(expectedUserIds);
 
       //Database should contain all models - nothing should be changed
       let idOfAllModels = _.sortBy(
-        (await Model.find({})).map(model => model._id.toString()),
-        id => id
+        (await Model.find({})).map((model) => model._id.toString()),
+        (id) => id
       );
 
       let expectedModelIds = _.sortBy(
@@ -7482,9 +9804,9 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
           ...modelsOfTestUser,
-          ...modelsOfTestSuperAdmin
-        ].map(user => user._id.toString()),
-        id => id
+          ...modelsOfTestSuperAdmin,
+        ].map((user) => user._id.toString()),
+        (id) => id
       );
 
       expect(idOfAllModels).toEqual(expectedModelIds);
@@ -7500,7 +9822,13 @@ describe("/sidiroar/api/user", () => {
         name: "editedTestUser",
         permissions: testUserAndAdmin.permissions,
         password: "9876",
-        oldPassword: "1243"
+        oldPassword: "1243",
+        additionalInfo: {
+          key1: "value1",
+          key2: "value2",
+          key3: "value3",
+        },
+        defaultLang: "eng",
       };
 
       let response = await exec();
@@ -7515,16 +9843,24 @@ describe("/sidiroar/api/user", () => {
         name: requestPayload.name,
         email: requestPayload.email,
         permissions: requestPayload.permissions,
-        modelIds: modelsOfTestUserAndAdmin.map(model => model._id.toString()),
-        modelNames: modelsOfTestUserAndAdmin.map(model => model.name),
+        modelIds: modelsOfTestUserAndAdmin.map((model) => model._id.toString()),
+        modelNames: modelsOfTestUserAndAdmin.map((model) => model.name),
         filesExist: await Promise.all(
-          modelsOfTestUserAndAdmin.map(async model => await model.fileExists())
+          modelsOfTestUserAndAdmin.map(
+            async (model) => await model.fileExists()
+          )
         ),
         iosFilesExist: await Promise.all(
           modelsOfTestUserAndAdmin.map(
-            async model => await model.iosFileExists()
+            async (model) => await model.iosFileExists()
           )
-        )
+        ),
+        additionalInfo: {
+          key1: "value1",
+          key2: "value2",
+          key3: "value3",
+        },
+        defaultLang: "eng",
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -7572,8 +9908,8 @@ describe("/sidiroar/api/user", () => {
 
       //Database should contain all users - nothing should be changed
       let idOfAllUsers = _.sortBy(
-        (await User.find({})).map(user => user._id.toString()),
-        id => id
+        (await User.find({})).map((user) => user._id.toString()),
+        (id) => id
       );
 
       let expectedUserIds = _.sortBy(
@@ -7582,17 +9918,17 @@ describe("/sidiroar/api/user", () => {
           testUser._id.toString(),
           testAdmin._id.toString(),
           testUserAndAdmin._id.toString(),
-          testSuperAdmin._id.toString()
+          testSuperAdmin._id.toString(),
         ],
-        id => id
+        (id) => id
       );
 
       expect(idOfAllUsers).toEqual(expectedUserIds);
 
       //Database should contain all models - nothing should be changed
       let idOfAllModels = _.sortBy(
-        (await Model.find({})).map(model => model._id.toString()),
-        id => id
+        (await Model.find({})).map((model) => model._id.toString()),
+        (id) => id
       );
 
       let expectedModelIds = _.sortBy(
@@ -7601,9 +9937,9 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
           ...modelsOfTestUser,
-          ...modelsOfTestSuperAdmin
-        ].map(user => user._id.toString()),
-        id => id
+          ...modelsOfTestSuperAdmin,
+        ].map((user) => user._id.toString()),
+        (id) => id
       );
 
       expect(idOfAllModels).toEqual(expectedModelIds);
@@ -7616,7 +9952,7 @@ describe("/sidiroar/api/user", () => {
         _id: testAdmin._id,
         email: testAdmin.email,
         name: testAdmin.name,
-        permissions: testAdmin.permissions
+        permissions: testAdmin.permissions,
       };
 
       jwt = await jsonWebToken.sign(fakeUserPayload, "differentTestPrivateKey");
@@ -7636,8 +9972,8 @@ describe("/sidiroar/api/user", () => {
 
       //Database should contain all users - nothing should be changed
       let idOfAllUsers = _.sortBy(
-        (await User.find({})).map(user => user._id.toString()),
-        id => id
+        (await User.find({})).map((user) => user._id.toString()),
+        (id) => id
       );
 
       let expectedUserIds = _.sortBy(
@@ -7646,17 +9982,17 @@ describe("/sidiroar/api/user", () => {
           testUser._id.toString(),
           testAdmin._id.toString(),
           testUserAndAdmin._id.toString(),
-          testSuperAdmin._id.toString()
+          testSuperAdmin._id.toString(),
         ],
-        id => id
+        (id) => id
       );
 
       expect(idOfAllUsers).toEqual(expectedUserIds);
 
       //Database should contain all models - nothing should be changed
       let idOfAllModels = _.sortBy(
-        (await Model.find({})).map(model => model._id.toString()),
-        id => id
+        (await Model.find({})).map((model) => model._id.toString()),
+        (id) => id
       );
 
       let expectedModelIds = _.sortBy(
@@ -7665,9 +10001,9 @@ describe("/sidiroar/api/user", () => {
           ...modelsOfTestAdmin,
           ...modelsOfTestUserAndAdmin,
           ...modelsOfTestUser,
-          ...modelsOfTestSuperAdmin
-        ].map(user => user._id.toString()),
-        id => id
+          ...modelsOfTestSuperAdmin,
+        ].map((user) => user._id.toString()),
+        (id) => id
       );
 
       expect(idOfAllModels).toEqual(expectedModelIds);

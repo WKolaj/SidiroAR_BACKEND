@@ -3,7 +3,7 @@ const { Model } = require("../../models/model");
 const {
   exists,
   hashString,
-  generateRandomNumberString
+  generateRandomNumberString,
 } = require("../../utilities/utilities");
 const Project = require("../../classes/project");
 const testUselessUserEmail = "useless@test1234abcd.com.pl";
@@ -21,7 +21,8 @@ module.exports.generateUselessUser = async () => {
     name: "testUselessUser",
     email: testUselessUserEmail,
     password: await hashString("1111"),
-    permissions: 0
+    permissions: 0,
+    defaultLang: "pl",
   });
 
   await user.save();
@@ -41,7 +42,8 @@ module.exports.generateTestAdmin = async () => {
     name: "testAdmin",
     email: testAdminEmail,
     password: await hashString("1234"),
-    permissions: 2
+    permissions: 2,
+    defaultLang: "pl",
   });
 
   await admin.save();
@@ -61,7 +63,8 @@ module.exports.generateTestUser = async () => {
     name: "testUser",
     email: testUserEmail,
     password: await hashString("4321"),
-    permissions: 1
+    permissions: 1,
+    defaultLang: "pl",
   });
 
   await user.save();
@@ -81,7 +84,8 @@ module.exports.generateTestAdminAndUser = async () => {
     name: "testUserAndAdmin",
     email: testUserAndAdminEmail,
     password: await hashString("1243"),
-    permissions: 3
+    permissions: 3,
+    defaultLang: "pl",
   });
 
   await user.save();
@@ -101,7 +105,8 @@ module.exports.generateTestSuperAdmin = async () => {
     name: "testSuperAdmin",
     email: testSuperAdminEmail,
     password: await hashString("9812"),
-    permissions: 7
+    permissions: 7,
+    defaultLang: "pl",
   });
 
   await admin.save();
@@ -113,20 +118,20 @@ module.exports.generateTestSuperAdmin = async () => {
 };
 
 //Method for generating test models for given user
-module.exports.generateTestModels = async user => {
+module.exports.generateTestModels = async (user) => {
   let modelsToReturn = [
     new Model({
       name: `testModel${generateRandomNumberString(4)}`,
-      user: user._id
+      user: user._id,
     }),
     new Model({
       name: `testModel${generateRandomNumberString(4)}`,
-      user: user._id
+      user: user._id,
     }),
     new Model({
       name: `testModel${generateRandomNumberString(4)}`,
-      user: user._id
-    })
+      user: user._id,
+    }),
   ];
 
   for (let model of modelsToReturn) {
