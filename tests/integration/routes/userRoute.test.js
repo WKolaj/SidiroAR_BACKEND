@@ -3,6 +3,7 @@ const {
   snooze,
   generateRandomString,
   generateRandomNumberString,
+  checkIfFileExistsAsync,
 } = require("../../../utilities/utilities");
 const _ = require("lodash");
 const request = require("supertest");
@@ -75,11 +76,11 @@ describe("/sidiroar/api/user", () => {
     testUserAndAdmin = await generateTestAdminAndUser();
     testSuperAdmin = await generateTestSuperAdmin();
 
-    modelsOfUselessUser = await generateTestModels(uselessUser);
-    modelsOfTestAdmin = await generateTestModels(testAdmin);
-    modelsOfTestUser = await generateTestModels(testUser);
-    modelsOfTestUserAndAdmin = await generateTestModels(testUserAndAdmin);
-    modelsOfTestSuperAdmin = await generateTestModels(testSuperAdmin);
+    modelsOfUselessUser = await generateTestModels([uselessUser]);
+    modelsOfTestAdmin = await generateTestModels([testAdmin]);
+    modelsOfTestUser = await generateTestModels([testUser]);
+    modelsOfTestUserAndAdmin = await generateTestModels([testUserAndAdmin]);
+    modelsOfTestSuperAdmin = await generateTestModels([testSuperAdmin]);
 
     //Overwriting logget action method
     logActionMock = jest.fn();
@@ -214,34 +215,6 @@ describe("/sidiroar/api/user", () => {
       expect(sendMailMockFunction.mock.calls[0][2]).toEqual(
         expectedMailContent
       );
-    });
-
-    it("should create user directory if user payload is valid", async () => {
-      let response = await exec();
-
-      expect(response).toBeDefined();
-      expect(response.status).toEqual(200);
-      expect(response.body).toBeDefined();
-
-      //Checking if user directory exists
-      let userDirectory = Project._getUserDirPath(response.body);
-      let directoryExists = await checkIfDirectoryExistsAsync(userDirectory);
-
-      expect(directoryExists).toEqual(true);
-
-      //checking if file dir exists
-      let modelFileDir = Project._getFileDirPath(response.body);
-      let modelFileDirExists = await checkIfDirectoryExistsAsync(modelFileDir);
-
-      expect(modelFileDirExists).toEqual(true);
-
-      //checking if file dir for ios exists
-      let modelIOSFileDir = Project._getIOSFileDirPath(response.body);
-      let modelIOSFileDirExists = await checkIfDirectoryExistsAsync(
-        modelIOSFileDir
-      );
-
-      expect(modelIOSFileDirExists).toEqual(true);
     });
 
     it("should call logger action method", async () => {
@@ -2469,10 +2442,7 @@ describe("/sidiroar/api/user", () => {
 
     it("should return 200 and a list of all users - if users model has files", async () => {
       //creating model file
-      let filePath = await Project.getModelFilePath(
-        testUser,
-        modelsOfTestUser[1]
-      );
+      let filePath = await Project.getModelFilePath(modelsOfTestUser[1]);
       await createFileAsync(filePath, "test File content");
 
       let response = await exec();
@@ -2594,10 +2564,7 @@ describe("/sidiroar/api/user", () => {
 
     it("should return 200 and a list of all users - if users model has ios files", async () => {
       //creating model file
-      let filePath = await Project.getModelIOSFilePath(
-        testUser,
-        modelsOfTestUser[1]
-      );
+      let filePath = await Project.getModelIOSFilePath(modelsOfTestUser[1]);
       await createFileAsync(filePath, "test File content");
 
       let response = await exec();
@@ -2682,6 +2649,134 @@ describe("/sidiroar/api/user", () => {
               async (model) => await model.iosFileExists()
             )
           ),
+          additionalInfo: {},
+          defaultLang: "pl",
+        },
+        {
+          _id: testSuperAdmin._id.toString(),
+          name: testSuperAdmin.name,
+          email: testSuperAdmin.email,
+          permissions: testSuperAdmin.permissions,
+          modelIds: modelsOfTestSuperAdmin.map((model) => model._id.toString()),
+          modelNames: modelsOfTestSuperAdmin.map((model) => model.name),
+          filesExist: await Promise.all(
+            modelsOfTestSuperAdmin.map(
+              async (model) => await model.fileExists()
+            )
+          ),
+          iosFilesExist: await Promise.all(
+            modelsOfTestSuperAdmin.map(
+              async (model) => await model.iosFileExists()
+            )
+          ),
+          additionalInfo: {},
+          defaultLang: "pl",
+        },
+      ];
+
+      //ordering both expected and real body by id
+      let orderedExpectedBody = _.orderBy(expectedBody, "_id", "asc");
+      let orderedResponseBody = _.orderBy(response.body, "_id", "asc");
+
+      //after sorting - both array should be the same
+      expect(orderedResponseBody).toEqual(orderedExpectedBody);
+
+      //#endregion CHECKING_RESPONSE
+    });
+
+    it("should return 200 and a list of all users - if users have some shared models", async () => {
+      let sharedModels = await generateTestModels([testUser, testUserAndAdmin]);
+
+      //creating model file
+      let filePath = await Project.getModelIOSFilePath(modelsOfTestUser[1]);
+      await createFileAsync(filePath, "test File content1");
+
+      //creating model file
+      let filePath2 = await Project.getModelFilePath(sharedModels[1]);
+      await createFileAsync(filePath2, "test File content2");
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(200);
+      expect(response.body).toBeDefined();
+
+      //Body should contain all users payload
+      expect(response.body).toBeDefined();
+
+      //There should be 4 users - useless, normal, admin, and normal+admin and superAdmin
+      expect(response.body.length).toEqual(5);
+
+      let expectedBody = [
+        {
+          _id: uselessUser._id.toString(),
+          name: uselessUser.name,
+          email: uselessUser.email,
+          permissions: uselessUser.permissions,
+          modelIds: modelsOfUselessUser.map((model) => model._id.toString()),
+          modelNames: modelsOfUselessUser.map((model) => model.name),
+          filesExist: await Promise.all(
+            modelsOfUselessUser.map(async (model) => await model.fileExists())
+          ),
+          iosFilesExist: await Promise.all(
+            modelsOfUselessUser.map(
+              async (model) => await model.iosFileExists()
+            )
+          ),
+          additionalInfo: {},
+          defaultLang: "pl",
+        },
+        {
+          _id: testUser._id.toString(),
+          name: testUser.name,
+          email: testUser.email,
+          permissions: testUser.permissions,
+          modelIds: [
+            ...modelsOfTestUser.map((model) => model._id.toString()),
+            ...sharedModels.map((model) => model._id.toString()),
+          ],
+          modelNames: [
+            ...modelsOfTestUser.map((model) => model.name),
+            ...sharedModels.map((model) => model.name),
+          ],
+          filesExist: [false, false, false, false, true, false],
+          iosFilesExist: [false, true, false, false, false, false],
+          additionalInfo: {},
+          defaultLang: "pl",
+        },
+        {
+          _id: testAdmin._id.toString(),
+          name: testAdmin.name,
+          email: testAdmin.email,
+          permissions: testAdmin.permissions,
+          modelIds: modelsOfTestAdmin.map((model) => model._id.toString()),
+          modelNames: modelsOfTestAdmin.map((model) => model.name),
+          filesExist: await Promise.all(
+            modelsOfTestAdmin.map(async (model) => await model.fileExists())
+          ),
+          iosFilesExist: await Promise.all(
+            modelsOfTestAdmin.map(async (model) => await model.iosFileExists())
+          ),
+          additionalInfo: {},
+          defaultLang: "pl",
+        },
+        {
+          _id: testUserAndAdmin._id.toString(),
+          name: testUserAndAdmin.name,
+          email: testUserAndAdmin.email,
+          permissions: testUserAndAdmin.permissions,
+          modelIds: [
+            ...modelsOfTestUserAndAdmin.map((model) => model._id.toString()),
+            ...sharedModels.map((model) => model._id.toString()),
+          ],
+          modelNames: [
+            ...modelsOfTestUserAndAdmin.map((model) => model.name),
+            ...sharedModels.map((model) => model.name),
+          ],
+          filesExist: [false, false, false, false, true, false],
+          iosFilesExist: [false, false, false, false, false, false],
           additionalInfo: {},
           defaultLang: "pl",
         },
@@ -3378,10 +3473,7 @@ describe("/sidiroar/api/user", () => {
 
     it("should return 200 and user of given id - if user exists and model file exists", async () => {
       //Creating file
-      let filePath = await Project.getModelFilePath(
-        testUser,
-        modelsOfTestUser[1]
-      );
+      let filePath = await Project.getModelFilePath(modelsOfTestUser[1]);
       await createFileAsync(filePath, "test file content");
 
       let response = await exec();
@@ -3409,10 +3501,7 @@ describe("/sidiroar/api/user", () => {
 
     it("should return 200 and user of given id - if user exists and model ios file exists", async () => {
       //Creating file
-      let filePath = await Project.getModelIOSFilePath(
-        testUser,
-        modelsOfTestUser[1]
-      );
+      let filePath = await Project.getModelIOSFilePath(modelsOfTestUser[1]);
       await createFileAsync(filePath, "test file content");
 
       let response = await exec();
@@ -3433,6 +3522,44 @@ describe("/sidiroar/api/user", () => {
         iosFilesExist: await Promise.all(
           modelsOfTestUser.map(async (model) => await model.iosFileExists())
         ),
+        additionalInfo: {},
+        defaultLang: "pl",
+      };
+
+      expect(response.body).toEqual(expectedPayload);
+    });
+
+    it("should return 200 and user of given id - if user has some shared models", async () => {
+      let sharedModels = await generateTestModels([testUser, testUserAndAdmin]);
+
+      //Creating file
+      let filePath = await Project.getModelFilePath(modelsOfTestUser[1]);
+      await createFileAsync(filePath, "test file content1");
+
+      //Creating file
+      let filePath2 = await Project.getModelIOSFilePath(sharedModels[1]);
+      await createFileAsync(filePath2, "test file content2");
+
+      let response = await exec();
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(200);
+
+      let expectedPayload = {
+        _id: testUser._id.toString(),
+        name: testUser.name,
+        email: testUser.email,
+        permissions: testUser.permissions,
+        modelIds: [
+          ...modelsOfTestUser.map((model) => model._id.toString()),
+          ...sharedModels.map((model) => model._id.toString()),
+        ],
+        modelNames: [
+          ...modelsOfTestUser.map((model) => model.name),
+          ...sharedModels.map((model) => model.name),
+        ],
+        filesExist: [false, true, false, false, false, false],
+        iosFilesExist: [false, false, false, false, true, false],
         additionalInfo: {},
         defaultLang: "pl",
       };
@@ -3720,14 +3847,10 @@ describe("/sidiroar/api/user", () => {
         name: testUser.name,
         email: testUser.email,
         permissions: testUser.permissions,
-        modelIds: modelsOfTestUser.map((model) => model._id.toString()),
-        modelNames: modelsOfTestUser.map((model) => model.name),
-        filesExist: await Promise.all(
-          modelsOfTestUser.map(async (model) => await model.fileExists())
-        ),
-        iosFilesExist: await Promise.all(
-          modelsOfTestUser.map(async (model) => await model.iosFileExists())
-        ),
+        modelIds: [],
+        modelNames: [],
+        filesExist: [],
+        iosFilesExist: [],
         additionalInfo: {},
         defaultLang: "pl",
       };
@@ -3846,6 +3969,248 @@ describe("/sidiroar/api/user", () => {
       //#endregion CHECKING_DATABASE
     });
 
+    it("should return 200, delete user and all model files - if models are not shared with other users", async () => {
+      let modelFilePath1 = Project.getModelFilePath(modelsOfTestUser[0]);
+      let modelFilePath2 = Project.getModelFilePath(modelsOfTestUser[1]);
+      let modelFilePath3 = Project.getModelFilePath(modelsOfTestUser[2]);
+
+      let modelIOSFilePath1 = Project.getModelIOSFilePath(modelsOfTestUser[0]);
+      let modelIOSFilePath2 = Project.getModelIOSFilePath(modelsOfTestUser[1]);
+      let modelIOSFilePath3 = Project.getModelIOSFilePath(modelsOfTestUser[2]);
+
+      await createFileAsync(modelFilePath1, "Test content 1");
+      await createFileAsync(modelFilePath2, "Test content 2");
+      await createFileAsync(modelFilePath3, "Test content 3");
+      await createFileAsync(modelIOSFilePath1, "Test content 4");
+      await createFileAsync(modelIOSFilePath2, "Test content 5");
+      await createFileAsync(modelIOSFilePath3, "Test content 6");
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(200);
+
+      let expectedPayload = {
+        _id: testUser._id.toString(),
+        name: testUser.name,
+        email: testUser.email,
+        permissions: testUser.permissions,
+
+        modelIds: [],
+        modelNames: [],
+        filesExist: [],
+        iosFilesExist: [],
+        additionalInfo: {},
+        defaultLang: "pl",
+      };
+
+      expect(response.body).toEqual(expectedPayload);
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_FILES
+
+      let fileExists1 = await checkIfFileExistsAsync(modelFilePath1);
+      let fileExists2 = await checkIfFileExistsAsync(modelFilePath2);
+      let fileExists3 = await checkIfFileExistsAsync(modelFilePath3);
+
+      let fileIOSExists1 = await checkIfFileExistsAsync(modelIOSFilePath1);
+      let fileIOSExists2 = await checkIfFileExistsAsync(modelIOSFilePath2);
+      let fileIOSExists3 = await checkIfFileExistsAsync(modelIOSFilePath3);
+
+      expect(fileExists1).toEqual(false);
+      expect(fileExists2).toEqual(false);
+      expect(fileExists3).toEqual(false);
+      expect(fileIOSExists1).toEqual(false);
+      expect(fileIOSExists2).toEqual(false);
+      expect(fileIOSExists3).toEqual(false);
+
+      //#endregion CHECKING_FILES
+
+      //#region CHECKING_DATABASE
+
+      //Database should contain all user except deleted one (testUser)
+      let idOfAllUsers = _.sortBy(
+        (await User.find({})).map((user) => user._id.toString()),
+        (id) => id
+      );
+
+      let expectedUserIds = _.sortBy(
+        [
+          uselessUser._id.toString(),
+          testAdmin._id.toString(),
+          testUserAndAdmin._id.toString(),
+          testSuperAdmin._id.toString(),
+        ],
+        (id) => id
+      );
+
+      expect(idOfAllUsers).toEqual(expectedUserIds);
+
+      //Database should contain all models except models of deleted user (testUser)
+      let idOfAllModels = _.sortBy(
+        (await Model.find({})).map((model) => model._id.toString()),
+        (id) => id
+      );
+
+      let expectedModelIds = _.sortBy(
+        [
+          ...modelsOfUselessUser,
+          ...modelsOfTestAdmin,
+          ...modelsOfTestUserAndAdmin,
+          ...modelsOfTestSuperAdmin,
+        ].map((user) => user._id.toString()),
+        (id) => id
+      );
+
+      expect(idOfAllModels).toEqual(expectedModelIds);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should return 200, delete user and all model files - for models that are not shared", async () => {
+      let sharedModels = await generateTestModels([testUser, testUserAndAdmin]);
+
+      let modelFilePath1 = Project.getModelFilePath(modelsOfTestUser[0]);
+      let modelFilePath2 = Project.getModelFilePath(modelsOfTestUser[1]);
+      let modelFilePath3 = Project.getModelFilePath(modelsOfTestUser[2]);
+      let modelFilePath4 = Project.getModelFilePath(sharedModels[0]);
+      let modelFilePath5 = Project.getModelFilePath(sharedModels[1]);
+      let modelFilePath6 = Project.getModelFilePath(sharedModels[2]);
+
+      let modelIOSFilePath1 = Project.getModelIOSFilePath(modelsOfTestUser[0]);
+      let modelIOSFilePath2 = Project.getModelIOSFilePath(modelsOfTestUser[1]);
+      let modelIOSFilePath3 = Project.getModelIOSFilePath(modelsOfTestUser[2]);
+      let modelIOSFilePath4 = Project.getModelIOSFilePath(sharedModels[0]);
+      let modelIOSFilePath5 = Project.getModelIOSFilePath(sharedModels[1]);
+      let modelIOSFilePath6 = Project.getModelIOSFilePath(sharedModels[2]);
+
+      await createFileAsync(modelFilePath1, "Test content 1");
+      await createFileAsync(modelFilePath2, "Test content 2");
+      await createFileAsync(modelFilePath3, "Test content 3");
+      await createFileAsync(modelIOSFilePath1, "Test content 4");
+      await createFileAsync(modelIOSFilePath2, "Test content 5");
+      await createFileAsync(modelIOSFilePath3, "Test content 6");
+
+      await createFileAsync(modelFilePath4, "Test content 7");
+      await createFileAsync(modelFilePath5, "Test content 8");
+      await createFileAsync(modelFilePath6, "Test content 9");
+      await createFileAsync(modelIOSFilePath4, "Test content 10");
+      await createFileAsync(modelIOSFilePath5, "Test content 11");
+      await createFileAsync(modelIOSFilePath6, "Test content 12");
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(200);
+
+      let expectedPayload = {
+        _id: testUser._id.toString(),
+        name: testUser.name,
+        email: testUser.email,
+        permissions: testUser.permissions,
+        modelIds: [],
+        modelNames: [],
+        filesExist: [],
+        iosFilesExist: [],
+        additionalInfo: {},
+        defaultLang: "pl",
+      };
+
+      expect(response.body).toEqual(expectedPayload);
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_FILES
+
+      let fileExists1 = await checkIfFileExistsAsync(modelFilePath1);
+      let fileExists2 = await checkIfFileExistsAsync(modelFilePath2);
+      let fileExists3 = await checkIfFileExistsAsync(modelFilePath3);
+      let fileExists4 = await checkIfFileExistsAsync(modelFilePath4);
+      let fileExists5 = await checkIfFileExistsAsync(modelFilePath5);
+      let fileExists6 = await checkIfFileExistsAsync(modelFilePath6);
+
+      let fileIOSExists1 = await checkIfFileExistsAsync(modelIOSFilePath1);
+      let fileIOSExists2 = await checkIfFileExistsAsync(modelIOSFilePath2);
+      let fileIOSExists3 = await checkIfFileExistsAsync(modelIOSFilePath3);
+      let fileIOSExists4 = await checkIfFileExistsAsync(modelIOSFilePath4);
+      let fileIOSExists5 = await checkIfFileExistsAsync(modelIOSFilePath5);
+      let fileIOSExists6 = await checkIfFileExistsAsync(modelIOSFilePath6);
+
+      expect(fileExists1).toEqual(false);
+      expect(fileExists2).toEqual(false);
+      expect(fileExists3).toEqual(false);
+      expect(fileIOSExists1).toEqual(false);
+      expect(fileIOSExists2).toEqual(false);
+      expect(fileIOSExists3).toEqual(false);
+
+      expect(fileExists4).toEqual(true);
+      expect(fileExists5).toEqual(true);
+      expect(fileExists6).toEqual(true);
+      expect(fileIOSExists4).toEqual(true);
+      expect(fileIOSExists5).toEqual(true);
+      expect(fileIOSExists6).toEqual(true);
+
+      //#endregion CHECKING_FILES
+
+      //#region CHECKING_DATABASE
+
+      //Database should contain all user except deleted one (testUser)
+      let idOfAllUsers = _.sortBy(
+        (await User.find({})).map((user) => user._id.toString()),
+        (id) => id
+      );
+
+      let expectedUserIds = _.sortBy(
+        [
+          uselessUser._id.toString(),
+          testAdmin._id.toString(),
+          testUserAndAdmin._id.toString(),
+          testSuperAdmin._id.toString(),
+        ],
+        (id) => id
+      );
+
+      expect(idOfAllUsers).toEqual(expectedUserIds);
+
+      //Database should contain all models except models of deleted user (testUser)
+      let idOfAllModels = _.sortBy(
+        (await Model.find({})).map((model) => model._id.toString()),
+        (id) => id
+      );
+
+      let expectedModelIds = _.sortBy(
+        [
+          ...modelsOfUselessUser,
+          ...modelsOfTestAdmin,
+          ...modelsOfTestUserAndAdmin,
+          ...modelsOfTestSuperAdmin,
+          ...sharedModels,
+        ].map((user) => user._id.toString()),
+        (id) => id
+      );
+
+      expect(idOfAllModels).toEqual(expectedModelIds);
+
+      //all shared models should have userId of testUser deleted
+
+      let model1 = await Model.findOne({ _id: sharedModels[0]._id });
+      let model2 = await Model.findOne({ _id: sharedModels[0]._id });
+      let model3 = await Model.findOne({ _id: sharedModels[0]._id });
+
+      let modelPayload1 = await model1.getPayload();
+
+      expect(modelPayload1.user).toEqual([testUserAndAdmin._id.toString()]);
+      expect(modelPayload1.user).toEqual([testUserAndAdmin._id.toString()]);
+      expect(modelPayload1.user).toEqual([testUserAndAdmin._id.toString()]);
+
+      //#endregion CHECKING_DATABASE
+    });
+
     it("should call logger action method", async () => {
       let response = await exec();
 
@@ -3853,19 +4218,6 @@ describe("/sidiroar/api/user", () => {
       expect(logActionMock.mock.calls[0][0]).toEqual(
         `User ${testAdmin.email} deleted user ${response.body.email}`
       );
-    });
-
-    it("should remove user directory - if user exists", async () => {
-      let response = await exec();
-
-      expect(response).toBeDefined();
-      expect(response.status).toEqual(200);
-      expect(response.body).toBeDefined();
-
-      let userDirectory = Project._getUserDirPath(response.body);
-      let directoryExists = await checkIfDirectoryExistsAsync(userDirectory);
-
-      expect(directoryExists).toEqual(false);
     });
 
     it("should return 404 if id is not valid", async () => {
@@ -4212,14 +4564,11 @@ describe("/sidiroar/api/user", () => {
         name: testUser.name,
         email: testUser.email,
         permissions: testUser.permissions,
-        modelIds: modelsOfTestUser.map((model) => model._id.toString()),
-        modelNames: modelsOfTestUser.map((model) => model.name),
-        filesExist: await Promise.all(
-          modelsOfTestUser.map(async (model) => await model.fileExists())
-        ),
-        iosFilesExist: await Promise.all(
-          modelsOfTestUser.map(async (model) => await model.iosFileExists())
-        ),
+
+        modelIds: [],
+        modelNames: [],
+        filesExist: [],
+        iosFilesExist: [],
         additionalInfo: {},
         defaultLang: "pl",
       };
@@ -4426,16 +4775,11 @@ describe("/sidiroar/api/user", () => {
         name: testUserAndAdmin.name,
         email: testUserAndAdmin.email,
         permissions: testUserAndAdmin.permissions,
-        modelIds: modelsOfTestUserAndAdmin.map((model) => model._id.toString()),
-        modelNames: modelsOfTestUserAndAdmin.map((model) => model.name),
-        filesExist: await Promise.all(
-          modelsOfTestUserAndAdmin.map(
-            async (model) => await model.fileExists()
-          )
-        ),
-        iosFilesExist: await Promise.all(
-          modelsOfTestUser.map(async (model) => await model.iosFileExists())
-        ),
+
+        modelIds: [],
+        modelNames: [],
+        filesExist: [],
+        iosFilesExist: [],
         additionalInfo: {},
         defaultLang: "pl",
       };
@@ -4561,14 +4905,11 @@ describe("/sidiroar/api/user", () => {
         name: testSuperAdmin.name,
         email: testSuperAdmin.email,
         permissions: testSuperAdmin.permissions,
-        modelIds: modelsOfTestSuperAdmin.map((model) => model._id.toString()),
-        modelNames: modelsOfTestSuperAdmin.map((model) => model.name),
-        filesExist: await Promise.all(
-          modelsOfTestSuperAdmin.map(async (model) => await model.fileExists())
-        ),
-        iosFilesExist: await Promise.all(
-          modelsOfTestUser.map(async (model) => await model.iosFileExists())
-        ),
+
+        modelIds: [],
+        modelNames: [],
+        filesExist: [],
+        iosFilesExist: [],
         additionalInfo: {},
         defaultLang: "pl",
       };
@@ -7603,6 +7944,50 @@ describe("/sidiroar/api/user", () => {
         modelNames: [],
         filesExist: [],
         iosFilesExist: [],
+        additionalInfo: {},
+        defaultLang: "pl",
+      };
+
+      expect(response.body).toEqual(expectedPayload);
+    });
+
+    it("should return 200 and user - if user has some shared models", async () => {
+      let sharedModels = await generateTestModels([testUser, testUserAndAdmin]);
+
+      let response = await exec();
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(200);
+
+      let expectedPayload = {
+        _id: testUser._id.toString(),
+        name: testUser.name,
+        email: testUser.email,
+        permissions: testUser.permissions,
+        modelIds: [
+          ...modelsOfTestUser.map((model) => model._id.toString()),
+          ...sharedModels.map((model) => model._id.toString()),
+        ],
+        modelNames: [
+          ...modelsOfTestUser.map((model) => model.name),
+          ...sharedModels.map((model) => model.name),
+        ],
+        filesExist: [
+          ...(await Promise.all(
+            modelsOfTestUser.map(async (model) => await model.fileExists())
+          )),
+          ...(await Promise.all(
+            sharedModels.map(async (model) => await model.fileExists())
+          )),
+        ],
+        iosFilesExist: [
+          ...(await Promise.all(
+            modelsOfTestUser.map(async (model) => await model.iosFileExists())
+          )),
+          ...(await Promise.all(
+            sharedModels.map(async (model) => await model.iosFileExists())
+          )),
+        ],
         additionalInfo: {},
         defaultLang: "pl",
       };

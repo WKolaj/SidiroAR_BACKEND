@@ -57,10 +57,10 @@ describe("/sidiroar/api/file", () => {
     testUser = await generateTestUser();
     testUserAndAdmin = await generateTestAdminAndUser();
 
-    modelsOfUselessUser = await generateTestModels(uselessUser);
-    modelsOfTestAdmin = await generateTestModels(testAdmin);
-    modelsOfTestUser = await generateTestModels(testUser);
-    modelsOfTestUserAndAdmin = await generateTestModels(testUserAndAdmin);
+    modelsOfUselessUser = await generateTestModels([uselessUser]);
+    modelsOfTestAdmin = await generateTestModels([testAdmin]);
+    modelsOfTestUser = await generateTestModels([testUser]);
+    modelsOfTestUserAndAdmin = await generateTestModels([testUserAndAdmin]);
 
     //Overwriting logget action method
     logActionMock = jest.fn();
@@ -100,7 +100,7 @@ describe("/sidiroar/api/file", () => {
 
     let exec = async () => {
       //creating file
-      let filePath = Project.getModelFilePath(user, model);
+      let filePath = Project.getModelFilePath(model);
       if (createFile) await createFileAsync(filePath, fileContent);
 
       if (exists(jwt))
@@ -260,7 +260,7 @@ describe("/sidiroar/api/file", () => {
 
     let exec = async () => {
       //creating file
-      let filePath = Project.getModelFilePath(user, model);
+      let filePath = Project.getModelFilePath(model);
       if (createFile) await createFileAsync(filePath, fileContent);
 
       if (exists(jwt))
@@ -484,7 +484,7 @@ describe("/sidiroar/api/file", () => {
       expect(response.status).toEqual(200);
       expect(response.text).toEqual("File successfully uploaded!");
 
-      let modelFilePath = Project.getModelFilePath(user, model);
+      let modelFilePath = Project.getModelFilePath(model);
 
       let uploadedFileExists = await checkIfFileExistsAsync(modelFilePath);
       expect(uploadedFileExists).toEqual(true);
@@ -497,7 +497,7 @@ describe("/sidiroar/api/file", () => {
 
     it("should return 200, send file to the server and override it - if file already exist", async () => {
       //Creating file to override
-      let modelFilePath = Project.getModelFilePath(user, model);
+      let modelFilePath = Project.getModelFilePath(model);
       await createFileAsync(modelFilePath, "test file content");
 
       let response = await exec();
@@ -578,7 +578,7 @@ describe("/sidiroar/api/file", () => {
 
       //#region CHECKING_FILE
 
-      let modelFilePath = Project.getModelFilePath(user, model);
+      let modelFilePath = Project.getModelFilePath(model);
       let fileExists = await checkIfFileExistsAsync(modelFilePath);
       expect(fileExists).toEqual(false);
 
@@ -601,7 +601,7 @@ describe("/sidiroar/api/file", () => {
 
       //#region CHECKING_FILE
 
-      let modelFilePath = Project.getModelFilePath(user, model);
+      let modelFilePath = Project.getModelFilePath(model);
       let fileExists = await checkIfFileExistsAsync(modelFilePath);
       expect(fileExists).toEqual(false);
 
@@ -624,7 +624,7 @@ describe("/sidiroar/api/file", () => {
 
       //#region CHECKING_FILE
 
-      let modelFilePath = Project.getModelFilePath(user, model);
+      let modelFilePath = Project.getModelFilePath(model);
       let fileExists = await checkIfFileExistsAsync(modelFilePath);
       expect(fileExists).toEqual(false);
 
@@ -647,7 +647,7 @@ describe("/sidiroar/api/file", () => {
 
       //#region CHECKING_FILE
 
-      let modelFilePath = Project.getModelFilePath(user, model);
+      let modelFilePath = Project.getModelFilePath(model);
       let fileExists = await checkIfFileExistsAsync(modelFilePath);
       expect(fileExists).toEqual(false);
 
@@ -677,7 +677,7 @@ describe("/sidiroar/api/file", () => {
 
       //#region CHECKING_FILE
 
-      let modelFilePath = Project.getModelFilePath(user, model);
+      let modelFilePath = Project.getModelFilePath(model);
       let fileExists = await checkIfFileExistsAsync(modelFilePath);
       expect(fileExists).toEqual(false);
 
@@ -704,7 +704,7 @@ describe("/sidiroar/api/file", () => {
     });
 
     let exec = async () => {
-      let modelFilePath = Project.getModelFilePath(user, model);
+      let modelFilePath = Project.getModelFilePath(model);
       if (createFile)
         await createFileAsync(modelFilePath, "This is a test file");
 
@@ -726,7 +726,7 @@ describe("/sidiroar/api/file", () => {
       expect(response.status).toEqual(200);
       expect(response.text).toEqual("File successfully deleted!");
 
-      let modelFilePath = Project.getModelFilePath(user, model);
+      let modelFilePath = Project.getModelFilePath(model);
 
       let uploadedFileExists = await checkIfFileExistsAsync(modelFilePath);
       expect(uploadedFileExists).toEqual(false);
@@ -805,7 +805,7 @@ describe("/sidiroar/api/file", () => {
 
       //#region CHECKING_FILE
 
-      let modelFilePath = Project.getModelFilePath(user, model);
+      let modelFilePath = Project.getModelFilePath(model);
       let fileExists = await checkIfFileExistsAsync(modelFilePath);
       expect(fileExists).toEqual(true);
 
@@ -828,7 +828,7 @@ describe("/sidiroar/api/file", () => {
 
       //#region CHECKING_FILE
 
-      let modelFilePath = Project.getModelFilePath(user, model);
+      let modelFilePath = Project.getModelFilePath(model);
       let fileExists = await checkIfFileExistsAsync(modelFilePath);
       expect(fileExists).toEqual(true);
 
@@ -851,7 +851,7 @@ describe("/sidiroar/api/file", () => {
 
       //#region CHECKING_FILE
 
-      let modelFilePath = Project.getModelFilePath(user, model);
+      let modelFilePath = Project.getModelFilePath(model);
       let fileExists = await checkIfFileExistsAsync(modelFilePath);
       expect(fileExists).toEqual(true);
 
@@ -874,7 +874,7 @@ describe("/sidiroar/api/file", () => {
 
       //#region CHECKING_FILE
 
-      let modelFilePath = Project.getModelFilePath(user, model);
+      let modelFilePath = Project.getModelFilePath(model);
       let fileExists = await checkIfFileExistsAsync(modelFilePath);
       expect(fileExists).toEqual(true);
 
@@ -904,7 +904,7 @@ describe("/sidiroar/api/file", () => {
 
       //#region CHECKING_FILE
 
-      let modelFilePath = Project.getModelFilePath(user, model);
+      let modelFilePath = Project.getModelFilePath(model);
       let fileExists = await checkIfFileExistsAsync(modelFilePath);
       expect(fileExists).toEqual(true);
 

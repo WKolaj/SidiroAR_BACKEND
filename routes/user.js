@@ -142,10 +142,10 @@ router.delete(
         .status(401)
         .send("Access denied. Only superAdmin can delete admins");
 
-    let payloadToReturn = await user.getPayload();
-
     //Deleting models of given user
     await user.deleteModels();
+
+    let payloadToReturn = await user.getPayload();
 
     //Deleting user
     await User.deleteOne({ _id: req.params.id });

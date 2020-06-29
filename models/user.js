@@ -1,7 +1,12 @@
 const Joi = require("joi");
 const mongoose = require("mongoose");
 const config = require("config");
-const { generateRandomString, getBit } = require("../utilities/utilities");
+const {
+  generateRandomString,
+  getBit,
+  checkIfFileExistsAsync,
+  removeFileOrDirectoryAsync,
+} = require("../utilities/utilities");
 const jwt = require("jsonwebtoken");
 const jwtPrivateKey = config.get("jwtPrivateKey");
 const { Model } = require("./model");
@@ -9,6 +14,8 @@ const {
   generateEmailContent,
   generateEmailSubject,
 } = require("../services/EmailService/EmailService");
+const { getModelFilePath, getModelIOSFilePath } = require("../classes/project");
+const { urlencoded } = require("express");
 
 const possibleLanguages = ["pl", "en"];
 
@@ -124,9 +131,38 @@ userSchema.methods.getModels = async function () {
 
 //Method for all deleting model assigned to user
 userSchema.methods.deleteModels = async function () {
-  return Model.deleteMany({ user: this._id });
+  //Getting all models
+  let modelsOfUser = await Model.find({ user: this._id });
 
-  //TO DO - also delete files associated with user
+  //Deleting all files of models - if they exists and user was the only user
+  for (let model of modelsOfUser) {
+    if (
+      model.user.length === 1 &&
+      model.user.toString() === this._id.toString()
+    ) {
+      //User is the only user of given model
+
+      //deleting model from db
+      await model.remove();
+
+      let filePath = getModelFilePath(model);
+      if (await checkIfFileExistsAsync(filePath))
+        await removeFileOrDirectoryAsync(filePath);
+
+      let iosFilePath = getModelIOSFilePath(model);
+      if (await checkIfFileExistsAsync(iosFilePath))
+        await removeFileOrDirectoryAsync(iosFilePath);
+    } else {
+      //User is not the only user of given model
+
+      //Updating model
+      model.user = model.user.filter(
+        (user) => user._id.toString() !== this._id.toString()
+      );
+
+      await model.save();
+    }
+  }
 };
 
 //Method for generating two lists of ids and names of models
