@@ -12,6 +12,12 @@ const testUserEmail = "user@test1234abcd.com.pl";
 const testUserAndAdminEmail = "userAndAdmin@test1234abcd.com.pl";
 const testSuperAdminEmail = "superAdmin@test1234abcd.com.pl";
 
+const testUselessUserPassword = "11111111";
+const testAdminPassword = "12341234";
+const testUserPassword = "43214321";
+const testUserAndAdminPassword = "12431243";
+const testSuperAdminPassword = "98129812";
+
 //Method for generating useless (without permissions) user directly into database
 module.exports.generateUselessUser = async () => {
   let user = await User.findOne({ email: testUselessUserEmail });
@@ -20,7 +26,7 @@ module.exports.generateUselessUser = async () => {
   user = new User({
     name: "testUselessUser",
     email: testUselessUserEmail,
-    password: await hashString("1111"),
+    password: await hashString(testUselessUserPassword),
     permissions: 0,
     defaultLang: "pl",
   });
@@ -41,7 +47,7 @@ module.exports.generateTestAdmin = async () => {
   admin = new User({
     name: "testAdmin",
     email: testAdminEmail,
-    password: await hashString("1234"),
+    password: await hashString(testAdminPassword),
     permissions: 2,
     defaultLang: "pl",
   });
@@ -62,7 +68,7 @@ module.exports.generateTestUser = async () => {
   user = new User({
     name: "testUser",
     email: testUserEmail,
-    password: await hashString("4321"),
+    password: await hashString(testUserPassword),
     permissions: 1,
     defaultLang: "pl",
   });
@@ -83,7 +89,7 @@ module.exports.generateTestAdminAndUser = async () => {
   user = new User({
     name: "testUserAndAdmin",
     email: testUserAndAdminEmail,
-    password: await hashString("1243"),
+    password: await hashString(testUserAndAdminPassword),
     permissions: 3,
     defaultLang: "pl",
   });
@@ -104,7 +110,7 @@ module.exports.generateTestSuperAdmin = async () => {
   admin = new User({
     name: "testSuperAdmin",
     email: testSuperAdminEmail,
-    password: await hashString("9812"),
+    password: await hashString(testSuperAdminPassword),
     permissions: 7,
     defaultLang: "pl",
   });

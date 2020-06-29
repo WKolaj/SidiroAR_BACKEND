@@ -1,10 +1,7 @@
 const Joi = require("joi");
 const mongoose = require("mongoose");
 const config = require("config");
-const {
-  generateRandomNumberString,
-  getBit,
-} = require("../utilities/utilities");
+const { generateRandomString, getBit } = require("../utilities/utilities");
 const jwt = require("jsonwebtoken");
 const jwtPrivateKey = config.get("jwtPrivateKey");
 const { Model } = require("./model");
@@ -12,7 +9,7 @@ const {
   generateEmailContent,
 } = require("../services/EmailService/EmailService");
 
-const possibleLanguages = ["pl", "eng"];
+const possibleLanguages = ["pl", "en"];
 
 //hashed password can be longer than 4 signs - use no limition accoridng to max min length
 const userSchema = new mongoose.Schema({
@@ -32,6 +29,8 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: true,
+    minlength: 8,
+    maxlength: 255,
   },
   permissions: {
     type: Number,
@@ -58,7 +57,7 @@ function validateUser(user) {
   const schema = {
     name: Joi.string().min(3).max(100).required(),
     email: Joi.string().email().required(),
-    password: Joi.string().regex(/^\d+$/).min(4).max(4),
+    password: Joi.string().min(8).max(255),
     oldPassword: Joi.string(),
     permissions: Joi.number().integer().min(0).max(255).required(),
     defaultLang: Joi.valid(possibleLanguages).optional(),
@@ -68,9 +67,9 @@ function validateUser(user) {
   return Joi.validate(user, schema);
 }
 
-//Method for generating random pin for user
-userSchema.statics.generateRandomPin = function () {
-  return generateRandomNumberString(4);
+//Method for generating random password for user
+userSchema.statics.generateRandomPassword = function () {
+  return generateRandomString(8);
 };
 
 //Method for checking if user is super admin
@@ -89,8 +88,13 @@ userSchema.statics.isUser = function (permissions) {
 };
 
 //Method for generating random pin for user
-userSchema.statics.generateEmailText = async function (name, login, password) {
-  return await generateEmailContent(login, password);
+userSchema.statics.generateEmailText = async function (
+  name,
+  login,
+  password,
+  defaultLang
+) {
+  return await generateEmailContent(login, password, defaultLang);
 };
 
 //Method for generating JWT Token of user

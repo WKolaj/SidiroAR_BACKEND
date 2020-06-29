@@ -77,9 +77,10 @@ describe("/sidiroar/api/users", () => {
     beforeEach(async () => {
       requestPayload = {
         email: testUser.email,
-        password: "4321",
+        password: "43214321",
       };
     });
+
     let exec = async () => {
       return request(server).post("/sidiroar/api/auth").send(requestPayload);
     };
@@ -88,7 +89,7 @@ describe("/sidiroar/api/users", () => {
       //Setting payload of normal user
       requestPayload = {
         email: uselessUser.email,
-        password: "1111",
+        password: "11111111",
       };
 
       let response = await exec();
@@ -190,7 +191,7 @@ describe("/sidiroar/api/users", () => {
       //Setting payload of normal user
       requestPayload = {
         email: testAdmin.email,
-        password: "1234",
+        password: "12341234",
       };
 
       let response = await exec();
@@ -243,7 +244,7 @@ describe("/sidiroar/api/users", () => {
       //Setting payload of normal user
       requestPayload = {
         email: testUserAndAdmin.email,
-        password: "1243",
+        password: "12431243",
       };
 
       let response = await exec();
@@ -565,7 +566,7 @@ describe("/sidiroar/api/users", () => {
     });
 
     it("should return 400 and empty body if password is invalid", async () => {
-      requestPayload.password = "9999";
+      requestPayload.password = "99999999";
 
       let response = await exec();
 

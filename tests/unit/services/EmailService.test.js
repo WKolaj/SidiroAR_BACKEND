@@ -2,6 +2,7 @@ const EmailService = require("../../../services/EmailService/EmailService");
 const nodemailer = require("nodemailer");
 const config = require("config");
 const { snooze } = require("../../../utilities/utilities");
+const fs = require("fs");
 
 describe("EmailService", () => {
   describe("sendMail", () => {
@@ -59,6 +60,78 @@ describe("EmailService", () => {
           }
         })
       ).resolves.toBeDefined();
+    });
+  });
+
+  describe("generateEmailContent", () => {
+    let enMailContent;
+    let plMailContent;
+    let login;
+    let password;
+    let language;
+
+    beforeEach(() => {
+      login = "testLogin";
+      language = "pl";
+
+      enMailContent = fs.readFileSync(
+        "./services/EmailService/emailTemplate/en.html",
+        "UTF-8"
+      );
+
+      plMailContent = fs.readFileSync(
+        "./services/EmailService/emailTemplate/pl.html",
+        "UTF-8"
+      );
+    });
+
+    let exec = async () => {
+      return EmailService.generateEmailContent(login, password, language);
+    };
+
+    it("should return valid html content, personlized for given user and language", async () => {
+      let content = await exec();
+
+      let expectedContent = plMailContent
+        .replace("@PAR_LOGIN", login)
+        .replace("@PAR_PIN", password);
+
+      expect(content).toEqual(expectedContent);
+    });
+
+    it("should return valid html content, personlized for given user and language - if language is en", async () => {
+      language = "en";
+
+      let content = await exec();
+
+      let expectedContent = enMailContent
+        .replace("@PAR_LOGIN", login)
+        .replace("@PAR_PIN", password);
+
+      expect(content).toEqual(expectedContent);
+    });
+
+    it("should throw if there is no language supported", async () => {
+      language = "fakeLang";
+
+      let rejectError;
+
+      await expect(
+        new Promise(async (resolve, reject) => {
+          try {
+            await exec();
+            return resolve(true);
+          } catch (err) {
+            rejectError = err;
+            return reject(err);
+          }
+        })
+      ).rejects.toBeDefined();
+
+      expect(rejectError).toBeDefined();
+      expect(rejectError.message).toEqual(
+        "Unsupported language fakeLang - email content not found"
+      );
     });
   });
 });

@@ -2,10 +2,24 @@ const config = require("config");
 const nodemailer = require("nodemailer");
 const logger = require("../../logger/logger");
 const path = require("path");
-const { readFileAsync } = require("../../utilities/utilities");
+const {
+  readFileAsync,
+  checkIfFileExistsAsync,
+} = require("../../utilities/utilities");
 
-module.exports.generateEmailContent = async function (login, password) {
-  const templatePath = path.join(__dirname, "emailTemplate/emailTemplate.html");
+module.exports.generateEmailContent = async function (
+  login,
+  password,
+  defaultLang
+) {
+  let templatePath = path.join(__dirname, `emailTemplate/${defaultLang}.html`);
+
+  let fileExists = await checkIfFileExistsAsync(templatePath);
+
+  if (!fileExists)
+    throw new Error(
+      `Unsupported language ${defaultLang} - email content not found`
+    );
 
   let templateContent = (await readFileAsync(templatePath, "utf8")).toString();
 

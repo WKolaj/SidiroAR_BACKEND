@@ -79,7 +79,7 @@ router.post(
 
     //Setting password as random one if user's password do not exist
     if (!exists(req.body.password))
-      req.body.password = User.generateRandomPin();
+      req.body.password = User.generateRandomPassword();
 
     let passwordBeforeHash = req.body.password;
 
@@ -107,7 +107,8 @@ router.post(
     let emailText = await User.generateEmailText(
       user.name,
       user.email,
-      passwordBeforeHash
+      passwordBeforeHash,
+      user.defaultLang
     );
 
     //Sending email - it is not neccessary to wait until it has been finished

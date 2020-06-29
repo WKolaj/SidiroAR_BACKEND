@@ -6,7 +6,7 @@ let usersDirPath = path.join(projectDirPath, Project._getUsersDirName());
 const {
   clearDirectoryAsync,
   checkIfDirectoryExistsAsync,
-  createDirAsync
+  createDirAsync,
 } = require("../../../utilities/utilities");
 
 describe("Project", () => {
@@ -87,7 +87,7 @@ describe("Project", () => {
       generateProjectDir = true;
 
       userPayload = {
-        _id: "user1"
+        _id: "user1",
       };
     });
 
@@ -171,14 +171,14 @@ describe("Project", () => {
 
       usersPayload = [
         {
-          _id: "user1"
+          _id: "user1",
         },
         {
-          _id: "user2"
+          _id: "user2",
         },
         {
-          _id: "user3"
-        }
+          _id: "user3",
+        },
       ];
     });
 
@@ -275,14 +275,14 @@ describe("Project", () => {
 
       usersPayload = [
         {
-          _id: "user1"
+          _id: "user1",
         },
         {
-          _id: "user2"
+          _id: "user2",
         },
         {
-          _id: "user3"
-        }
+          _id: "user3",
+        },
       ];
 
       userToDelete = usersPayload[1];

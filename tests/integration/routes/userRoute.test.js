@@ -1,5 +1,9 @@
 const EmailService = require("../../../services/EmailService/EmailService");
-const { snooze } = require("../../../utilities/utilities");
+const {
+  snooze,
+  generateRandomString,
+  generateRandomNumberString,
+} = require("../../../utilities/utilities");
 const _ = require("lodash");
 const request = require("supertest");
 const bcrypt = require("bcrypt");
@@ -106,8 +110,8 @@ describe("/sidiroar/api/user", () => {
         email: "1234@abcd.pl",
         name: "testUser",
         permissions: 1,
-        password: "4321",
-        defaultLang: "eng",
+        password: "43214321",
+        defaultLang: "en",
         additionalInfo: {
           key1: "value1",
           key2: "value2",
@@ -193,7 +197,8 @@ describe("/sidiroar/api/user", () => {
       let expectedMailContent = await User.generateEmailText(
         response.body.name,
         response.body.email,
-        response.body.password
+        response.body.password,
+        response.body.defaultLang
       );
 
       expect(sendMailMockFunction.mock.calls[0][0]).toEqual(
@@ -760,6 +765,8 @@ describe("/sidiroar/api/user", () => {
       expect(response.status).toEqual(200);
       expect(response.body).toBeDefined();
 
+      expect(response.body.password).toBeDefined();
+
       //Body should correspond with payload (except for password and _id)
       let expectedBody = {
         ...requestPayload,
@@ -821,7 +828,8 @@ describe("/sidiroar/api/user", () => {
       let expectedMailContent = await User.generateEmailText(
         response.body.name,
         response.body.email,
-        response.body.password
+        response.body.password,
+        response.body.defaultLang
       );
 
       expect(sendMailMockFunction.mock.calls[0][0]).toEqual(
@@ -896,7 +904,7 @@ describe("/sidiroar/api/user", () => {
     });
 
     it("should not create new user and return 400 if password is a number", async () => {
-      requestPayload.password = 1234;
+      requestPayload.password = 12341234;
 
       let response = await exec();
 
@@ -925,8 +933,8 @@ describe("/sidiroar/api/user", () => {
       //#endregion CHECKING_DATABASE
     });
 
-    it("should not create new user and return 400 if password is shorter than 4 signs", async () => {
-      requestPayload.password = "123";
+    it("should not create new user and return 400 if password is shorter than 8 signs", async () => {
+      requestPayload.password = "1234567";
 
       let response = await exec();
 
@@ -942,7 +950,7 @@ describe("/sidiroar/api/user", () => {
       expect(response.status).toEqual(400);
       expect(response.text).toBeDefined();
       expect(response.text).toContain(
-        '"password" length must be at least 4 characters long'
+        '"password" length must be at least 8 characters long'
       );
 
       //#endregion CHECKING_RESPONSE
@@ -957,9 +965,9 @@ describe("/sidiroar/api/user", () => {
       //#endregion CHECKING_DATABASE
     });
 
-    it("should create new user and return 200 if password is 4 signs", async () => {
+    it("should create new user and return 200 if password is 8 signs", async () => {
       //4 signs
-      requestPayload.password = "1234";
+      requestPayload.password = "12345678";
 
       let response = await exec();
 
@@ -1017,9 +1025,9 @@ describe("/sidiroar/api/user", () => {
       //#endregion CHECKING_DATABASE
     });
 
-    it("should not create new user and return 400 if name is longer than 4 signs", async () => {
+    it("should not create new user and return 400 if name is longer than 255 signs", async () => {
       //5 signs
-      requestPayload.password = "12345";
+      requestPayload.password = generateRandomString(256);
 
       let response = await exec();
 
@@ -1035,7 +1043,7 @@ describe("/sidiroar/api/user", () => {
       expect(response.status).toEqual(400);
       expect(response.text).toBeDefined();
       expect(response.text).toContain(
-        '"password" length must be less than or equal to 4 characters long'
+        '"password" length must be less than or equal to 255 characters long'
       );
 
       //#endregion CHECKING_RESPONSE
@@ -1050,35 +1058,58 @@ describe("/sidiroar/api/user", () => {
       //#endregion CHECKING_DATABASE
     });
 
-    it("should not create new user and return 400 if password contains letters", async () => {
-      //5 signs
-      requestPayload.password = "1ab2";
+    it("should create new user if password contains letters", async () => {
+      requestPayload.password = "abcd1234";
 
       let response = await exec();
-
-      //#region CHECKING_EMAIL
-
-      expect(sendMailMockFunction).not.toHaveBeenCalled();
-
-      //#endregion CHECKING_EMAIL
 
       //#region CHECKING_RESPONSE
 
       expect(response).toBeDefined();
-      expect(response.status).toEqual(400);
-      expect(response.text).toBeDefined();
-      expect(response.text).toContain(
-        "fails to match the required pattern: /^\\d+$/"
-      );
+      expect(response.status).toEqual(200);
+      expect(response.body).toBeDefined();
+
+      //Body should correspond with payload (except  _id)
+      let expectedBody = {
+        ...requestPayload,
+        _id: response.body._id,
+        modelIds: [],
+        modelNames: [],
+        filesExist: [],
+        iosFilesExist: [],
+      };
+
+      expect(response.body).toEqual(expectedBody);
 
       //#endregion CHECKING_RESPONSE
 
       //#region CHECKING_DATABASE
 
-      //Only five users should be saved inside database - uselessUser, testAdmin, testUser, testAdminAndUser, superAdmin
-      let userCount = await User.countDocuments({});
+      //New user should be saved inside database
+      let user = await User.findOne({ _id: response.body._id });
+      expect(user).toBeDefined();
 
-      expect(userCount).toEqual(5);
+      //user payload should be the same to response (except hashed password)
+      let userPayload = _.pick(user, [
+        "email",
+        "name",
+        "permissions",
+        "defaultLang",
+        "additionalInfo",
+      ]);
+      //Id should be converted to string
+      userPayload._id = user._id.toString();
+      userPayload.password = requestPayload.password;
+      //modelIds and modelNames should be empty - it is new user
+      userPayload.modelNames = [];
+      userPayload.modelIds = [];
+      userPayload.filesExist = [];
+      userPayload.iosFilesExist = [];
+
+      expect(response.body).toEqual(userPayload);
+
+      //Password should be encrypted properly
+      expect(bcrypt.compareSync(requestPayload.password, user.password));
 
       //#endregion CHECKING_DATABASE
     });
@@ -1499,7 +1530,7 @@ describe("/sidiroar/api/user", () => {
       expect(response).toBeDefined();
       expect(response.status).toEqual(400);
       expect(response.text).toBeDefined();
-      expect(response.text).toContain('"defaultLang" must be one of [pl, eng]');
+      expect(response.text).toContain('"defaultLang" must be one of [pl, en]');
 
       //#endregion CHECKING_RESPONSE
 
@@ -1529,7 +1560,7 @@ describe("/sidiroar/api/user", () => {
       expect(response).toBeDefined();
       expect(response.status).toEqual(400);
       expect(response.text).toBeDefined();
-      expect(response.text).toContain('"defaultLang" must be one of [pl, eng]');
+      expect(response.text).toContain('"defaultLang" must be one of [pl, en]');
 
       //#endregion CHECKING_RESPONSE
 
@@ -1559,7 +1590,7 @@ describe("/sidiroar/api/user", () => {
       expect(response).toBeDefined();
       expect(response.status).toEqual(400);
       expect(response.text).toBeDefined();
-      expect(response.text).toContain('"defaultLang" must be one of [pl, eng]');
+      expect(response.text).toContain('"defaultLang" must be one of [pl, en]');
 
       //#endregion CHECKING_RESPONSE
 
@@ -1573,8 +1604,8 @@ describe("/sidiroar/api/user", () => {
       //#endregion CHECKING_DATABASE
     });
 
-    it("should create new user and return 200 if defaultLang is eng", async () => {
-      requestPayload.defaultLang = "eng";
+    it("should create new user and return 200 if defaultLang is en", async () => {
+      requestPayload.defaultLang = "en";
 
       let response = await exec();
 
@@ -2891,8 +2922,8 @@ describe("/sidiroar/api/user", () => {
       //#endregion CHECKING_RESPONSE
     });
 
-    it("should return 200 and proper list - if user has lang eng info defined", async () => {
-      testUser.defaultLang = "eng";
+    it("should return 200 and proper list - if user has lang en info defined", async () => {
+      testUser.defaultLang = "en";
 
       await testUser.save();
 
@@ -2943,7 +2974,7 @@ describe("/sidiroar/api/user", () => {
             modelsOfTestUser.map(async (model) => await model.iosFileExists())
           ),
           additionalInfo: {},
-          defaultLang: "eng",
+          defaultLang: "en",
         },
         {
           _id: testAdmin._id.toString(),
@@ -3400,8 +3431,8 @@ describe("/sidiroar/api/user", () => {
       expect(response.body).toEqual(expectedPayload);
     });
 
-    it("should return 200 and user of given id - if user exists and has default lang as eng", async () => {
-      testUser.defaultLang = "eng";
+    it("should return 200 and user of given id - if user exists and has default lang as en", async () => {
+      testUser.defaultLang = "en";
 
       await testUser.save();
 
@@ -3424,7 +3455,7 @@ describe("/sidiroar/api/user", () => {
           modelsOfTestUser.map(async (model) => await model.iosFileExists())
         ),
         additionalInfo: {},
-        defaultLang: "eng",
+        defaultLang: "en",
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -4536,9 +4567,9 @@ describe("/sidiroar/api/user", () => {
         email: testUser.email,
         name: "editedTestUser",
         permissions: 0,
-        password: "9876",
+        password: "98765432",
         additionalInfo: { key1: "value1", key2: "value2", key3: "value3" },
-        defaultLang: "eng",
+        defaultLang: "en",
       };
     });
 
@@ -4576,7 +4607,7 @@ describe("/sidiroar/api/user", () => {
           modelsOfTestUser.map(async (model) => await model.iosFileExists())
         ),
         additionalInfo: { key1: "value1", key2: "value2", key3: "value3" },
-        defaultLang: "eng",
+        defaultLang: "en",
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -4629,7 +4660,7 @@ describe("/sidiroar/api/user", () => {
           modelsOfTestUser.map(async (model) => await model.iosFileExists())
         ),
         additionalInfo: { key1: "value1", key2: "value2", key3: "value3" },
-        defaultLang: "eng",
+        defaultLang: "en",
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -4650,7 +4681,7 @@ describe("/sidiroar/api/user", () => {
 
       //Checking password - it should have not been changed
       let newPasswordMatches = await hashedStringMatch(
-        "4321",
+        "43214321",
         userFromDatabase.password
       );
 
@@ -4668,8 +4699,8 @@ describe("/sidiroar/api/user", () => {
       );
     });
 
-    it("should return 400, and not edit user - if user exists but password is shorter than 4 signs", async () => {
-      requestPayload.password = "123";
+    it("should return 400, and not edit user - if user exists but password is shorter than 8 signs", async () => {
+      requestPayload.password = "1234567";
       let response = await exec();
 
       //#region CHECKING_RESPONSE
@@ -4678,7 +4709,7 @@ describe("/sidiroar/api/user", () => {
       expect(response.status).toEqual(400);
 
       expect(response.text).toContain(
-        '"password" length must be at least 4 characters long'
+        '"password" length must be at least 8 characters long'
       );
 
       //#endregion CHECKING_RESPONSE
@@ -4698,7 +4729,7 @@ describe("/sidiroar/api/user", () => {
 
       //Checking password - it should have not been changed
       let newPasswordMatches = await hashedStringMatch(
-        "4321",
+        "43214321",
         userFromDatabase.password
       );
 
@@ -4707,8 +4738,8 @@ describe("/sidiroar/api/user", () => {
       //#endregion CHECKING_DATABASE
     });
 
-    it("should return 400, and not edit user - if user exists but password is longer than 4 signs", async () => {
-      requestPayload.password = "12345";
+    it("should return 400, and not edit user - if user exists but password is longer than 255 signs", async () => {
+      requestPayload.password = generateRandomNumberString(256);
       let response = await exec();
 
       //#region CHECKING_RESPONSE
@@ -4717,7 +4748,7 @@ describe("/sidiroar/api/user", () => {
       expect(response.status).toEqual(400);
 
       expect(response.text).toContain(
-        '"password" length must be less than or equal to 4 characters long'
+        '"password" length must be less than or equal to 255 characters long'
       );
 
       //#endregion CHECKING_RESPONSE
@@ -4737,7 +4768,7 @@ describe("/sidiroar/api/user", () => {
 
       //Checking password - it should have not been changed
       let newPasswordMatches = await hashedStringMatch(
-        "4321",
+        "43214321",
         userFromDatabase.password
       );
 
@@ -4774,7 +4805,7 @@ describe("/sidiroar/api/user", () => {
 
       //Checking password - it should have not been changed
       let newPasswordMatches = await hashedStringMatch(
-        "4321",
+        "43214321",
         userFromDatabase.password
       );
 
@@ -4811,7 +4842,7 @@ describe("/sidiroar/api/user", () => {
 
       //Checking password - it should have not been changed
       let newPasswordMatches = await hashedStringMatch(
-        "4321",
+        "43214321",
         userFromDatabase.password
       );
 
@@ -5358,7 +5389,7 @@ describe("/sidiroar/api/user", () => {
           modelsOfTestUser.map(async (model) => await model.iosFileExists())
         ),
         additionalInfo: { key1: "value1", key2: "value2", key3: "value3" },
-        defaultLang: "eng",
+        defaultLang: "en",
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -5472,7 +5503,7 @@ describe("/sidiroar/api/user", () => {
           modelsOfTestUser.map(async (model) => await model.iosFileExists())
         ),
         additionalInfo: { key1: "value1", key2: "value2", key3: "value3" },
-        defaultLang: "eng",
+        defaultLang: "en",
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -5531,7 +5562,7 @@ describe("/sidiroar/api/user", () => {
           modelsOfTestUser.map(async (model) => await model.iosFileExists())
         ),
         additionalInfo: info,
-        defaultLang: "eng",
+        defaultLang: "en",
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -5805,9 +5836,9 @@ describe("/sidiroar/api/user", () => {
       //#endregion CHECKING_DATABASE
     });
 
-    it("should return 200, edit user and not edit defaultLang- if defaultLang is not defined in payload, and was set previously to eng", async () => {
+    it("should return 200, edit user and not edit defaultLang- if defaultLang is not defined in payload, and was set previously to en", async () => {
       //Setting initial lang value
-      testUser.defaultLang = "eng";
+      testUser.defaultLang = "en";
       await testUser.save();
 
       delete requestPayload.defaultLang;
@@ -5833,7 +5864,7 @@ describe("/sidiroar/api/user", () => {
           modelsOfTestUser.map(async (model) => await model.iosFileExists())
         ),
         additionalInfo: { key1: "value1", key2: "value2", key3: "value3" },
-        defaultLang: "eng",
+        defaultLang: "en",
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -5863,10 +5894,10 @@ describe("/sidiroar/api/user", () => {
       //#endregion CHECKING_DATABASE
     });
 
-    it("should return 400, and not edit any user- if defaultLang is null in payload, and was set previously to eng", async () => {
+    it("should return 400, and not edit any user- if defaultLang is null in payload, and was set previously to en", async () => {
       //Setting info non-empty value
       //Setting initial lang value
-      testUser.defaultLang = "eng";
+      testUser.defaultLang = "en";
       await testUser.save();
 
       requestPayload.defaultLang = null;
@@ -5877,7 +5908,7 @@ describe("/sidiroar/api/user", () => {
 
       expect(response).toBeDefined();
       expect(response.status).toEqual(400);
-      expect(response.text).toContain('"defaultLang" must be one of [pl, eng]');
+      expect(response.text).toContain('"defaultLang" must be one of [pl, en]');
 
       //#endregion CHECKING_RESPONSE
 
@@ -5924,10 +5955,10 @@ describe("/sidiroar/api/user", () => {
       //#endregion CHECKING_DATABASE
     });
 
-    it("should return 400, and not edit any user- if defaultLang is an invalid string in payload, and was set previously to eng", async () => {
+    it("should return 400, and not edit any user- if defaultLang is an invalid string in payload, and was set previously to en", async () => {
       //Setting info non-empty value
       //Setting initial lang value
-      testUser.defaultLang = "eng";
+      testUser.defaultLang = "en";
       await testUser.save();
 
       requestPayload.defaultLang = "invalidString";
@@ -5938,7 +5969,7 @@ describe("/sidiroar/api/user", () => {
 
       expect(response).toBeDefined();
       expect(response.status).toEqual(400);
-      expect(response.text).toContain('"defaultLang" must be one of [pl, eng]');
+      expect(response.text).toContain('"defaultLang" must be one of [pl, en]');
 
       //#endregion CHECKING_RESPONSE
 
@@ -5985,10 +6016,10 @@ describe("/sidiroar/api/user", () => {
       //#endregion CHECKING_DATABASE
     });
 
-    it("should return 400, and not edit any user- if defaultLang is a number in payload, and was set previously to eng", async () => {
+    it("should return 400, and not edit any user- if defaultLang is a number in payload, and was set previously to en", async () => {
       //Setting info non-empty value
       //Setting initial lang value
-      testUser.defaultLang = "eng";
+      testUser.defaultLang = "en";
       await testUser.save();
 
       requestPayload.defaultLang = 123;
@@ -5999,7 +6030,7 @@ describe("/sidiroar/api/user", () => {
 
       expect(response).toBeDefined();
       expect(response.status).toEqual(400);
-      expect(response.text).toContain('"defaultLang" must be one of [pl, eng]');
+      expect(response.text).toContain('"defaultLang" must be one of [pl, en]');
 
       //#endregion CHECKING_RESPONSE
 
@@ -6046,10 +6077,10 @@ describe("/sidiroar/api/user", () => {
       //#endregion CHECKING_DATABASE
     });
 
-    it("should return 400, and not edit any user- if defaultLang is a boolean in payload, and was set previously to eng", async () => {
+    it("should return 400, and not edit any user- if defaultLang is a boolean in payload, and was set previously to en", async () => {
       //Setting info non-empty value
       //Setting initial lang value
-      testUser.defaultLang = "eng";
+      testUser.defaultLang = "en";
       await testUser.save();
 
       requestPayload.defaultLang = true;
@@ -6060,7 +6091,7 @@ describe("/sidiroar/api/user", () => {
 
       expect(response).toBeDefined();
       expect(response.status).toEqual(400);
-      expect(response.text).toContain('"defaultLang" must be one of [pl, eng]');
+      expect(response.text).toContain('"defaultLang" must be one of [pl, en]');
 
       //#endregion CHECKING_RESPONSE
 
@@ -6302,7 +6333,7 @@ describe("/sidiroar/api/user", () => {
           modelsOfTestUser.map(async (model) => await model.iosFileExists())
         ),
         additionalInfo: { key1: "value1", key2: "value2", key3: "value3" },
-        defaultLang: "eng",
+        defaultLang: "en",
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -6416,7 +6447,7 @@ describe("/sidiroar/api/user", () => {
           modelsOfTestUser.map(async (model) => await model.iosFileExists())
         ),
         additionalInfo: { key1: "value1", key2: "value2", key3: "value3" },
-        defaultLang: "eng",
+        defaultLang: "en",
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -6641,7 +6672,7 @@ describe("/sidiroar/api/user", () => {
           modelsOfTestUser.map(async (model) => await model.iosFileExists())
         ),
         additionalInfo: { key1: "value1", key2: "value2", key3: "value3" },
-        defaultLang: "eng",
+        defaultLang: "en",
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -6799,7 +6830,7 @@ describe("/sidiroar/api/user", () => {
         email: testUserAndAdmin.email,
         name: "editedTestUser",
         permissions: 0,
-        password: "9876",
+        password: "987654321",
       };
 
       let response = await exec();
@@ -6864,9 +6895,9 @@ describe("/sidiroar/api/user", () => {
         email: testUserAndAdmin.email,
         name: "editedTestUser",
         permissions: 0,
-        password: "9876",
+        password: "987654321",
         additionalInfo: { key1: "value1", key2: "value2", key3: "value3" },
-        defaultLang: "eng",
+        defaultLang: "en",
       };
 
       let response = await exec();
@@ -6894,7 +6925,7 @@ describe("/sidiroar/api/user", () => {
           )
         ),
         additionalInfo: { key1: "value1", key2: "value2", key3: "value3" },
-        defaultLang: "eng",
+        defaultLang: "en",
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -6931,7 +6962,7 @@ describe("/sidiroar/api/user", () => {
         email: testUserAndAdmin.email,
         name: "editedTestUser",
         permissions: 0,
-        password: "9876",
+        password: "987654321",
       };
 
       let response = await exec();
@@ -6997,9 +7028,9 @@ describe("/sidiroar/api/user", () => {
         email: testSuperAdmin.email,
         name: "editedTestUser",
         permissions: 0,
-        password: "9876",
+        password: "987654321",
         additionalInfo: { key1: "value1", key2: "value2", key3: "value3" },
-        defaultLang: "eng",
+        defaultLang: "en",
       };
 
       let response = await exec();
@@ -7025,7 +7056,7 @@ describe("/sidiroar/api/user", () => {
           )
         ),
         additionalInfo: { key1: "value1", key2: "value2", key3: "value3" },
-        defaultLang: "eng",
+        defaultLang: "en",
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -7062,7 +7093,7 @@ describe("/sidiroar/api/user", () => {
         email: testUser.email,
         name: "editedTestUser",
         permissions: 2,
-        password: "9876",
+        password: "987654321",
       };
 
       let response = await exec();
@@ -7128,9 +7159,9 @@ describe("/sidiroar/api/user", () => {
         email: testUser.email,
         name: "editedTestUser",
         permissions: 2,
-        password: "9876",
+        password: "987654321",
         additionalInfo: { key1: "value1", key2: "value2", key3: "value3" },
-        defaultLang: "eng",
+        defaultLang: "en",
       };
 
       let response = await exec();
@@ -7154,7 +7185,7 @@ describe("/sidiroar/api/user", () => {
           modelsOfTestUser.map(async (model) => await model.iosFileExists())
         ),
         additionalInfo: { key1: "value1", key2: "value2", key3: "value3" },
-        defaultLang: "eng",
+        defaultLang: "en",
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -7192,7 +7223,7 @@ describe("/sidiroar/api/user", () => {
         email: testUser.email,
         name: "editedTestUser",
         permissions: 4,
-        password: "9876",
+        password: "987654321",
       };
 
       let response = await exec();
@@ -7258,9 +7289,9 @@ describe("/sidiroar/api/user", () => {
         email: testUser.email,
         name: "editedTestUser",
         permissions: 4,
-        password: "9876",
+        password: "987654321",
         additionalInfo: { key1: "value1", key2: "value2", key3: "value3" },
-        defaultLang: "eng",
+        defaultLang: "en",
       };
 
       let response = await exec();
@@ -7284,7 +7315,7 @@ describe("/sidiroar/api/user", () => {
           modelsOfTestUser.map(async (model) => await model.iosFileExists())
         ),
         additionalInfo: { key1: "value1", key2: "value2", key3: "value3" },
-        defaultLang: "eng",
+        defaultLang: "en",
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -7321,9 +7352,9 @@ describe("/sidiroar/api/user", () => {
         email: testAdmin.email,
         name: "editedTestUser",
         permissions: 4,
-        password: "9876",
+        password: "987654321",
         additionalInfo: { key1: "value1", key2: "value2", key3: "value3" },
-        defaultLang: "eng",
+        defaultLang: "en",
       };
 
       let response = await exec();
@@ -7347,7 +7378,7 @@ describe("/sidiroar/api/user", () => {
           modelsOfTestAdmin.map(async (model) => await model.iosFileExists())
         ),
         additionalInfo: { key1: "value1", key2: "value2", key3: "value3" },
-        defaultLang: "eng",
+        defaultLang: "en",
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -7492,8 +7523,8 @@ describe("/sidiroar/api/user", () => {
       expect(response.body).toEqual(expectedPayload);
     });
 
-    it("should return 200 and user - if user has defaultLang defined as eng", async () => {
-      testUser.defaultLang = "eng";
+    it("should return 200 and user - if user has defaultLang defined as en", async () => {
+      testUser.defaultLang = "en";
       await testUser.save();
 
       let response = await exec();
@@ -7515,7 +7546,7 @@ describe("/sidiroar/api/user", () => {
           modelsOfTestUser.map(async (model) => await model.iosFileExists())
         ),
         additionalInfo: {},
-        defaultLang: "eng",
+        defaultLang: "en",
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -7656,14 +7687,14 @@ describe("/sidiroar/api/user", () => {
         email: testUser.email,
         name: "editedTestUser",
         permissions: testUser.permissions,
-        password: "9876",
-        oldPassword: "4321",
+        password: "9876abcd",
+        oldPassword: "43214321",
         additionalInfo: {
           key1: "value1",
           key2: "value2",
           key3: "value3",
         },
-        defaultLang: "eng",
+        defaultLang: "en",
       };
     });
 
@@ -7705,7 +7736,7 @@ describe("/sidiroar/api/user", () => {
           key2: "value2",
           key3: "value3",
         },
-        defaultLang: "eng",
+        defaultLang: "en",
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -7763,7 +7794,7 @@ describe("/sidiroar/api/user", () => {
           key2: "value2",
           key3: "value3",
         },
-        defaultLang: "eng",
+        defaultLang: "en",
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -7784,7 +7815,7 @@ describe("/sidiroar/api/user", () => {
 
       //Checking password - it should have not been changed
       let newPasswordMatches = await hashedStringMatch(
-        "4321",
+        "43214321",
         userFromDatabase.password
       );
 
@@ -7802,8 +7833,8 @@ describe("/sidiroar/api/user", () => {
       );
     });
 
-    it("should return 400, and not edit user - if user exists but password is shorter than 4 signs", async () => {
-      requestPayload.password = "123";
+    it("should return 400, and not edit user - if user exists but password is shorter than 8 signs", async () => {
+      requestPayload.password = "1234567";
       let response = await exec();
 
       //#region CHECKING_RESPONSE
@@ -7812,7 +7843,7 @@ describe("/sidiroar/api/user", () => {
       expect(response.status).toEqual(400);
 
       expect(response.text).toContain(
-        '"password" length must be at least 4 characters long'
+        '"password" length must be at least 8 characters long'
       );
 
       //#endregion CHECKING_RESPONSE
@@ -7832,7 +7863,7 @@ describe("/sidiroar/api/user", () => {
 
       //Checking password - it should have not been changed
       let newPasswordMatches = await hashedStringMatch(
-        "4321",
+        "43214321",
         userFromDatabase.password
       );
 
@@ -7841,8 +7872,8 @@ describe("/sidiroar/api/user", () => {
       //#endregion CHECKING_DATABASE
     });
 
-    it("should return 400, and not edit user - if user exists but password is longer than 4 signs", async () => {
-      requestPayload.password = "12345";
+    it("should return 400, and not edit user - if user exists but password is longer than 255 signs", async () => {
+      requestPayload.password = generateRandomString(256);
       let response = await exec();
 
       //#region CHECKING_RESPONSE
@@ -7851,7 +7882,7 @@ describe("/sidiroar/api/user", () => {
       expect(response.status).toEqual(400);
 
       expect(response.text).toContain(
-        '"password" length must be less than or equal to 4 characters long'
+        '"password" length must be less than or equal to 255 characters long'
       );
 
       //#endregion CHECKING_RESPONSE
@@ -7871,7 +7902,7 @@ describe("/sidiroar/api/user", () => {
 
       //Checking password - it should have not been changed
       let newPasswordMatches = await hashedStringMatch(
-        "4321",
+        "43214321",
         userFromDatabase.password
       );
 
@@ -7908,7 +7939,7 @@ describe("/sidiroar/api/user", () => {
 
       //Checking password - it should have not been changed
       let newPasswordMatches = await hashedStringMatch(
-        "4321",
+        "43214321",
         userFromDatabase.password
       );
 
@@ -7945,7 +7976,7 @@ describe("/sidiroar/api/user", () => {
 
       //Checking password - it should have not been changed
       let newPasswordMatches = await hashedStringMatch(
-        "4321",
+        "43214321",
         userFromDatabase.password
       );
 
@@ -7982,7 +8013,7 @@ describe("/sidiroar/api/user", () => {
 
       //Checking password - it should have not been changed
       let newPasswordMatches = await hashedStringMatch(
-        "4321",
+        "43214321",
         userFromDatabase.password
       );
 
@@ -8019,7 +8050,7 @@ describe("/sidiroar/api/user", () => {
 
       //Checking password - it should have not been changed
       let newPasswordMatches = await hashedStringMatch(
-        "4321",
+        "43214321",
         userFromDatabase.password
       );
 
@@ -8058,7 +8089,7 @@ describe("/sidiroar/api/user", () => {
 
       //Checking password - it should have not been changed
       let newPasswordMatches = await hashedStringMatch(
-        "4321",
+        "43214321",
         userFromDatabase.password
       );
 
@@ -8095,7 +8126,7 @@ describe("/sidiroar/api/user", () => {
 
       //Checking password - it should have not been changed
       let newPasswordMatches = await hashedStringMatch(
-        "4321",
+        "43214321",
         userFromDatabase.password
       );
 
@@ -8587,7 +8618,7 @@ describe("/sidiroar/api/user", () => {
           key2: "value2",
           key3: "value3",
         },
-        defaultLang: "eng",
+        defaultLang: "en",
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -8705,7 +8736,7 @@ describe("/sidiroar/api/user", () => {
           key2: "value2",
           key3: "value3",
         },
-        defaultLang: "eng",
+        defaultLang: "en",
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -8771,7 +8802,7 @@ describe("/sidiroar/api/user", () => {
           key2: "value2",
           key3: "value3",
         },
-        defaultLang: "eng",
+        defaultLang: "en",
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -9113,9 +9144,9 @@ describe("/sidiroar/api/user", () => {
       //#endregion CHECKING_DATABASE
     });
 
-    it("should return 200, edit user, and return it - if defaultLang is not defined in payload and was prevously set to eng", async () => {
+    it("should return 200, edit user, and return it - if defaultLang is not defined in payload and was prevously set to en", async () => {
       //setting defaultLang
-      testUser.defaultLang = "eng";
+      testUser.defaultLang = "en";
       await testUser.save();
 
       delete requestPayload.defaultLang;
@@ -9145,7 +9176,7 @@ describe("/sidiroar/api/user", () => {
           key2: "value2",
           key3: "value3",
         },
-        defaultLang: "eng",
+        defaultLang: "en",
       };
 
       expect(response.body).toEqual(expectedPayload);
@@ -9175,9 +9206,9 @@ describe("/sidiroar/api/user", () => {
       //#endregion CHECKING_DATABASE
     });
 
-    it("should return 400, and not edit any user- if defaultLang is null in payload and was prevously set to eng", async () => {
+    it("should return 400, and not edit any user- if defaultLang is null in payload and was prevously set to en", async () => {
       //setting defaultLang
-      testUser.defaultLang = "eng";
+      testUser.defaultLang = "en";
       await testUser.save();
 
       requestPayload.defaultLang = null;
@@ -9188,7 +9219,7 @@ describe("/sidiroar/api/user", () => {
 
       expect(response).toBeDefined();
       expect(response.status).toEqual(400);
-      expect(response.text).toContain('"defaultLang" must be one of [pl, eng]');
+      expect(response.text).toContain('"defaultLang" must be one of [pl, en]');
 
       //#endregion CHECKING_RESPONSE
 
@@ -9235,9 +9266,9 @@ describe("/sidiroar/api/user", () => {
       //#endregion CHECKING_DATABASE
     });
 
-    it("should return 400, and not edit any user- if defaultLang is invalid string in payload and was prevously set to eng", async () => {
+    it("should return 400, and not edit any user- if defaultLang is invalid string in payload and was prevously set to en", async () => {
       //setting defaultLang
-      testUser.defaultLang = "eng";
+      testUser.defaultLang = "en";
       await testUser.save();
 
       requestPayload.defaultLang = "invalidString";
@@ -9248,7 +9279,7 @@ describe("/sidiroar/api/user", () => {
 
       expect(response).toBeDefined();
       expect(response.status).toEqual(400);
-      expect(response.text).toContain('"defaultLang" must be one of [pl, eng]');
+      expect(response.text).toContain('"defaultLang" must be one of [pl, en]');
 
       //#endregion CHECKING_RESPONSE
 
@@ -9295,9 +9326,9 @@ describe("/sidiroar/api/user", () => {
       //#endregion CHECKING_DATABASE
     });
 
-    it("should return 400, and not edit any user- if defaultLang is a number in payload and was prevously set to eng", async () => {
+    it("should return 400, and not edit any user- if defaultLang is a number in payload and was prevously set to en", async () => {
       //setting defaultLang
-      testUser.defaultLang = "eng";
+      testUser.defaultLang = "en";
       await testUser.save();
 
       requestPayload.defaultLang = 123;
@@ -9308,7 +9339,7 @@ describe("/sidiroar/api/user", () => {
 
       expect(response).toBeDefined();
       expect(response.status).toEqual(400);
-      expect(response.text).toContain('"defaultLang" must be one of [pl, eng]');
+      expect(response.text).toContain('"defaultLang" must be one of [pl, en]');
 
       //#endregion CHECKING_RESPONSE
 
@@ -9355,9 +9386,9 @@ describe("/sidiroar/api/user", () => {
       //#endregion CHECKING_DATABASE
     });
 
-    it("should return 400, and not edit any user- if defaultLang is a boolean in payload and was prevously set to eng", async () => {
+    it("should return 400, and not edit any user- if defaultLang is a boolean in payload and was prevously set to en", async () => {
       //setting defaultLang
-      testUser.defaultLang = "eng";
+      testUser.defaultLang = "en";
       await testUser.save();
 
       requestPayload.defaultLang = true;
@@ -9368,7 +9399,7 @@ describe("/sidiroar/api/user", () => {
 
       expect(response).toBeDefined();
       expect(response.status).toEqual(400);
-      expect(response.text).toContain('"defaultLang" must be one of [pl, eng]');
+      expect(response.text).toContain('"defaultLang" must be one of [pl, en]');
 
       //#endregion CHECKING_RESPONSE
 
@@ -9821,14 +9852,14 @@ describe("/sidiroar/api/user", () => {
         email: testUserAndAdmin.email,
         name: "editedTestUser",
         permissions: testUserAndAdmin.permissions,
-        password: "9876",
-        oldPassword: "1243",
+        password: "98769876",
+        oldPassword: "12431243",
         additionalInfo: {
           key1: "value1",
           key2: "value2",
           key3: "value3",
         },
-        defaultLang: "eng",
+        defaultLang: "en",
       };
 
       let response = await exec();
@@ -9860,7 +9891,7 @@ describe("/sidiroar/api/user", () => {
           key2: "value2",
           key3: "value3",
         },
-        defaultLang: "eng",
+        defaultLang: "en",
       };
 
       expect(response.body).toEqual(expectedPayload);

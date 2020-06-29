@@ -90,17 +90,17 @@ describe("User", () => {
     });
   });
 
-  describe("generateRandomPin", () => {
+  describe("generateRandomPassword", () => {
     let exec = () => {
-      return User.generateRandomPin();
+      return User.generateRandomPassword();
     };
 
-    it("should generate random string that contains three digits", () => {
+    it("should generate random string that contains eight signs", () => {
       let result = exec();
 
       expect(result).toBeDefined();
 
-      expect(result).toMatch(/^\d+$/);
+      expect(result.length).toEqual(8);
     });
 
     it("should generate two different passwords - one after antoher", () => {
@@ -108,10 +108,10 @@ describe("User", () => {
       let result2 = exec();
 
       expect(result1).toBeDefined();
-      expect(result1).toMatch(/^\d+$/);
+      expect(result1.length).toEqual(8);
 
       expect(result2).toBeDefined();
-      expect(result2).toMatch(/^\d+$/);
+      expect(result2.length).toEqual(8);
 
       expect(result1).not.toEqual(result2);
     });
