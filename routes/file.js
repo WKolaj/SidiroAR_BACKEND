@@ -29,7 +29,7 @@ router.get("/me/:id", [hasUser, isUser, validateObjectId], async (req, res) => {
   //returning 404 if model does not exist
   if (!exists(model)) return res.status(404).send("Model not found...");
 
-  let modelFilePath = Project.getModelFilePath(req.user, model);
+  let modelFilePath = Project.getModelFilePath(model);
 
   //Checking if file exists
   let fileExists = await checkIfFileExistsAsync(modelFilePath);
@@ -74,7 +74,7 @@ router.get(
     //returning 404 if model does not exist
     if (!exists(model)) return res.status(404).send("Model not found...");
 
-    let modelFilePath = Project.getModelFilePath(user, model);
+    let modelFilePath = Project.getModelFilePath(model);
 
     //Checking if file exists
     let fileExists = await checkIfFileExistsAsync(modelFilePath);
@@ -113,7 +113,7 @@ router.post(
     var model = await Model.findOne({ _id: req.params.id, user: user._id });
     if (!exists(model)) return res.status(404).send("Model not found...");
 
-    let modelFilePath = Project.getModelFilePath(user, model);
+    let modelFilePath = Project.getModelFilePath(model);
 
     //Setting up formidable
     let form = new formidable.IncomingForm();
@@ -168,7 +168,7 @@ router.delete(
     var model = await Model.findOne({ _id: req.params.id, user: user._id });
     if (!exists(model)) return res.status(404).send("Model not found...");
 
-    let modelFilePath = Project.getModelFilePath(user, model);
+    let modelFilePath = Project.getModelFilePath(model);
 
     //Check if model file exists
     let fileExists = await checkIfFileExistsAsync(modelFilePath);
@@ -196,7 +196,7 @@ router.get(
     //returning 404 if model does not exist
     if (!exists(model)) return res.status(404).send("Model not found...");
 
-    let modelFilePath = Project.getModelIOSFilePath(req.user, model);
+    let modelFilePath = Project.getModelIOSFilePath(model);
 
     //Checking if file exists
     let fileExists = await checkIfFileExistsAsync(modelFilePath);
@@ -242,7 +242,7 @@ router.get(
     //returning 404 if model does not exist
     if (!exists(model)) return res.status(404).send("Model not found...");
 
-    let modelFilePath = Project.getModelIOSFilePath(user, model);
+    let modelFilePath = Project.getModelIOSFilePath(model);
 
     //Checking if file exists
     let fileExists = await checkIfFileExistsAsync(modelFilePath);
@@ -281,7 +281,7 @@ router.post(
     var model = await Model.findOne({ _id: req.params.id, user: user._id });
     if (!exists(model)) return res.status(404).send("Model not found...");
 
-    let modelFilePath = Project.getModelIOSFilePath(user, model);
+    let modelFilePath = Project.getModelIOSFilePath(model);
 
     //Setting up formidable
     let form = new formidable.IncomingForm();
@@ -336,7 +336,7 @@ router.delete(
     var model = await Model.findOne({ _id: req.params.id, user: user._id });
     if (!exists(model)) return res.status(404).send("Model not found...");
 
-    let modelFilePath = Project.getModelIOSFilePath(user, model);
+    let modelFilePath = Project.getModelIOSFilePath(model);
 
     //Check if model file exists
     let fileExists = await checkIfFileExistsAsync(modelFilePath);

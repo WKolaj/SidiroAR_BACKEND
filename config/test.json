@@ -4,9 +4,7 @@
   "emailLogin": "testSidiroEmail@abcd.com",
   "port": 5000,
   "projectDir": "__testDir/project",
-  "userDir": "users",
-  "fileDir": "files",
-  "iosFileDir": "iosFiles",
+  "modelsDir": "models",
   "jwtPrivateKey": "testPrivateKey",
   "emailPassword": "testSidiroEmailPasssword",
   "logging": {

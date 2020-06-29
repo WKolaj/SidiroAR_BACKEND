@@ -33,9 +33,6 @@ module.exports.generateUselessUser = async () => {
 
   await user.save();
 
-  //Generating user directory
-  await Project.generateUserDirectory(user);
-
   return user;
 };
 
@@ -53,9 +50,6 @@ module.exports.generateTestAdmin = async () => {
   });
 
   await admin.save();
-
-  //Generating user directory
-  await Project.generateUserDirectory(admin);
 
   return admin;
 };
@@ -75,9 +69,6 @@ module.exports.generateTestUser = async () => {
 
   await user.save();
 
-  //Generating user directory
-  await Project.generateUserDirectory(user);
-
   return user;
 };
 
@@ -95,9 +86,6 @@ module.exports.generateTestAdminAndUser = async () => {
   });
 
   await user.save();
-
-  //Generating user directory
-  await Project.generateUserDirectory(user);
 
   return user;
 };
@@ -117,26 +105,23 @@ module.exports.generateTestSuperAdmin = async () => {
 
   await admin.save();
 
-  //Generating user directory
-  await Project.generateUserDirectory(admin);
-
   return admin;
 };
 
 //Method for generating test models for given user
-module.exports.generateTestModels = async (user) => {
+module.exports.generateTestModels = async (users) => {
   let modelsToReturn = [
     new Model({
       name: `testModel${generateRandomNumberString(4)}`,
-      user: user._id,
+      user: users,
     }),
     new Model({
       name: `testModel${generateRandomNumberString(4)}`,
-      user: user._id,
+      user: users,
     }),
     new Model({
       name: `testModel${generateRandomNumberString(4)}`,
-      user: user._id,
+      user: users,
     }),
   ];
 

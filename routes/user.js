@@ -101,9 +101,6 @@ router.post(
 
     await user.save();
 
-    //Generating user directory
-    await Project.generateUserDirectory(user);
-
     //Generating email text
     let emailText = await User.generateEmailText(
       user.name,
@@ -152,9 +149,6 @@ router.delete(
 
     //Deleting user
     await User.deleteOne({ _id: req.params.id });
-
-    //Remvoing user directory
-    await Project.removeUserDirectory(user);
 
     logger.action(`User ${req.user.email} deleted user ${user.email}`);
 

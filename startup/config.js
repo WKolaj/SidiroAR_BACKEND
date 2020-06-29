@@ -18,8 +18,7 @@ module.exports = async function () {
   throwIfConfigDoesNotExist("tokenHeader");
   throwIfConfigDoesNotExist("jwtPrivateKey");
   throwIfConfigDoesNotExist("projectDir");
-  throwIfConfigDoesNotExist("userDir");
-  throwIfConfigDoesNotExist("fileDir");
+  throwIfConfigDoesNotExist("modelsDir");
   throwIfConfigDoesNotExist("smtpServerURL");
   throwIfConfigDoesNotExist("smtpServerPort");
   throwIfConfigDoesNotExist("useTLS");
