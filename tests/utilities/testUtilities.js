@@ -113,15 +113,15 @@ module.exports.generateTestModels = async (users) => {
   let modelsToReturn = [
     new Model({
       name: `testModel${generateRandomNumberString(4)}`,
-      user: users,
+      user: users.map((user) => user._id),
     }),
     new Model({
       name: `testModel${generateRandomNumberString(4)}`,
-      user: users,
+      user: users.map((user) => user._id),
     }),
     new Model({
       name: `testModel${generateRandomNumberString(4)}`,
-      user: users,
+      user: users.map((user) => user._id),
     }),
   ];
 

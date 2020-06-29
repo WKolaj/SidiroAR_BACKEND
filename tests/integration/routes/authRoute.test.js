@@ -295,11 +295,8 @@ describe("/sidiroar/api/users", () => {
 
     it("should return 200 and logged users payload inside body (together with jwt) if user has model files", async () => {
       //Creating models and files
-      let modelsOfTestUser = await generateTestModels(testUser);
-      let filePath = await Project.getModelFilePath(
-        testUser,
-        modelsOfTestUser[1]
-      );
+      let modelsOfTestUser = await generateTestModels([testUser]);
+      let filePath = await Project.getModelFilePath(modelsOfTestUser[1]);
       await createFileAsync(filePath, "content of test file");
 
       let response = await exec();
@@ -352,11 +349,122 @@ describe("/sidiroar/api/users", () => {
 
     it("should return 200 and logged users payload inside body (together with jwt) if user has ios model files", async () => {
       //Creating models and files
-      let modelsOfTestUser = await generateTestModels(testUser);
-      let filePath = await Project.getModelIOSFilePath(
-        testUser,
-        modelsOfTestUser[1]
+      let modelsOfTestUser = await generateTestModels([testUser]);
+      let filePath = await Project.getModelIOSFilePath(modelsOfTestUser[1]);
+      await createFileAsync(filePath, "content of test file");
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(200);
+      expect(response.body).toBeDefined();
+
+      //Body should correspond with users payload
+      let expectedBody = {
+        _id: testUser._id.toString(),
+        email: testUser.email,
+        name: testUser.name,
+        permissions: testUser.permissions,
+        modelIds: modelsOfTestUser.map((model) => model._id.toString()),
+        modelNames: modelsOfTestUser.map((model) => model.name.toString()),
+        filesExist: await Promise.all(
+          modelsOfTestUser.map(async (model) => await model.fileExists())
+        ),
+        iosFilesExist: [false, true, false],
+        additionalInfo: {},
+        defaultLang: "pl",
+      };
+
+      //JWT should also be returned in body
+      (expectedBody.jwt = await testUser.generateJWT()),
+        expect(response.body).toEqual(expectedBody);
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_HEADER
+
+      //Header should have x-auth-token as jwt
+      expect(response.header["x-auth-token"]).toEqual(
+        await testUser.generateJWT()
       );
+
+      //#endregion CHECKING_HEADER
+
+      //#region CHECKING_LOGGING
+
+      expect(logActionMock).toHaveBeenCalledTimes(1);
+      expect(logActionMock.mock.calls[0][0]).toEqual(
+        `User ${requestPayload.email} logged in`
+      );
+      //#endregion CHECKING_LOGGING
+    });
+
+    it("should return 200 and logged users payload inside body (together with jwt) if user has shared models", async () => {
+      //Creating models and files
+      let modelsOfTestUser = await generateTestModels([
+        testUser,
+        testUserAndAdmin,
+      ]);
+      let filePath = await Project.getModelFilePath(modelsOfTestUser[1]);
+      await createFileAsync(filePath, "content of test file");
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(200);
+      expect(response.body).toBeDefined();
+
+      //Body should correspond with users payload
+      let expectedBody = {
+        _id: testUser._id.toString(),
+        email: testUser.email,
+        name: testUser.name,
+        permissions: testUser.permissions,
+        modelIds: modelsOfTestUser.map((model) => model._id.toString()),
+        modelNames: modelsOfTestUser.map((model) => model.name.toString()),
+        filesExist: [false, true, false],
+        iosFilesExist: await Promise.all(
+          modelsOfTestUser.map(async (model) => await model.iosFileExists())
+        ),
+        additionalInfo: {},
+        defaultLang: "pl",
+      };
+
+      //JWT should also be returned in body
+      (expectedBody.jwt = await testUser.generateJWT()),
+        expect(response.body).toEqual(expectedBody);
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_HEADER
+
+      //Header should have x-auth-token as jwt
+      expect(response.header["x-auth-token"]).toEqual(
+        await testUser.generateJWT()
+      );
+
+      //#endregion CHECKING_HEADER
+
+      //#region CHECKING_LOGGING
+
+      expect(logActionMock).toHaveBeenCalledTimes(1);
+      expect(logActionMock.mock.calls[0][0]).toEqual(
+        `User ${requestPayload.email} logged in`
+      );
+      //#endregion CHECKING_LOGGING
+    });
+
+    it("should return 200 and logged users payload inside body (together with jwt) if user has shared ios model files", async () => {
+      //Creating models and files
+      let modelsOfTestUser = await generateTestModels([
+        testUser,
+        testUserAndAdmin,
+      ]);
+      let filePath = await Project.getModelIOSFilePath(modelsOfTestUser[1]);
       await createFileAsync(filePath, "content of test file");
 
       let response = await exec();
