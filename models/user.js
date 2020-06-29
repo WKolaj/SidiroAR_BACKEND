@@ -7,6 +7,7 @@ const jwtPrivateKey = config.get("jwtPrivateKey");
 const { Model } = require("./model");
 const {
   generateEmailContent,
+  generateEmailSubject,
 } = require("../services/EmailService/EmailService");
 
 const possibleLanguages = ["pl", "en"];
@@ -87,7 +88,7 @@ userSchema.statics.isUser = function (permissions) {
   return getBit(permissions, 0);
 };
 
-//Method for generating random pin for user
+//Method for generating email text
 userSchema.statics.generateEmailText = async function (
   name,
   login,
@@ -95,6 +96,11 @@ userSchema.statics.generateEmailText = async function (
   defaultLang
 ) {
   return await generateEmailContent(login, password, defaultLang);
+};
+
+//Method for generating users subject
+userSchema.statics.generateEmailSubject = async function (defaultLang) {
+  return await generateEmailSubject(defaultLang);
 };
 
 //Method for generating JWT Token of user

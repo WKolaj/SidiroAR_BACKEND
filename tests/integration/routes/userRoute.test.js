@@ -201,11 +201,15 @@ describe("/sidiroar/api/user", () => {
         response.body.defaultLang
       );
 
+      let expectedMailSubject = await User.generateEmailSubject(
+        response.body.defaultLang
+      );
+
       expect(sendMailMockFunction.mock.calls[0][0]).toEqual(
         response.body.email
       );
       expect(sendMailMockFunction.mock.calls[0][1]).toEqual(
-        "Rejestracja SidiroAR"
+        expectedMailSubject
       );
       expect(sendMailMockFunction.mock.calls[0][2]).toEqual(
         expectedMailContent
@@ -832,11 +836,15 @@ describe("/sidiroar/api/user", () => {
         response.body.defaultLang
       );
 
+      let expectedMailSubject = await User.generateEmailSubject(
+        response.body.defaultLang
+      );
+
       expect(sendMailMockFunction.mock.calls[0][0]).toEqual(
         response.body.email
       );
       expect(sendMailMockFunction.mock.calls[0][1]).toEqual(
-        "Rejestracja SidiroAR"
+        expectedMailSubject
       );
       expect(sendMailMockFunction.mock.calls[0][2]).toEqual(
         expectedMailContent

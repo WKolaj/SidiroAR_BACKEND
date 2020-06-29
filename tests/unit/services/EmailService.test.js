@@ -134,4 +134,55 @@ describe("EmailService", () => {
       );
     });
   });
+
+  describe("generateEmailSubject", () => {
+    let login;
+    let password;
+    let language;
+
+    beforeEach(() => {
+      language = "pl";
+    });
+
+    let exec = async () => {
+      return EmailService.generateEmailSubject(language);
+    };
+
+    it("should return valid subject, personlized for given user and language", async () => {
+      let subject = await exec();
+
+      expect(subject).toEqual("SidiroAR - rejestracja");
+    });
+
+    it("should return valid subject, personlized for given user and language - if lang is en", async () => {
+      language = "en";
+
+      let subject = await exec();
+
+      expect(subject).toEqual("SidiroAR - registration");
+    });
+
+    it("should throw if there is no language supported", async () => {
+      language = "fakeLang";
+
+      let rejectError;
+
+      await expect(
+        new Promise(async (resolve, reject) => {
+          try {
+            await exec();
+            return resolve(true);
+          } catch (err) {
+            rejectError = err;
+            return reject(err);
+          }
+        })
+      ).rejects.toBeDefined();
+
+      expect(rejectError).toBeDefined();
+      expect(rejectError.message).toEqual(
+        "Unsupported language fakeLang - email subject not found"
+      );
+    });
+  });
 });

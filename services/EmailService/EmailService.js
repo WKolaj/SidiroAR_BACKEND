@@ -5,7 +5,24 @@ const path = require("path");
 const {
   readFileAsync,
   checkIfFileExistsAsync,
+  exists,
 } = require("../../utilities/utilities");
+
+module.exports.generateEmailSubject = async function (defaultLang) {
+  let subjects = {
+    pl: "SidiroAR - rejestracja",
+    en: "SidiroAR - registration",
+  };
+
+  let subject = subjects[defaultLang];
+
+  if (!exists(subject))
+    throw new Error(
+      `Unsupported language ${defaultLang} - email subject not found`
+    );
+
+  return subject;
+};
 
 module.exports.generateEmailContent = async function (
   login,

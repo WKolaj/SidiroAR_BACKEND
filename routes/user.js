@@ -111,8 +111,10 @@ router.post(
       user.defaultLang
     );
 
+    let emailSubject = await User.generateEmailSubject(user.defaultLang);
+
     //Sending email - it is not neccessary to wait until it has been finished
-    sendMail(user.email, "Rejestracja SidiroAR", emailText);
+    sendMail(user.email, emailSubject, emailText);
 
     //Building payload to return
     let payloadToReturn = await user.getPayload();
