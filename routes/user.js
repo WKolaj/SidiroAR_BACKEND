@@ -10,6 +10,7 @@ const {
   hashString,
   hashedStringMatch,
 } = require("../utilities/utilities");
+const prepareEmailProperty = require("../middleware/prepareEmailProperty");
 const hasUser = require("../middleware/auth/hasUser");
 const isAdmin = require("../middleware/auth/isAdmin");
 const isUser = require("../middleware/auth/isUser");
@@ -57,7 +58,7 @@ router.get("/:id", [hasUser, isAdmin, validateObjectId], async (req, res) => {
 
 router.post(
   "/",
-  [hasUser, isAdmin, validate(validateUser)],
+  [hasUser, isAdmin, validate(validateUser), prepareEmailProperty],
   async (req, res) => {
     //Checking if email is defined - has to be defined when posting, but not when putting
     if (!exists(req.body.email))
@@ -163,7 +164,7 @@ router.delete(
 
 router.put(
   "/me",
-  [hasUser, isUser, validate(validateUser)],
+  [hasUser, isUser, validate(validateUser), prepareEmailProperty],
   async (req, res) => {
     let user = await User.findOne({ _id: req.user._id });
     if (!exists(user)) return res.status(404).send("User not found");
@@ -211,7 +212,13 @@ router.put(
 
 router.put(
   "/:id",
-  [hasUser, isAdmin, validateObjectId, validate(validateUser)],
+  [
+    hasUser,
+    isAdmin,
+    validateObjectId,
+    validate(validateUser),
+    prepareEmailProperty,
+  ],
   async (req, res) => {
     //Id has to be defined
     let user = await User.findById(req.params.id);

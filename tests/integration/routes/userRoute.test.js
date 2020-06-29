@@ -445,6 +445,63 @@ describe("/sidiroar/api/user", () => {
       //#endregion CHECKING_DATABASE
     });
 
+    it("should create new user,set email to lowercase and return 200 with user payload has email with upper case letters", async () => {
+      requestPayload.email = "AbCd@abcd.pl";
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(200);
+      expect(response.body).toBeDefined();
+
+      //Body should correspond with payload (except  _id)
+      let expectedBody = {
+        ...requestPayload,
+        email: "abcd@abcd.pl",
+        _id: response.body._id,
+        modelIds: [],
+        modelNames: [],
+        filesExist: [],
+        iosFilesExist: [],
+      };
+
+      expect(response.body).toEqual(expectedBody);
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //New user should be saved inside database
+      let user = await User.findOne({ _id: response.body._id });
+      expect(user).toBeDefined();
+
+      //user payload should be the same to response (except hashed password)
+      let userPayload = _.pick(user, [
+        "email",
+        "name",
+        "permissions",
+        "defaultLang",
+        "additionalInfo",
+      ]);
+      //Id should be converted to string
+      userPayload._id = user._id.toString();
+      userPayload.password = requestPayload.password;
+      //modelIds and modelNames should be empty - it is new user
+      userPayload.modelNames = [];
+      userPayload.modelIds = [];
+      userPayload.filesExist = [];
+      userPayload.iosFilesExist = [];
+
+      expect(response.body).toEqual(userPayload);
+
+      //Password should be encrypted properly
+      expect(bcrypt.compareSync(requestPayload.password, user.password));
+
+      //#endregion CHECKING_DATABASE
+    });
+
     //#endregion CHECK_EMAIL
 
     //#region CHECK_NAME
@@ -5030,6 +5087,58 @@ describe("/sidiroar/api/user", () => {
       //#endregion CHECKING_DATABASE
     });
 
+    it("should return 200, edit user, and return it - if user email in payload is different due to uppercase letters", async () => {
+      request.email = "UsEr@test1234abcd.com.pl";
+      let response = await exec();
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(200);
+
+      let expectedPayload = {
+        _id: testUser._id.toString(),
+        name: requestPayload.name,
+        email: "user@test1234abcd.com.pl",
+        permissions: requestPayload.permissions,
+        modelIds: modelsOfTestUser.map((model) => model._id.toString()),
+        modelNames: modelsOfTestUser.map((model) => model.name),
+        filesExist: await Promise.all(
+          modelsOfTestUser.map(async (model) => await model.fileExists())
+        ),
+        iosFilesExist: await Promise.all(
+          modelsOfTestUser.map(async (model) => await model.iosFileExists())
+        ),
+        additionalInfo: { key1: "value1", key2: "value2", key3: "value3" },
+        defaultLang: "en",
+      };
+
+      expect(response.body).toEqual(expectedPayload);
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //User should also be edited in database
+
+      //Getting user from db
+      let userFromDatabase = await User.findOne({ _id: id });
+      expect(userFromDatabase).toBeDefined();
+
+      //Checking payload
+      let userFromDatabasePayload = await userFromDatabase.getPayload();
+      expect(userFromDatabasePayload).toEqual(expectedPayload);
+
+      //Checking password
+      let newPasswordMatches = await hashedStringMatch(
+        requestPayload.password,
+        userFromDatabase.password
+      );
+
+      expect(newPasswordMatches).toEqual(true);
+
+      //#endregion CHECKING_DATABASE
+    });
+
     it("should return 400, and not edit any user- if users email is not defined", async () => {
       //generating new random id
       delete requestPayload.email;
@@ -8194,6 +8303,64 @@ describe("/sidiroar/api/user", () => {
       );
 
       expect(idOfAllModels).toEqual(expectedModelIds);
+
+      //#endregion CHECKING_DATABASE
+    });
+
+    it("should return 200, edit user, and return it - if email is different due to uppercase letters", async () => {
+      requestPayload.email = "UsEr@test1234abcd.com.pl";
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(200);
+
+      let expectedPayload = {
+        _id: testUser._id.toString(),
+        name: requestPayload.name,
+        email: "user@test1234abcd.com.pl",
+        permissions: requestPayload.permissions,
+        modelIds: modelsOfTestUser.map((model) => model._id.toString()),
+        modelNames: modelsOfTestUser.map((model) => model.name),
+        filesExist: await Promise.all(
+          modelsOfTestUser.map(async (model) => await model.fileExists())
+        ),
+        iosFilesExist: await Promise.all(
+          modelsOfTestUser.map(async (model) => await model.iosFileExists())
+        ),
+        additionalInfo: {
+          key1: "value1",
+          key2: "value2",
+          key3: "value3",
+        },
+        defaultLang: "en",
+      };
+
+      expect(response.body).toEqual(expectedPayload);
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_DATABASE
+
+      //User should also be edited in database
+
+      //Getting user from db
+      let userFromDatabase = await User.findOne({ _id: testUser._id });
+      expect(userFromDatabase).toBeDefined();
+
+      //Checking payload
+      let userFromDatabasePayload = await userFromDatabase.getPayload();
+      expect(userFromDatabasePayload).toEqual(expectedPayload);
+
+      //Checking password
+      let newPasswordMatches = await hashedStringMatch(
+        requestPayload.password,
+        userFromDatabase.password
+      );
+
+      expect(newPasswordMatches).toEqual(true);
 
       //#endregion CHECKING_DATABASE
     });

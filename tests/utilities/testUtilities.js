@@ -9,8 +9,8 @@ const Project = require("../../classes/project");
 const testUselessUserEmail = "useless@test1234abcd.com.pl";
 const testAdminEmail = "admin@test1234abcd.com.pl";
 const testUserEmail = "user@test1234abcd.com.pl";
-const testUserAndAdminEmail = "userAndAdmin@test1234abcd.com.pl";
-const testSuperAdminEmail = "superAdmin@test1234abcd.com.pl";
+const testUserAndAdminEmail = "userandadmin@test1234abcd.com.pl";
+const testSuperAdminEmail = "superadmin@test1234abcd.com.pl";
 
 const testUselessUserPassword = "11111111";
 const testAdminPassword = "12341234";

@@ -7,11 +7,12 @@ const Model = require("../models/model").Model;
 const {
   existsAndIsNotEmpty,
   exists,
-  hashedStringMatch
+  hashedStringMatch,
 } = require("../utilities/utilities");
 const headerName = config.get("tokenHeader");
 const jsonValidation = require("../middleware/jsonError");
 const logger = require("../logger/logger");
+const prepareEmailProperty = require("../middleware/prepareEmailProperty");
 
 //assigning JSON parsing to router
 router.use(express.json());
@@ -19,7 +20,7 @@ router.use(express.json());
 //assigning JSON parsing error validation
 router.use(jsonValidation);
 
-router.post("/", async (req, res) => {
+router.post("/", [prepareEmailProperty], async (req, res) => {
   if (!exists(req.body)) return res.status(400).send("Invalid request");
   if (!exists(req.body.email))
     return res.status(400).send("Invalid request - email cannot be empty");
@@ -46,10 +47,7 @@ router.post("/", async (req, res) => {
 
   logger.action(`User ${req.body.email} logged in`);
 
-  return res
-    .status(200)
-    .set(headerName, jwt)
-    .send(payloadToReturn);
+  return res.status(200).set(headerName, jwt).send(payloadToReturn);
 });
 
 module.exports = router;

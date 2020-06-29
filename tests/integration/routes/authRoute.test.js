@@ -407,6 +407,48 @@ describe("/sidiroar/api/users", () => {
       //#endregion CHECKING_LOGGING
     });
 
+    it("should return 200 and logged users payload inside body (together with jwt) if email differs due to uppercase", async () => {
+      //Setting payload of normal user
+      requestPayload.email = "UsEr@test1234abcd.com.pl";
+
+      let response = await exec();
+
+      //#region CHECKING_RESPONSE
+
+      expect(response).toBeDefined();
+      expect(response.status).toEqual(200);
+      expect(response.body).toBeDefined();
+
+      //Body should correspond with users payload
+      let expectedBody = {
+        _id: testUser._id.toString(),
+        email: testUser.email,
+        name: testUser.name,
+        permissions: testUser.permissions,
+        modelIds: [],
+        modelNames: [],
+        filesExist: [],
+        iosFilesExist: [],
+        additionalInfo: {},
+        defaultLang: "pl",
+      };
+
+      //JWT should also be returned in body
+      (expectedBody.jwt = await testUser.generateJWT()),
+        expect(response.body).toEqual(expectedBody);
+
+      //#endregion CHECKING_RESPONSE
+
+      //#region CHECKING_HEADER
+
+      //Header should have x-auth-token as jwt
+      expect(response.header["x-auth-token"]).toEqual(
+        await testUser.generateJWT()
+      );
+
+      //#endregion CHECKING_HEADER
+    });
+
     it("should return 400 and empty body if user payload is not valid - email is not defined", async () => {
       delete requestPayload.email;
 
