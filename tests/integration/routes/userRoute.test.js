@@ -1781,7 +1781,9 @@ describe("/sidiroar/api/user", () => {
       expect(response).toBeDefined();
       expect(response.status).toEqual(400);
       expect(response.text).toBeDefined();
-      expect(response.text).toContain('"additionalInfo" must be an object');
+      expect(response.text).toContain(
+        '"additionalInfo" must be of type object'
+      );
 
       //#endregion CHECKING_RESPONSE
 
@@ -1811,7 +1813,9 @@ describe("/sidiroar/api/user", () => {
       expect(response).toBeDefined();
       expect(response.status).toEqual(400);
       expect(response.text).toBeDefined();
-      expect(response.text).toContain('"additionalInfo" must be an object');
+      expect(response.text).toContain(
+        '"additionalInfo" must be of type object'
+      );
 
       //#endregion CHECKING_RESPONSE
 
@@ -1841,7 +1845,9 @@ describe("/sidiroar/api/user", () => {
       expect(response).toBeDefined();
       expect(response.status).toEqual(400);
       expect(response.text).toBeDefined();
-      expect(response.text).toContain('"additionalInfo" must be an object');
+      expect(response.text).toContain(
+        '"additionalInfo" must be of type object'
+      );
 
       //#endregion CHECKING_RESPONSE
 
@@ -1871,7 +1877,9 @@ describe("/sidiroar/api/user", () => {
       expect(response).toBeDefined();
       expect(response.status).toEqual(400);
       expect(response.text).toBeDefined();
-      expect(response.text).toContain('"additionalInfo" must be an object');
+      expect(response.text).toContain(
+        '"additionalInfo" must be of type object'
+      );
 
       //#endregion CHECKING_RESPONSE
 
@@ -1901,7 +1909,9 @@ describe("/sidiroar/api/user", () => {
       expect(response).toBeDefined();
       expect(response.status).toEqual(400);
       expect(response.text).toBeDefined();
-      expect(response.text).toContain('"additionalInfo" must be an object');
+      expect(response.text).toContain(
+        '"additionalInfo" must be of type object'
+      );
 
       //#endregion CHECKING_RESPONSE
 
@@ -1931,7 +1941,9 @@ describe("/sidiroar/api/user", () => {
       expect(response).toBeDefined();
       expect(response.status).toEqual(400);
       expect(response.text).toBeDefined();
-      expect(response.text).toContain('"additionalInfo" must be an object');
+      expect(response.text).toContain(
+        '"additionalInfo" must be of type object'
+      );
 
       //#endregion CHECKING_RESPONSE
 
@@ -6064,7 +6076,9 @@ describe("/sidiroar/api/user", () => {
 
       expect(response).toBeDefined();
       expect(response.status).toEqual(400);
-      expect(response.text).toContain('"additionalInfo" must be an object');
+      expect(response.text).toContain(
+        '"additionalInfo" must be of type object'
+      );
 
       //#endregion CHECKING_RESPONSE
 
@@ -6125,7 +6139,9 @@ describe("/sidiroar/api/user", () => {
 
       expect(response).toBeDefined();
       expect(response.status).toEqual(400);
-      expect(response.text).toContain('"additionalInfo" must be an object');
+      expect(response.text).toContain(
+        '"additionalInfo" must be of type object'
+      );
 
       //#endregion CHECKING_RESPONSE
 
@@ -6186,7 +6202,9 @@ describe("/sidiroar/api/user", () => {
 
       expect(response).toBeDefined();
       expect(response.status).toEqual(400);
-      expect(response.text).toContain('"additionalInfo" must be an object');
+      expect(response.text).toContain(
+        '"additionalInfo" must be of type object'
+      );
 
       //#endregion CHECKING_RESPONSE
 
@@ -6247,7 +6265,9 @@ describe("/sidiroar/api/user", () => {
 
       expect(response).toBeDefined();
       expect(response.status).toEqual(400);
-      expect(response.text).toContain('"additionalInfo" must be an object');
+      expect(response.text).toContain(
+        '"additionalInfo" must be of type object'
+      );
 
       //#endregion CHECKING_RESPONSE
 
@@ -9409,7 +9429,9 @@ describe("/sidiroar/api/user", () => {
 
       expect(response).toBeDefined();
       expect(response.status).toEqual(400);
-      expect(response.text).toContain('"additionalInfo" must be an object');
+      expect(response.text).toContain(
+        '"additionalInfo" must be of type object'
+      );
 
       //#endregion CHECKING_RESPONSE
 
@@ -9473,7 +9495,9 @@ describe("/sidiroar/api/user", () => {
 
       expect(response).toBeDefined();
       expect(response.status).toEqual(400);
-      expect(response.text).toContain('"additionalInfo" must be an object');
+      expect(response.text).toContain(
+        '"additionalInfo" must be of type object'
+      );
 
       //#endregion CHECKING_RESPONSE
 
@@ -9537,7 +9561,9 @@ describe("/sidiroar/api/user", () => {
 
       expect(response).toBeDefined();
       expect(response.status).toEqual(400);
-      expect(response.text).toContain('"additionalInfo" must be an object');
+      expect(response.text).toContain(
+        '"additionalInfo" must be of type object'
+      );
 
       //#endregion CHECKING_RESPONSE
 
@@ -9601,7 +9627,9 @@ describe("/sidiroar/api/user", () => {
 
       expect(response).toBeDefined();
       expect(response.status).toEqual(400);
-      expect(response.text).toContain('"additionalInfo" must be an object');
+      expect(response.text).toContain(
+        '"additionalInfo" must be of type object'
+      );
 
       //#endregion CHECKING_RESPONSE
 

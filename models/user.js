@@ -1,4 +1,4 @@
-const Joi = require("joi");
+const Joi = require("@hapi/joi");
 const mongoose = require("mongoose");
 const config = require("config");
 const {
@@ -62,17 +62,17 @@ const userSchema = new mongoose.Schema({
 });
 
 function validateUser(user) {
-  const schema = {
+  const schema = Joi.object({
     name: Joi.string().min(3).max(100).required(),
     email: Joi.string().email().required(),
     password: Joi.string().min(8).max(255),
     oldPassword: Joi.string(),
     permissions: Joi.number().integer().min(0).max(255).required(),
-    defaultLang: Joi.valid(possibleLanguages).optional(),
+    defaultLang: Joi.valid(...possibleLanguages).optional(),
     additionalInfo: Joi.object().optional(),
-  };
+  });
 
-  return Joi.validate(user, schema);
+  return schema.validate(user);
 }
 
 //Method for generating random password for user

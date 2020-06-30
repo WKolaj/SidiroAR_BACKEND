@@ -1,7 +1,7 @@
 const logger = require("../logger/logger");
-const Joi = require("joi");
+const Joi = require("@hapi/joi");
 
-module.exports = async function() {
+module.exports = async function () {
   logger.info("initializing validation...");
 
   //Assigning object id type to Joi validation

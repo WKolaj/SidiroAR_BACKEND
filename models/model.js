@@ -1,4 +1,4 @@
-const Joi = require("joi");
+const Joi = require("@hapi/joi");
 const Project = require("../classes/project");
 const mongoose = require("mongoose");
 const { checkIfFileExistsAsync } = require("../utilities/utilities");
@@ -20,12 +20,12 @@ const modelSchema = new mongoose.Schema({
 
 //user has to be optional - it is given as params in endpoint
 function validateModel(model) {
-  const schema = {
+  const schema = Joi.object({
     name: Joi.string().min(3).max(100).required(),
     user: Joi.array().items(Joi.objectId()).min(1),
-  };
+  });
 
-  return Joi.validate(model, schema);
+  return schema.validate(model);
 }
 
 //Method for checking if model file exists
