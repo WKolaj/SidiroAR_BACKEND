@@ -1,6 +1,6 @@
 {
   "name": "sidiroar_backend",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Back-end for SidiroAR application",
   "main": "server.js",
   "directories": {
