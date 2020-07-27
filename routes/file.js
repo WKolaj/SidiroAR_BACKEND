@@ -20,6 +20,7 @@ const {
 } = require("../utilities/utilities");
 const _ = require("lodash");
 const formidable = require("formidable");
+const config = require("config");
 
 //Routes for Android
 
@@ -118,8 +119,8 @@ router.post(
     //Setting up formidable
     let form = new formidable.IncomingForm();
     form.keepExtensions = false;
-    //file size limit per model - 200 MB
-    form.maxFileSize = 200 * 1024 * 1024;
+    //file size limit per model - 300 MB
+    form.maxFileSize = config.get("maxFileSize");
 
     form.parse(req, async (err, fields, files) => {
       try {
@@ -286,8 +287,8 @@ router.post(
     //Setting up formidable
     let form = new formidable.IncomingForm();
     form.keepExtensions = false;
-    //file size limit per model - 200 MB
-    form.maxFileSize = 200 * 1024 * 1024;
+    //file size limit per model - 300 MB
+    form.maxFileSize = config.get("maxFileSize");
 
     form.parse(req, async (err, fields, files) => {
       try {

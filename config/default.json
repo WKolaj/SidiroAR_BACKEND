@@ -1,6 +1,7 @@
 {
   "filesDir": "files",
   "modelFileExtension": "smdl",
+  "maxFileSize": 314572800,
   "tokenHeader": "x-auth-token",
   "port": 5000,
   "projectDir": "project",

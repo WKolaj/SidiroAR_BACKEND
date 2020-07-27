@@ -13,6 +13,7 @@ module.exports = async function () {
   throwIfConfigDoesNotExist("emailLogin");
   throwIfConfigDoesNotExist("emailPassword");
   throwIfConfigDoesNotExist("modelFileExtension");
+  throwIfConfigDoesNotExist("maxFileSize");
   throwIfConfigDoesNotExist("port");
   throwIfConfigDoesNotExist("requestTimeout");
   throwIfConfigDoesNotExist("tokenHeader");

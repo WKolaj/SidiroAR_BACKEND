@@ -1,10 +1,10 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "195c8fc3dd84e39ceb6c4c1c7625dd4c",
+    "revision": "b4e5e7ee5db0b5d9bedfc3e09a59c1ec",
     "url": "/sidiroar/index.html"
   },
   {
-    "revision": "2956cd81eebbd8feab2d",
+    "revision": "7b85dad3b143e0b4fdec",
     "url": "/sidiroar/static/css/main.5f361e03.chunk.css"
   },
   {
@@ -16,8 +16,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/sidiroar/static/js/2.b870a7f3.chunk.js.LICENSE.txt"
   },
   {
-    "revision": "2956cd81eebbd8feab2d",
-    "url": "/sidiroar/static/js/main.f3784fff.chunk.js"
+    "revision": "7b85dad3b143e0b4fdec",
+    "url": "/sidiroar/static/js/main.ddce7d48.chunk.js"
   },
   {
     "revision": "5e4046f09d6c6226ff1f",
